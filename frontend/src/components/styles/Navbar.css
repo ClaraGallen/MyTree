@@ -1,0 +1,35 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-container {
+  display: flex;
+  padding-right: 150px;
+}
+
+.logo {
+  font-size: 32px; /* Gros texte */
+  color: white; /* Texte blanc */
+}
+
+.nav-links {
+  font-size: 24px; /* Gros texte */
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  justify-content: center; /* Pour centrer le contenu horizontalement */
+}
+
+.nav-link {
+  color: rgb(121, 121, 121); /* Texte blanc */
+  text-decoration: none;
+  transition: color 0.3s ease; /* Transition fluide pour la couleur */
+}
+
+.nav-link:hover,
+.nav-link:focus,
+.nav-link:active {
+  color: #ffffff; /* Texte gris clair au survol */
+}

@@ -1,0 +1,49 @@
+/* App container */
+.App {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+/* Header */
+#header {
+  text-align: center;
+  margin-bottom: 40px;
+  background-color: rgba(243, 244, 246, 0.6);
+  padding: 40px;
+  border-radius: 10px;
+}
+
+/* Title */
+#title {
+  font-size: 4rem;
+  color: #1a1a1a;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Subtitle */
+#subtitle {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Start button */
+#start-button {
+  padding: 15px 30px;
+  background-color: #a3aeff ; /* Changement de couleur */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#start-button:hover {
+  background-color: #87c0bc  ; /* Changement de couleur */
+}

@@ -1,0 +1,33 @@
+
+/* Styles pour le conteneur de texte */
+.text-container {
+  text-align: center;
+  padding-top:  100px;
+}
+
+/* Styles pour le titre */
+#title {
+  font-size: 3.5rem;
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Styles pour le sous-titre */
+#subtitle {
+  font-size: 1.5rem;
+  color: #ffffff; 
+}
+
+/* Styles pour le bouton de démarrage */
+#start-button {
+  font-weight: bold;
+  padding: 15px 30px;
+  background-color: #ffffff;
+  color: #242424;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  text-decoration: none; 
+}
