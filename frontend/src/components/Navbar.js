@@ -4,7 +4,8 @@ import './styles/Navbar.css';
 
 export default function Navbar() {
   return (
-    <nav className="navbar">
+    <div className="navContainer">
+       <nav className="navbar">
       <div className="logo-container">
         <h1 className="logo">My Tree</h1>
       </div>
@@ -20,5 +21,7 @@ export default function Navbar() {
         </li>
       </ul>
     </nav>
+    </div>
+   
   );
 };
