@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Documentation des Fonctionnalités Front-End pour MyTree
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Aperçu
 
-## Available Scripts
+Cette documentation détaille les fonctionnalités front-end requises pour l'application MyTree. Elle décrit les interactions de l'utilisateur avec l'interface et les appels aux points d'accès (endpoints) de l'API back-end nécessaires pour chaque action.
 
-In the project directory, you can run:
+## Authentification
 
-### `npm start`
+### Page d'Inscription
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Intégrer un formulaire d'inscription qui soumet les données au point d'accès `POST /api/auth/register`.
+- Prévoir une validation de formulaire côté client pour l'email et le mot de passe.
+- Gérer les réponses de succès et d'erreur de l'API et afficher les messages appropriés à l'utilisateur.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Page de Connexion
 
-### `npm test`
+- Créer un formulaire de connexion pour soumettre les données à `POST /api/auth/login`.
+- Enregistrer le token retourné dans le stockage local pour maintenir la session utilisateur.
+- Rediriger vers la page principale de l'application après une connexion réussie.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Gestion des Utilisateurs (Administrateur)
 
-### `npm run build`
+### Interface Administrateur
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Concevoir une interface administrateur pour changer les rôles des utilisateurs en utilisant le point d'accès `PATCH /api/users/{userId}/role`.
+- Permettre à l'administrateur de voir la liste des utilisateurs et de modifier leurs droits d'accès.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Gestion des Informations Généalogiques
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Ajout/Édition de Personne
 
-### `npm run eject`
+- Fournir des formulaires pour ajouter et éditer les informations des personnes via les points d'accès `POST /api/people` et `PUT /api/people/{personId}`.
+- Assurer que les champs du formulaire correspondent aux données attendues par l'API.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Gestion des Relations Familiales
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Implémenter une interface pour ajouter des relations entre les membres de la famille via `POST /api/relations`.
+- Permettre aux utilisateurs de visualiser et de modifier les relations existantes.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Visualisation de l'Arbre Généalogique
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Affichage de l'Arbre
 
-## Learn More
+- Intégrer une librairie graphique, comme D3.js, pour visualiser l'arbre généalogique.
+- S'assurer que l'arbre peut être navigué et que les détails des individus peuvent être affichés.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Fonctionnalités Supplémentaires
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Importation/Exportation
 
-### Code Splitting
+- Ajouter des fonctionnalités pour que les utilisateurs puissent exporter et importer leur arbre au format JSON en utilisant les endpoints `GET /api/export` et `POST /api/import`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Statistiques
 
-### Analyzing the Bundle Size
+- Afficher les statistiques de l'arbre généalogique obtenues à partir de `GET /api/statistics`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Interface et Expérience Utilisateur
 
-### Making a Progressive Web App
+- Toutes les interfaces doivent être réactives et adaptées aux dispositifs mobiles.
+- La conception doit être cohérente avec une navigation intuitive.
+- Implémenter des gestionnaires d'erreurs pour tous les appels API afin d'informer les utilisateurs en cas de problème.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Erreurs et Validation
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Intégrer une gestion des erreurs côté client pour les formulaires et les requêtes API.
+- Valider les entrées utilisateur avant de les envoyer au back-end pour éviter les appels API inutiles.
