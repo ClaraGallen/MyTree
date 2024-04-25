@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("cors"); // Importer le module CORS
+const cors = require("cors");
 const connectDB = require("./config/db");
 const dotenv = require("dotenv").config();
 const port = 5000;
@@ -9,16 +9,33 @@ connectDB();
 
 const app = express();
 
-app.use(cors({
-    origin: "http://localhost:3000",
-    credentials: true
-  }));
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
+
+// Middleware pour logger les requêtes reçues
+app.use((req, res, next) => {
+  console.log(
+    `A ${req.method} request received at ${new Date().toISOString()}`
+  );
+  next();
+});
 
 // Middleware qui permet de traiter les données de la Request
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Routes
+app.use("/auth", require("./routes/authRoutes"));
 app.use("/tree", require("./routes/tree.routes"));
 
+// Middleware qui permet de gérer les erreurs
+app.use(require("./utils/errorHandler"));
+
 // Lancer le serveur
-app.listen(port, () => console.log("Le serveur a démarré au port  " + port));
+app.listen(port, "0.0.0.0", () =>
+  console.log("Le serveur a démarré au port " + port)
+);

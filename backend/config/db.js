@@ -1,13 +1,16 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
+
+const db = process.env.MONGO_URI;
 
 const connectDB = async () => {
   try {
     mongoose.set("strictQuery", false);
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Mongo connecté");
+    await mongoose.connect(db);
+    console.log("MongoDB connected");
   } catch (err) {
-    console.error("Erreur de connexion à MongoDB :", err);
-    process.exit(1); // Assurez-vous de quitter le processus avec un code d'erreur
+    console.error(err.message);
+    process.exit(1);
   }
 };
 
