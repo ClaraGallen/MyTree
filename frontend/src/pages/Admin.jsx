@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Admin = () => {
+export default function Admin() {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -9,7 +9,7 @@ const Admin = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/users');
+                const response = await axios.get('/users'); //route pour récupérer la liste de tous les utilsateurs
                 setUsers(response.data);
                 setIsLoading(false);
             } catch (error) {
@@ -24,7 +24,7 @@ const Admin = () => {
 
     const updateUserRole = async (userId, newRole) => {
         try {
-            const response = await axios.put(`/api/users/${userId}`, { role: newRole });
+            const response = await axios.put(`/users/${userId}/role`, { role: newRole }); // attribuer un nouveau rôle
             const updatedUser = response.data;
             // Mettre à jour la liste des utilisateurs avec le nouvel utilisateur mis à jour
             setUsers(prevUsers => prevUsers.map(user => (user._id === updatedUser._id ? updatedUser : user)));
@@ -36,7 +36,7 @@ const Admin = () => {
 
     const updateUserValidation = async (userId, validated) => {
         try {
-            const response = await axios.put(`/users/${userId}/validation`, { validated });
+            const response = await axios.put(`/users/${userId}/validation`, { validated }); //valider l'inscription
             const updatedUser = response.data;
             // Mettre à jour la liste des utilisateurs avec le nouvel utilisateur mis à jour
             setUsers(prevUsers => prevUsers.map(user => (user._id === updatedUser._id ? updatedUser : user)));
@@ -48,7 +48,7 @@ const Admin = () => {
 
     const deleteUser = async (userId) => {
         try {
-            await axios.delete(`/users/${userId}`);
+            await axios.delete(`/users/${userId}/delete`); //supprimer un utilisateur
             // Mettre à jour la liste des utilisateurs en supprimant l'utilisateur supprimé
             setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
         } catch (error) {
@@ -86,5 +86,3 @@ const Admin = () => {
         </div>
     );
 };
-
-export default Admin;

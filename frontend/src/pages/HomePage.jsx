@@ -10,7 +10,7 @@ export default function HomePage() {
             <p id="subtitle">Uncover the fascinating history of your family through the generations with
              Genealogy Tree. Our user-friendly platform allows you to create interactive family trees, 
              trace family connections, and discover untold stories about your ancestors.</p>
-            <Link to="/create-tree" id="start-button">Start Now</Link>
+            <Link to="/register" id="start-button">Start Now</Link>
         </div>
     );
 };

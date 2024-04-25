@@ -7,6 +7,10 @@ import CreateTreePage from './pages/CreateTreePage';
 import CreateRelationPage from './pages/CreateRelationPage';
 import Login from './pages/LoginPage'; 
 import Register from './pages/SignupPage'; 
+import Admin from './pages/Admin'; 
+import Dashboard from './pages/Dashboard'; 
+
+
 
 import './App.css'; // Importer le fichier CSS pour appliquer les styles
 
@@ -22,6 +26,10 @@ function App() {
             <Route path="/create-relation" element={<CreateRelationPage />} />
             <Route path="/login" element={<Login/>} />
             <Route path="/register" element={<Register/>} />
+            <Route path="/admin" element={<Admin/>} />
+            <Route path="/dashboard" element={<Dashboard/>} />
+
+
           </Routes>
         </div>
       </div>

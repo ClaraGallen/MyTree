@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // Importer Axios
+import axios from 'axios';
 import "./styles/LoginPage.css";
 
 export default function Login() {
@@ -11,7 +11,7 @@ export default function Login() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('/auth/login', { email, password });
+            const response = await axios.post('/auth/login', { email, password }); //route pour envoyer la demande de connexion
             if (response.status === 200) {
                 // Connexion réussie, rediriger l'utilisateur
                 window.location.href = '/dashboard';
