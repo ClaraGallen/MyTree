@@ -95,9 +95,9 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
-# API Endpoints pour la gestion des personnes
+# API Endpoints pour la gestion des Relations
 
-## Ajouter une Personne
+## Ajouter une Relation
 
 - **Endpoint** : `POST /people/addRelation`
 - **Description** : Ajouter une nouvelle Relation à la base de données.
@@ -130,7 +130,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   ```
   Après cette opération, si la relation ajoutée est un père ou une mère, l'utilisateur actuel qui a ajouté cette relation sera considéré comme son enfant.
 
-## Mettre à Jour une Personne
+## Mettre à Jour une Relation
 
 - **Endpoint** : `PUT /people/{personId}`
 - **Description** : Mettre à jour les informations d'une personne existante.
@@ -157,11 +157,11 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 - **Sortie** :
   ```json
   {
-    "message": "Informations de la personne mises à jour avec succès"
+    "message": "Informations de la relation mises à jour avec succès"
   }
   ```
 
-## Supprimer une Personne
+## Supprimer une Relation
 
 - **Endpoint** : `DELETE /people/{personId}`
 - **Description** : Supprimer une personne de la base de données.
@@ -169,7 +169,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 - **Sortie** :
   ```json
   {
-    "message": "Personne supprimée avec succès"
+    "message": "Relation supprimée avec succès"
   }
   ```
 
