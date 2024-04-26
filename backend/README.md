@@ -56,14 +56,10 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Déconnexion
 
-- **Endpoint** : `POST /api/auth/logout`
+- **Endpoint** : `GET /api/auth/logout`
 - **Description** : Déconnecter un utilisateur et invalider le token.
-- **Entrée** :
-  ```json
-  {
-    "token": "jwt.token.ici"
-  }
-  ```
+- **Entrée** : Aucune, authentification requise.
+
 - **Sortie** :
   ```json
   {

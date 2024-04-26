@@ -4,7 +4,7 @@ const { tokenExpiry } = require("../config/config");
 const jwt = require("jsonwebtoken");
 
 const test = (req, res) => {
-  res.json("auth test is working");
+  res.json("Le test d'authentification fonctionne");
 };
 
 const registerUser = async (req, res, next) => {
@@ -12,16 +12,16 @@ const registerUser = async (req, res, next) => {
     const { email, password } = req.body;
     if (!email) {
       res.status(400);
-      throw new Error("Email is required");
+      throw new Error("L'adresse e-mail est requise");
     }
     if (!password) {
       res.status(400);
-      throw new Error("Password is required");
+      throw new Error("Le mot de passe est requis");
     }
     const exist = await User.findOne({ email });
     if (exist) {
       return res.status(409).json({
-        error: "Email is taken already",
+        error: "L'adresse e-mail est déjà utilisée",
       });
     }
 
@@ -44,16 +44,16 @@ const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
     if (!email) {
       res.status(400);
-      throw new Error("Email is required");
+      throw new Error("L'adresse e-mail est requise");
     }
     if (!password) {
       res.status(400);
-      throw new Error("Password is required");
+      throw new Error("Le mot de passe est requis");
     }
     const user = await User.findOne({ email: email });
     if (!user) {
       res.status(404);
-      throw new Error("User not found");
+      throw new Error("Utilisateur introuvable");
     }
     const hashed = user.passwordHash;
     const match = await comparePassword(password, hashed);
@@ -65,16 +65,28 @@ const loginUser = async (req, res, next) => {
         (err, token) => {
           if (err) {
             console.error(err);
-            throw new Error("Error signing token, Please try again later");
+            throw new Error(
+              "Erreur lors de la génération du jeton, veuillez réessayer ultérieurement"
+            );
           }
           return res.cookie("token", token).json({ token, userId: user._id });
         }
       );
     } else {
       res.status(401);
-      throw new Error("Invalid email or password");
+      throw new Error("Adresse e-mail ou mot de passe invalide");
     }
   } catch (err) {
+    next(err);
+  }
+};
+
+const logoutUser = (req, res, next) => {
+  try {
+    res.clearCookie("token").json("Utilisateur déconnecté avec succès");
+  } catch (err) {
+    console.error("logout: ", err);
+    err.message = "Erreur du serveur, veuillez réessayer ultérieurement";
     next(err);
   }
 };
@@ -83,4 +95,5 @@ module.exports = {
   test,
   registerUser,
   loginUser,
+  logoutUser,
 };
