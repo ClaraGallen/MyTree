@@ -12,10 +12,13 @@ export default function Login({ onLogin }) {
         event.preventDefault();
         try {
             const response = await axios.post('/auth/login', { email, password }); //route pour envoyer la demande de connexion
+            console.log("envoie demande");
             if (response.status === 200) {
-                // Connexion réussie, récupérer le token et rediriger l'utilisateur
+                // Connexion réussie
                 const token = response.data.token;
-                localStorage.setItem('token', token); // Stocker le token dans le localStorage
+                const userId = response.data.userId;
+                localStorage.setItem('token', token);
+                localStorage.setItem('userId', userId);
                 onLogin();
                 window.location.href = '/dashboard';
             } else {
@@ -23,8 +26,9 @@ export default function Login({ onLogin }) {
             }
         } catch (error) {
             console.error('Error:', error);
-            setError('Une erreur s\'est produite');
+            setError(error.response.data.error || error.response.data.message || 'An error occurred'); // Afficher le message / l'erreur
         }
+        
     };
 
     return (

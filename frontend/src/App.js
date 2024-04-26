@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
@@ -28,10 +29,19 @@ function App() {
   };
 
   // Fonction pour déconnecter l'utilisateur
-  const logout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem('token');
+  const logout = async () => {
+    try {
+      await axios.get('/auth/logout');
+      setIsLoggedIn(false);
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      console.log("log out successfully");
+    } catch (error){
+      console.error('Error:', error);
+      console.log(error.response.data.error || error.response.data.message || 'An error occurred');
+    }
   };
+
 
   return (
     <Router>

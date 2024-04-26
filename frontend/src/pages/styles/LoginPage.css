@@ -15,6 +15,8 @@
 .login-container form {
     text-align: center;
     width: 60%;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .login-container h2 {
@@ -30,6 +32,7 @@
     margin-top: 10px;
     font-weight: bold;
     text-align: left;
+    flex-direction: row;
 }
 
 .login-container input {
@@ -42,8 +45,17 @@
     background-color: rgba(98, 98, 98, 0.616);
 }
 
+.login-container label {
+    flex: 0 0 48%;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: left;
+}
+
 button[type="submit"] {
     margin-top: 30px;
+    margin-bottom: 30px; /* Ajout de marge en bas pour séparer le bouton du reste */
     padding: 10px 30px;
     background-color: rgba(0, 86, 179, 0.3);
     text-shadow: 0px 0px 4px rgba(0, 86, 179, 0.8);
@@ -54,6 +66,17 @@ button[type="submit"] {
     border-width: 2px;
     border-radius: 50px;
     cursor: pointer;
+}
+
+.login-container select {
+    margin-top: 10px;
+    align-items: left;
+    width: 48%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 15px;
+    border: none;
+    background-color: rgba(98, 98, 98, 0.616);
 }
 
 button[type="submit"]:hover {
@@ -76,5 +99,6 @@ p a:hover {
 }
 
 .error-message {
-color: rgb(248, 0, 145);
+    color: rgb(248, 0, 0);
+    font-size: 20px;
 }
