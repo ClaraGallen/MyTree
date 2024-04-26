@@ -2,19 +2,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.779);
+  background-color: rgba(255, 255, 255, 0.897);
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo-container {
   display: flex;
-  padding-right: 150px;
+  padding-right: 200px;
 }
 
 .logo {
   font-size: 32px; 
-  color: rgb(248, 0, 145);
-  text-shadow: 0px 0px 8px rgba(248, 0, 145, 0.8);
+  color: rgb(155, 40, 80);
+  /* text-shadow: 0px 0px 8px rgba(129, 34, 68, 0.8); */
 }
 
 .nav-links {
@@ -27,8 +27,8 @@
 }
 
 .nav-link {
-  color: rgb(86, 110, 218);
-  text-shadow: 0px 0px 8px rgba(86, 110, 218, 0.8);
+  color: rgb(0, 0, 0);
+  /* text-shadow: 0px 0px 8px rgba(74, 74, 74, 0.8); */
   text-decoration: none;
   transition: color 0.3s ease;
 }
@@ -36,11 +36,10 @@
 .nav-link:hover,
 .nav-link:focus,
 .nav-link:active {
-  color: rgb(255, 255, 255);
-  text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.8);
+  color: rgb(74, 74, 74);
+  /* text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.8); */
 
 }
-
 
 .navContainer {
   padding-bottom: 20px;
