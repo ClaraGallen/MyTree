@@ -110,12 +110,10 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "photo": "urlPhoto",
     "dateNaissance": "1980-01-01",
     "dateDeces": null,
-    "professions": ["Menuisier", "Designer"],
-    "coordonnees": {
-      "adresse": "123 rue de l'Exemple",
-      "tel": "0123456789",
-      "mail": "jean.dupont@example.com"
-    },
+    "professions": "Menuisier",
+    "adresse": "123 rue de l'Exemple",
+    "tel": "0123456789",
+    "mail": "jean.dupont@example.com",
     "informationsComplementaires": "Autres informations pertinentes ici"
   }
   ```
@@ -140,12 +138,10 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "photo": "nouvelleUrlPhoto",
     "dateNaissance": "1980-01-01",
     "dateDeces": "2040-12-31",
-    "professions": ["Architecte"],
-    "coordonnees": {
-      "adresse": "456 nouvelle rue de l'Exemple",
-      "tel": "9876543210",
-      "mail": "jean.dupont.nouveau@example.com"
-    },
+    "professions": "Architecte",
+    "adresse": "456 nouvelle rue de l'Exemple",
+    "tel": "9876543210",
+    "mail": "jean.dupont.nouveau@example.com",
     "informationsComplementaires": "Mises à jour des informations"
   }
   ```
