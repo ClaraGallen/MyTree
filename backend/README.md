@@ -56,7 +56,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Déconnexion
 
-- **Endpoint** : `GET /api/auth/logout`
+- **Endpoint** : `GET /auth/logout`
 - **Description** : Déconnecter un utilisateur et invalider le token.
 - **Entrée** : Aucune, authentification requise.
 
@@ -71,7 +71,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Changer de Rôle
 
-- **Endpoint** : `PATCH /api/users/{userId}/role`
+- **Endpoint** : `PATCH /users/{userId}/role`
 - **Description** : Changer le rôle d'un utilisateur.
 - **Entrée** :
   ```json
@@ -86,20 +86,28 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
-## Gestion des Informations Généalogiques
+# API Endpoints pour la gestion des personnes
 
-### Ajouter une Personne
+## Ajouter une Personne
 
 - **Endpoint** : `POST /api/people`
-- **Description** : Ajouter une nouvelle personne à l'arbre généalogique.
+- **Description** : Ajouter une nouvelle personne à la base de données.
 - **Entrée** :
   ```json
   {
-    "name": "Jean",
-    "surname": "Dupont",
-    "gender": "male",
-    "birthdate": "1980-01-01"
-    // Autres attributs...
+    "nom": "Jean",
+    "prenom": "Dupont",
+    "sexe": "Homme",
+    "photo": "urlPhoto",
+    "dateNaissance": "1980-01-01",
+    "dateDeces": null,
+    "professions": ["Menuisier", "Designer"],
+    "coordonnees": {
+      "adresse": "123 rue de l'Exemple",
+      "tel": "0123456789",
+      "mail": "jean.dupont@example.com"
+    },
+    "informationsComplementaires": "Autres informations pertinentes ici"
   }
   ```
 - **Sortie** :
@@ -110,26 +118,85 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
-## Gestion des Relations Familiales
+## Mettre à Jour une Personne
 
-### Ajouter une Relation
-
-- **Endpoint** : `POST /api/relations`
-- **Description** : Ajouter une nouvelle relation familiale.
+- **Endpoint** : `PUT /api/people/{personId}`
+- **Description** : Mettre à jour les informations d'une personne existante.
 - **Entrée** :
   ```json
   {
-    "personId1": "identifiantUniquePersonne1",
-    "personId2": "identifiantUniquePersonne2",
-    "relationType": "parent"
-    // Autres attributs...
+    "nom": "Jean",
+    "prenom": "Dupont modifié",
+    "sexe": "Homme",
+    "photo": "nouvelleUrlPhoto",
+    "dateNaissance": "1980-01-01",
+    "dateDeces": "2040-12-31",
+    "professions": ["Architecte"],
+    "coordonnees": {
+      "adresse": "456 nouvelle rue de l'Exemple",
+      "tel": "9876543210",
+      "mail": "jean.dupont.nouveau@example.com"
+    },
+    "informationsComplementaires": "Mises à jour des informations"
   }
   ```
 - **Sortie** :
   ```json
   {
-    "message": "Relation ajoutée avec succès",
-    "relationId": "identifiantUniqueRelation"
+    "message": "Informations de la personne mises à jour avec succès"
+  }
+  ```
+
+## Supprimer une Personne
+
+- **Endpoint** : `DELETE /api/people/{personId}`
+- **Description** : Supprimer une personne de la base de données.
+- **Entrée** : Aucune entrée spécifique requise, l'ID est passé dans l'URL.
+- **Sortie** :
+  ```json
+  {
+    "message": "Personne supprimée avec succès"
+  }
+  ```
+
+## Gestion des Relations Familiales
+
+### Ajouter des Relations Familiales
+
+#### Ajouter un Parent
+
+- **Endpoint**: `POST /api/people/{personId}/parents`
+- **Description**: Ajoute un parent (père ou mère) à une personne existante.
+- **Entrée**:
+  ```json
+  {
+    "parentType": "pere",
+    "parentId": "ObjectIdDuParent"
+  }
+  ```
+- **Sortie**:
+  ```json
+  {
+    "message": "Parent ajouté avec succès"
+  }
+  ```
+
+#### Ajouter un Conjoint
+
+- **Endpoint**: `POST /api/people/{personId}/conjoints`
+- **Description**: Ajoute un conjoint à une personne existante.
+- **Entrée**:
+  ```json
+  {
+    "conjointId": "ObjectIdDuConjoint",
+    "dateUnion": "2021-06-01",
+    "dateSeparation": null
+  }
+  ```
+- **Sortie**:
+  ```json
+  {
+    "message": "Conjoint ajouté avec succès"
   }
   ```
 
@@ -137,14 +204,14 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Exporter l'Arbre
 
-- **Endpoint** : `GET /api/export`
+- **Endpoint** : `GET /export`
 - **Description** : Exporter l'arbre généalogique au format JSON.
 - **Entrée** : Aucune, authentification requise.
 - **Sortie** : Fichier JSON de l'arbre généalogique.
 
 ### Importer l'Arbre
 
-- **Endpoint** : `POST /api/import`
+- **Endpoint** : `POST /import`
 - **Description** : Importer un arbre généalogique à partir d'un fichier JSON.
 - **Entrée** : Fichier JSON de l'arbre généalogique.
 - **Sortie** :
@@ -158,7 +225,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Obtenir les Statistiques
 
-- **Endpoint** : `GET /api/statistics`
+- **Endpoint** : `GET /statistics`
 - **Description** : Récupérer des statistiques sur l'arbre généalogique.
 - \*\*Entrée
 
