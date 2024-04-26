@@ -14,7 +14,7 @@ Ce projet est divisé en deux parties principales :
 Pour commencer à travailler sur le projet MyTree, vous devez cloner ce dépôt sur votre machine locale. Exécutez la commande suivante :
 
 ```
-git clone https://chemin_du_depot/mytree.git
+git clone https://github.com/ClaraGallen/MyTree.git
 ```
 
 Une fois le dépôt cloné, vous trouverez deux dossiers principaux à la racine :

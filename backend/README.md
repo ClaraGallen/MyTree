@@ -179,7 +179,13 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Erreurs
 
-Tous les endpoints renverront des codes d'état HTTP appropriés accompagnés de messages d'erreur descriptifs en cas d'échec.
+Chaque endpoint renvoie un code d'état HTTP approprié, ainsi qu'un message d'erreur descriptif en cas d'échec de la requête. Le message d'erreur est renvoyé sous la forme d'un objet JSON, comme illustré ci-dessous :
+
+```json
+{
+  "error": "Description de l'erreur"
+}
+```
 
 # Structure de la Base de Données MyTree
 
@@ -195,6 +201,11 @@ Chaque document de la collection `Users` peut contenir les champs suivants :
 - **email** : Adresse email de l'utilisateur, utilisée pour la connexion et unique dans la base de données.
 - **passwordHash** : Hash du mot de passe de l'utilisateur pour une sécurité accrue.
 - **role** : Rôle de l'utilisateur qui peut être par exemple 'admin' ou 'user', déterminant les niveaux d'accès.
+- **status** : Indique le statut actuel de l'utilisateur :
+  - `Active` : L'inscription de l'utilisateur a été approuvée par l'administrateur.
+  - `Suspended` : L'utilisateur a été suspendu par l'administrateur.
+- **createdAt** : Date de création de l'utilisateur.
+- **updatedAt** : Date de la dernière mise à jour de l'utilisateur.
 
 ### Collection `Persons`
 
