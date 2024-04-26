@@ -7,12 +7,15 @@ const addPerson = async (data) => {
       nom,
       prenom,
       sexe,
-      //photo = null,
+      photo = null,
       dateNaissance = null,
       dateDeces = null,
       professions = null,
       adresse = null,
       tel = null,
+      parents = null,
+      conjoints = [],
+      enfants = [],
     } = data;
     if (!nom) {
       throw new Error("Le nom est requis");
@@ -28,11 +31,15 @@ const addPerson = async (data) => {
       nom,
       prenom,
       sexe,
+      photo,
       dateNaissance,
       dateDeces,
       professions,
       adresse,
       tel,
+      parents,
+      conjoints,
+      enfants,
     });
 
     return person;
@@ -50,6 +57,7 @@ const getPersonById = async (personId) => {
     if (!person) {
       throw new Error("Person not found");
     }
+    return person;
   } catch (err) {
     throw new Error(err);
   }
@@ -71,6 +79,9 @@ const updatePerson = async (personId, data) => {
       professions = null,
       adresse = null,
       tel = null,
+      parents = null,
+      conjoints = null,
+      enfants = null,
     } = data;
     if (nom) {
       person.nom = nom;
@@ -98,6 +109,15 @@ const updatePerson = async (personId, data) => {
     }
     if (tel) {
       person.tel = tel;
+    }
+    if (parents) {
+      person.parents = parents;
+    }
+    if (conjoints) {
+      person.conjoints = conjoints;
+    }
+    if (enfants) {
+      person.enfants = enfants;
     }
     await person.save();
     return person;

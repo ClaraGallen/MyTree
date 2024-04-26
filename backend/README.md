@@ -99,8 +99,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Ajouter une Personne
 
-- **Endpoint** : `POST /people`
-- **Description** : Ajouter une nouvelle personne à la base de données.
+- **Endpoint** : `POST /people/addRelation`
+- **Description** : Ajouter une nouvelle Relation à la base de données.
 - **Entrée** :
   ```json
   {
@@ -124,10 +124,11 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 - **Sortie** :
   ```json
   {
-    "message": "Personne ajoutée avec succès",
+    "message": "Relation ajoutée avec succès",
     "personId": "identifiantUniquePersonne"
   }
   ```
+  Après cette opération, si la relation ajoutée est un père ou une mère, l'utilisateur actuel qui a ajouté cette relation sera considéré comme son enfant.
 
 ## Mettre à Jour une Personne
 

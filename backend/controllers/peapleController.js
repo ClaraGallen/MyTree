@@ -34,14 +34,33 @@ const addRelation = async (req, res, next) => {
   session.startTransaction();
   try {
     const { relation, dateUnion, dateSeparation } = req.body;
-    const addedPerson = await addPerson(req.body);
-    console.log(req.userId);
-    const actualPerson = await getUserById(req.userId).Person;
-    if ((relation = "pere")) {
-      actualPerson.parents.pere = addedPerson._id;
-    } else if ((relation = "mere")) {
-      actualPerson.parents.mere = addedPerson._id;
-    } else if ((relation = "conjoint")) {
+    let actualUser = await getUserById(req.userId);
+    let userWithPerson = await actualUser.populate("person");
+    let actualPerson = userWithPerson.person;
+    let addedPerson;
+    if (relation === "pere") {
+      if (actualPerson.parents && actualPerson.parents.pere) {
+        throw new Error("La personne a déjà un père");
+      }
+      addedPerson = await addPerson({
+        ...req.body,
+        enfants: [{ idEnfant: actualPerson._id }],
+      });
+      actualPerson.parents = { ...actualPerson.parents, pere: addedPerson._id };
+    } else if (relation === "mere") {
+      if (actualPerson.parents && actualPerson.parents.mere) {
+        throw new Error("La personne a déjà une mère");
+      }
+      addedPerson = await addPerson({
+        ...req.body,
+        enfants: [{ idEnfant: actualPerson._id }],
+      });
+      actualPerson.parents = { ...actualPerson.parents, mere: addedPerson._id };
+    } else if (relation === "conjoint") {
+      addedPerson = await addPerson(req.body);
+      if (!actualPerson.conjoints) {
+        actualPerson.conjoints = [];
+      }
       actualPerson.conjoints.push({
         idConjoint: addedPerson._id,
         dateUnion,
@@ -50,7 +69,12 @@ const addRelation = async (req, res, next) => {
     } else {
       throw new Error("Relation non valide");
     }
-    await updatePerson(actualPerson);
+    console.log(actualPerson._id);
+    await updatePerson(actualPerson._id, actualPerson);
+    res.json({
+      message: "Relation ajoutée avec succès",
+      personId: addedPerson._id,
+    });
     await session.commitTransaction();
   } catch (err) {
     await session.abortTransaction();
