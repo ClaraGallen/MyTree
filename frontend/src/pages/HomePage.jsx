@@ -6,11 +6,11 @@ import "./styles/HomePage.css";
 export default function HomePage() {
     return (
         <div className="text-container">
-            <h1 id="title">Explore Your Family Roots</h1>
-            <p id="subtitle">Uncover the fascinating history of your family through the generations with
-             Genealogy Tree. Our user-friendly platform allows you to create interactive family trees, 
-             trace family connections, and discover untold stories about your ancestors.</p>
-            <Link to="/register" id="start-button">Start Now</Link>
+            <h1 id="title">Explorez les Racines de Votre Famille</h1>
+            <p id="subtitle">Découvrez l'histoire fascinante de votre famille à travers les générations avec
+     Arbre Généalogique. Notre plateforme conviviale vous permet de créer des arbres généalogiques interactifs,
+     de retracer les liens familiaux et de découvrir des histoires inédites sur vos ancêtres.</p>
+            <Link to="/register" id="start-button">Commencer</Link>
         </div>
     );
 };

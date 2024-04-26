@@ -26,7 +26,7 @@ export default function Login({ onLogin }) {
             }
         } catch (error) {
             console.error('Error:', error);
-            setError(error.response.data.error || error.response.data.message || 'An error occurred'); // Afficher le message / l'erreur
+            setError(error.response.data.error || error.response.data.message || 'Une erreur s\'est produite'); // Afficher le message / l'erreur
         }
         
     };
@@ -34,16 +34,16 @@ export default function Login({ onLogin }) {
     return (
         <div>
             <div className="login-container">
-                <h2>Login</h2>
+                <h2>Se connecter</h2>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="email">Email:</label>
                     <input type="email" placeholder="example@gmail.com" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                    <label htmlFor="password">Password:</label>
+                    <label htmlFor="password">Mot de passe:</label>
                     <input type="password" id="password" placeholder="Password.123" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                    <button type="submit">Login</button>
+                    <button type="submit">Se connecter</button>
                 </form>
                 {error && <p className="error-message">{error}</p>}
-                <p>Don't have an account? <Link to="/register">Sign up</Link></p>
+                <p>Vous n'avez pas encore de compte ? <Link to="/register">S'inscrire</Link></p>
             </div>
         </div>
     );

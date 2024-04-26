@@ -7,8 +7,8 @@ export default function Dashboard({ isLoggedIn }) {
   if (!isLoggedIn) {
     return (
       <div className="text-container">
-        <h1 id="title">You need to log in to access the dashboard.</h1>
-        <Link to="/login" id="start-button">Log in</Link>
+        <h1 id="title">Vous devez être connecté pour accéder à cette page.</h1>
+        <Link to="/login" id="start-button">Se connecter</Link>
         <br></br>
         <br></br>
         <br></br>

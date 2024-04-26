@@ -2,7 +2,7 @@
     width: 450px;
     margin: 0 auto;
     padding-top: 50px;
-    background-color: rgba(190, 190, 190, 0.715);
+    background-color: rgba(217, 217, 217, 0.737);
     border-radius: 15px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -42,7 +42,7 @@
     font-size: 16px;
     border-radius: 15px;
     border: none;
-    background-color: rgba(212, 212, 212, 0.616);
+    background-color: rgba(212, 212, 212, 0.772);
 }
 
 .login-container label {
