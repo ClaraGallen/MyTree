@@ -31,6 +31,7 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 app.use("/auth", require("./routes/authRoutes"));
 app.use("/tree", require("./routes/tree.routes"));
+app.use("/peaple", require("./routes/peapleRoutes"));
 
 // Middleware qui permet de gérer les erreurs
 app.use(require("./utils/errorHandler"));

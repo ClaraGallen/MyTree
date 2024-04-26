@@ -8,12 +8,9 @@ const personSchema = new mongoose.Schema(
     photo: String,
     dateNaissance: Date,
     dateDeces: Date,
-    professions: [String],
-    coordonnees: {
-      adresse: String,
-      tel: String,
-      mail: String,
-    },
+    professions: String,
+    adresse: String,
+    tel: String,
     informationsComplementaires: mongoose.Schema.Types.Mixed,
     parents: {
       pere: mongoose.Schema.Types.ObjectId,
@@ -24,6 +21,11 @@ const personSchema = new mongoose.Schema(
         idConjoint: mongoose.Schema.Types.ObjectId,
         dateUnion: Date,
         dateSeparation: Date,
+      },
+    ],
+    enfants: [
+      {
+        idEnfant: mongoose.Schema.Types.ObjectId,
       },
     ],
   },

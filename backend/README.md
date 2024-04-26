@@ -24,7 +24,16 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   ```json
   {
     "email": "utilisateur@exemple.com",
-    "password": "motdepasse123"
+    "password": "motdepasse123",
+    "nom": "Jean",
+    "prenom": "Dupont",
+    "sexe": "Homme",
+    "photo": "urlPhoto",
+    "dateNaissance": "1980-01-01",
+    "dateDeces": null,
+    "professions": "Menuisier",
+    "adresse": "123 rue de l'Exemple",
+    "tel": "0123456789"
   }
   ```
 - **Sortie** :
@@ -90,7 +99,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Ajouter une Personne
 
-- **Endpoint** : `POST /api/people`
+- **Endpoint** : `POST /people`
 - **Description** : Ajouter une nouvelle personne à la base de données.
 - **Entrée** :
   ```json
@@ -120,7 +129,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Mettre à Jour une Personne
 
-- **Endpoint** : `PUT /api/people/{personId}`
+- **Endpoint** : `PUT /people/{personId}`
 - **Description** : Mettre à jour les informations d'une personne existante.
 - **Entrée** :
   ```json
@@ -149,7 +158,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Supprimer une Personne
 
-- **Endpoint** : `DELETE /api/people/{personId}`
+- **Endpoint** : `DELETE /people/{personId}`
 - **Description** : Supprimer une personne de la base de données.
 - **Entrée** : Aucune entrée spécifique requise, l'ID est passé dans l'URL.
 - **Sortie** :
@@ -165,7 +174,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 #### Ajouter un Parent
 
-- **Endpoint**: `POST /api/people/{personId}/parents`
+- **Endpoint**: `POST /people/{personId}/parents`
 - **Description**: Ajoute un parent (père ou mère) à une personne existante.
 - **Entrée**:
   ```json
@@ -183,7 +192,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 #### Ajouter un Conjoint
 
-- **Endpoint**: `POST /api/people/{personId}/conjoints`
+- **Endpoint**: `POST /people/{personId}/conjoints`
 - **Description**: Ajoute un conjoint à une personne existante.
 - **Entrée**:
   ```json
@@ -267,6 +276,7 @@ Chaque document de la collection `Users` peut contenir les champs suivants :
 - **status** : Indique le statut actuel de l'utilisateur :
   - `Active` : L'inscription de l'utilisateur a été approuvée par l'administrateur.
   - `Suspended` : L'utilisateur a été suspendu par l'administrateur.
+- **person** : Identifiant unique MongoDB de la personne (Person) associée à l'utilisateur.
 - **createdAt** : Date de création de l'utilisateur.
 - **updatedAt** : Date de la dernière mise à jour de l'utilisateur.
 
@@ -286,14 +296,11 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **professions** : Liste des professions de la personne (facultatif).
 - **coordonnees** : Coordonnées comprenant l'adresse, le téléphone, l'email, etc. (facultatif).
 - **informationsComplementaires** : Toute autre information supplémentaire (facultatif).
-
-#### Relations Familiales
-
-- **parents** : Identifiants (\_id) du père et de la mère de la personne (facultatif).
-- **conjoints** : Un tableau contenant les identifiants (\_id) des conjoints et les détails de la relation conjugale :
-  - **idConjoint** : Identifiant du conjoint.
-  - **dateUnion** : Date de l'union (facultative).
-  - **dateSeparation** : Date de séparation ou de divorce (facultative).
+- **parents** : Objets contenant les identifiants des parents de la personne (facultatif).
+- **conjoints** : Tableau d'objets contenant les identifiants des conjoints de la personne (facultatif).
+- **enfants** : Tableau d'objets contenant les identifiants des enfants de la personne (facultatif).
+- **createdAt** : Date de création du document.
+- **updatedAt** : Date de mise à jour du document.
 
 ## Sécurité
 
@@ -301,32 +308,32 @@ Les mots de passe ne sont jamais stockés en clair dans la base de données. Seu
 
 ## Exemple de Document de la Collection `Persons`
 
-```json
 {
-  "_id": ObjectId("identifiantUniquePersonne"),
-  "nom": "Dupont",
-  "prenom": "Jean",
-  "sexe": "Homme",
-  "photo": "urlPhoto",
-  "dateNaissance": "1970-05-15",
-  "dateDeces": null,
-  "professions": ["Menuisier", "Designer"],
-  "coordonnees": {
-    "adresse": "123 rue de l'Exemple",
-    "tel": "0123456789",
-    "mail": "jean.dupont@example.com"
-  },
-  "informationsComplementaires": "Informations diverses ici",
-  "parents": {
-    "pere": ObjectId("identifiantPere"),
-    "mere": ObjectId("identifiantMere")
-  },
-  "conjoints": [
-    {
-      "idConjoint": ObjectId("identifiantConjoint"),
-      "dateUnion": "1995-06-20",
-      "dateSeparation": "2005-04-15"
-    }
-  ]
+"\_id": ObjectId("identifiantUniquePersonne"),
+"nom": "Dupont",
+"prenom": "Jean",
+"sexe": "Homme",
+"photo": "urlPhoto",
+"dateNaissance": "1970-05-15",
+"dateDeces": null,
+"professions": "Menuisier",
+"adresse": "123 rue de l'Exemple",
+"tel": "0123456789"
+"informationsComplementaires": "Informations diverses ici",
+"parents": {
+"pere": ObjectId("identifiantPere"),
+"mere": ObjectId("identifiantMere")
+},
+"conjoints": [
+{
+"idConjoint": ObjectId("identifiantConjoint"),
+"dateUnion": "1995-06-20",
+"dateSeparation": "2005-04-15"
 }
-```
+],
+"enfants": [
+{
+"idEnfant": ObjectId("identifiantEnfant"),
+}
+]
+}

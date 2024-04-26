@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Person = require("../models/Person");
 const { hashPassowrd, comparePassword } = require("../utils/passwordUtils");
 const { tokenExpiry } = require("../config/config");
 const jwt = require("jsonwebtoken");
@@ -8,8 +9,21 @@ const test = (req, res) => {
 };
 
 const registerUser = async (req, res, next) => {
+  let person, user;
   try {
-    const { email, password } = req.body;
+    const {
+      email,
+      password,
+      nom,
+      prenom,
+      sexe,
+      //photo = null,
+      dateNaissance = null,
+      dateDeces = null,
+      professions = null,
+      adresse = null,
+      tel = null,
+    } = req.body;
     if (!email) {
       res.status(400);
       throw new Error("L'adresse e-mail est requise");
@@ -18,6 +32,18 @@ const registerUser = async (req, res, next) => {
       res.status(400);
       throw new Error("Le mot de passe est requis");
     }
+    if (!nom) {
+      res.status(400);
+      throw new Error("Le nom est requis");
+    }
+    if (!prenom) {
+      res.status(400);
+      throw new Error("Le prenom est requis");
+    }
+    if (!sexe) {
+      res.status(400);
+      throw new Error("Le sexe est requis");
+    }
     const exist = await User.findOne({ email });
     if (exist) {
       return res.status(409).json({
@@ -25,17 +51,36 @@ const registerUser = async (req, res, next) => {
       });
     }
 
+    // creation des enrégistrements
     const passwordHash = await hashPassowrd(password);
 
+    const person = await Person.create({
+      nom,
+      prenom,
+      sexe,
+      dateNaissance,
+      dateDeces,
+      professions,
+      adresse,
+      tel,
+    });
     const user = await User.create({
       email,
       passwordHash,
+      person: person._id,
     });
+
     return res.status(201).json({
       message: "Utilisateur enregistré avec succès",
       userId: user._id,
     });
   } catch (err) {
+    if (person) {
+      await Person.deleteOne({ _id: person._id });
+    }
+    if (user) {
+      await User.deleteOne({ _id: user._id });
+    }
     next(err);
   }
 };
