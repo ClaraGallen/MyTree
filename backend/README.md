@@ -114,7 +114,11 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "adresse": "123 rue de l'Exemple",
     "tel": "0123456789",
     "mail": "jean.dupont@example.com",
-    "informationsComplementaires": "Autres informations pertinentes ici"
+    "informationsComplementaires": "Autres informations pertinentes ici",
+    "relation": "pere/mere/conjoint",
+    // si Conjoint
+    "dateUnion": "2010-03-01",
+    "dateSeparation": null
   }
   ```
 - **Sortie** :
@@ -142,7 +146,11 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "adresse": "456 nouvelle rue de l'Exemple",
     "tel": "9876543210",
     "mail": "jean.dupont.nouveau@example.com",
-    "informationsComplementaires": "Mises à jour des informations"
+    "informationsComplementaires": "Mises à jour des informations",
+    "relation": "pere/mere/conjoint",
+    // si Conjoint
+    "dateUnion": "2010-03-01",
+    "dateSeparation": null
   }
   ```
 - **Sortie** :
