@@ -13,19 +13,19 @@ const personSchema = new mongoose.Schema(
     tel: String,
     informationsComplementaires: mongoose.Schema.Types.Mixed,
     parents: {
-      pere: mongoose.Schema.Types.ObjectId,
-      mere: mongoose.Schema.Types.ObjectId,
+      pere: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
+      mere: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
     },
     conjoints: [
       {
-        idConjoint: mongoose.Schema.Types.ObjectId,
+        idConjoint: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
         dateUnion: Date,
         dateSeparation: Date,
       },
     ],
     enfants: [
       {
-        idEnfant: mongoose.Schema.Types.ObjectId,
+        idEnfant: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
       },
     ],
   },

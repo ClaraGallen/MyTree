@@ -3,6 +3,7 @@ const Person = require("../models/Person");
 const { hashPassowrd, comparePassword } = require("../utils/passwordUtils");
 const { tokenExpiry } = require("../config/config");
 const jwt = require("jsonwebtoken");
+const { addPerson } = require("../utils/personUtils");
 
 const test = (req, res) => {
   res.json("Le test d'authentification fonctionne");
@@ -11,19 +12,7 @@ const test = (req, res) => {
 const registerUser = async (req, res, next) => {
   let person, user;
   try {
-    const {
-      email,
-      password,
-      nom,
-      prenom,
-      sexe,
-      //photo = null,
-      dateNaissance = null,
-      dateDeces = null,
-      professions = null,
-      adresse = null,
-      tel = null,
-    } = req.body;
+    const { email, password } = req.body;
     if (!email) {
       res.status(400);
       throw new Error("L'adresse e-mail est requise");
@@ -32,38 +21,16 @@ const registerUser = async (req, res, next) => {
       res.status(400);
       throw new Error("Le mot de passe est requis");
     }
-    if (!nom) {
-      res.status(400);
-      throw new Error("Le nom est requis");
-    }
-    if (!prenom) {
-      res.status(400);
-      throw new Error("Le prenom est requis");
-    }
-    if (!sexe) {
-      res.status(400);
-      throw new Error("Le sexe est requis");
-    }
     const exist = await User.findOne({ email });
     if (exist) {
       return res.status(409).json({
         error: "L'adresse e-mail est déjà utilisée",
       });
     }
-
-    // creation des enrégistrements
     const passwordHash = await hashPassowrd(password);
+    // creation des enrégistrements
+    const person = await addPerson(req.body);
 
-    const person = await Person.create({
-      nom,
-      prenom,
-      sexe,
-      dateNaissance,
-      dateDeces,
-      professions,
-      adresse,
-      tel,
-    });
     const user = await User.create({
       email,
       passwordHash,

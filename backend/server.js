@@ -27,11 +27,16 @@ app.use((req, res, next) => {
 // Middleware qui permet de traiter les données de la Request
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(require("cookie-parser")());
 
 // Routes
 app.use("/auth", require("./routes/authRoutes"));
 app.use("/tree", require("./routes/tree.routes"));
-app.use("/peaple", require("./routes/peapleRoutes"));
+app.use(
+  "/peaple",
+  require("./controllers/peapleController").verifySession,
+  require("./routes/peapleRoutes")
+);
 
 // Middleware qui permet de gérer les erreurs
 app.use(require("./utils/errorHandler"));
