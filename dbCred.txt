@@ -1,0 +1,4 @@
+Username= ghassenedev
+pw= JONrgySaMOn7Pxh3
+
+url= mongodb+srv://ghassenedev:JONrgySaMOn7Pxh3@mytree.g5jahlr.mongodb.net/?retryWrites=true&w=majority&appName=MyTree

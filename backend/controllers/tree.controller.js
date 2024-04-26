@@ -1,14 +1,24 @@
-const PostModel = require("../models/tree.model");
+const PostModel = require("../models/Person");
 
 module.exports.testTree = async (req, res) => {
   console.log("test réussi");
 };
 
-
 module.exports.CreateParent = async (req, res) => {
   console.log("parent");
   try {
-    const { ParentId, FamilyName, FirstName, Genre, Picture, DateofBirth, DateofDeath, Profession, Contacts, Info } = req.body;
+    const {
+      ParentId,
+      FamilyName,
+      FirstName,
+      Genre,
+      Picture,
+      DateofBirth,
+      DateofDeath,
+      Profession,
+      Contacts,
+      Info,
+    } = req.body;
     // Créer un nouvel objet parent avec les données reçues du frontend
     const newParent = new PostModel.Parent({
       ParentId,
@@ -33,13 +43,13 @@ module.exports.CreateParent = async (req, res) => {
   }
 };
 
-
 module.exports.CreateRelation = async (req, res) => {
   try {
-    const { MemberIds, RelationshipType, DateofUnion, DateofSeparation } = req.body;
+    const { MemberIds, RelationshipType, DateofUnion, DateofSeparation } =
+      req.body;
 
     console.log(MemberIds);
-    
+
     let memberIds;
     if (RelationshipType === "Parent") {
       memberIds = MemberIds[0]; // Utiliser uniquement le premier ID pour une relation parent
@@ -67,6 +77,8 @@ module.exports.CreateRelation = async (req, res) => {
   } catch (error) {
     // En cas d'erreur, répondre avec un code d'erreur et un message d'erreur
     console.error("Error creating relation:", error);
-    res.status(500).json({ message: "Erreur lors de la création de la relation." });
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la création de la relation." });
   }
 };

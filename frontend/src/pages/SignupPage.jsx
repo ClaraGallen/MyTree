@@ -7,7 +7,6 @@ export default function Signup() {
     const [password1, setPassword1] = useState('');
     const [password2, setPassword2] = useState('');
     const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -17,12 +16,9 @@ export default function Signup() {
                     const password = password1;
                     const response = await axios.post('/auth/register', { email, password });  //route pour s'inscrire
                     if (response.status === 200) {
-                        setMessage(response.data.message); // Si succès, afficher le message de succès
-                        setTimeout(() => {
-                            window.location.href = '/dashboard'; // Rediriger après un délai
-                        }, 3000); // Délai de 3 secondes avant la redirection
+                            window.location.href = '/dashboard'; // Rediriger
                     } else {
-                        setError(response.data.error || "An unexpected error occurred."); // Afficher l'erreur renvoyée par l'API
+                        setError(response.data.error || response.data.message); // Afficher le message / l'erreur
                     }
                 } else {
                     setError("Password must contain at least 6 characters (letters and numbers).");
@@ -50,7 +46,6 @@ export default function Signup() {
                     <button type="submit">Sign up</button>
                 </form>
                 {error && <p className="error-message">{error}</p>}
-                {message && <p className="success-message">{message}</p>}
                 <p>Have you an account? <Link to="/login">Log in</Link></p>
             </div>
         </div>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import "./styles/LoginPage.css";
 
-export default function Login() {
+export default function Login({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(' ');
@@ -13,7 +13,10 @@ export default function Login() {
         try {
             const response = await axios.post('/auth/login', { email, password }); //route pour envoyer la demande de connexion
             if (response.status === 200) {
-                // Connexion réussie, rediriger l'utilisateur
+                // Connexion réussie, récupérer le token et rediriger l'utilisateur
+                const token = response.data.token;
+                localStorage.setItem('token', token); // Stocker le token dans le localStorage
+                onLogin();
                 window.location.href = '/dashboard';
             } else {
                 setError('Identifiants incorrects');
