@@ -4,7 +4,19 @@ const getUserById = async (userId) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+      return null;
+    }
+    return user;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+const getUserByEmail = async (userEmail) => {
+  try {
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      return null;
     }
     return user;
   } catch (err) {
@@ -14,4 +26,5 @@ const getUserById = async (userId) => {
 
 module.exports = {
   getUserById,
+  getUserByEmail,
 };

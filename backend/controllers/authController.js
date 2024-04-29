@@ -30,6 +30,9 @@ const registerUser = async (req, res, next) => {
     const passwordHash = await hashPassowrd(password);
     // creation des enrégistrements
     const person = await addPerson(req.body);
+    if (!person) {
+      throw new Error("Erreur lors de l'ajout de la personne");
+    }
 
     const user = await User.create({
       email,

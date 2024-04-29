@@ -108,6 +108,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "prenom": "Dupont",
     "sexe": "Homme",
     "photo": "urlPhoto",
+    "email": "JeaDupont@gmail.com",
     "dateNaissance": "1980-01-01",
     "dateDeces": null,
     "professions": "Menuisier",
@@ -294,6 +295,7 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **\_id** : Identifiant unique MongoDB de la personne.
 - **nom** : Nom de famille de la personne (obligatoire).
 - **prenom** : Prénom de la personne (obligatoire).
+- **email** : Email de la personne (obligatoire).
 - **sexe** : Genre de la personne, 'Homme' ou 'Femme' (obligatoire).
 - **photo** : Lien vers une photo de la personne (facultatif).
 - **dateNaissance** : Date de naissance de la personne (facultative).
@@ -303,7 +305,7 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **informationsComplementaires** : Toute autre information supplémentaire (facultatif).
 - **parents** : Objets contenant les identifiants des parents de la personne (facultatif).
 - **conjoints** : Tableau d'objets contenant les identifiants des conjoints de la personne (facultatif).
-- **enfants** : Tableau d'objets contenant les identifiants des enfants de la personne (facultatif).
+- **enfants** : [Tableau d'objets contenant les identifiants des enfants de la personne (facultatif).]
 - **createdAt** : Date de création du document.
 - **updatedAt** : Date de mise à jour du document.
 
@@ -319,6 +321,7 @@ Les mots de passe ne sont jamais stockés en clair dans la base de données. Seu
 "prenom": "Jean",
 "sexe": "Homme",
 "photo": "urlPhoto",
+"email": "JeanDupont@gmail.com",
 "dateNaissance": "1970-05-15",
 "dateDeces": null,
 "professions": "Menuisier",
