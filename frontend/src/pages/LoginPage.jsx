@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import "./styles/LoginPage.css";
+import './styles/background.css';
+
 
 export default function Login({ onLogin }) {
     const [email, setEmail] = useState('');
@@ -32,7 +34,7 @@ export default function Login({ onLogin }) {
     };
 
     return (
-        <div>
+        <div className='background'>
             <div className="login-container">
                 <h2>Se connecter</h2>
                 <form onSubmit={handleSubmit}>

@@ -1,15 +1,3 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  background-color: #836040; /* Fond gris foncé */
-  background-image: url('./pages/img/21495484511.jpg'); /* Remplacez 'chemin/vers/votre/image.jpg' par le chemin de votre image */
-  background-size: cover; /* Ajuste la taille de l'image pour couvrir tout l'arrière-plan */
-  background-position: center; /* Centre l'image de fond */
-  background-repeat: no-repeat; /* Empêche la répétition de l'image de fond */
-}
-
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Trebuchet MS', 'sans-serif';
 }

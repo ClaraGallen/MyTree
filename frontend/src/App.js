@@ -11,6 +11,8 @@ import Admin from './pages/Admin';
 import Dashboard from './pages/Dashboard'; 
 
 import './App.css';
+//import './pages/styles/background.css';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

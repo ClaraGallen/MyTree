@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import "./styles/LoginPage.css";
+import './styles/background.css';
+
 
 export default function Signup() {
     const [step, setStep] = useState(1);
@@ -50,7 +52,7 @@ export default function Signup() {
     };
 
     return (
-        <div>
+        <div className='background'>
             {step === 1 && (
                 <div className="login-container">
                     <h2>S'inscrire</h2>
@@ -97,13 +99,14 @@ export default function Signup() {
                     </form>
                     <p>(*): Ce champs est requis.</p>
                     {error && <p className="error-message">{error}</p>}
+                    <br></br>
                 </div>
                 
             )}
         <br></br>
         <br></br>
         <br></br>
-        <br></br>
+
 
         </div>
     );

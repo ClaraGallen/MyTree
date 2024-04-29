@@ -1,5 +1,6 @@
 /* Styles pour le conteneur de texte */
 .text-container {
+  margin: 150px;
   text-align: center; /* Centrer le texte à l'intérieur du conteneur */
   color: #ffffff;
 }
