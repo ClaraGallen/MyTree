@@ -8,22 +8,24 @@ const personSchema = new mongoose.Schema(
     photo: String,
     dateNaissance: Date,
     dateDeces: Date,
-    professions: [String],
-    coordonnees: {
-      adresse: String,
-      tel: String,
-      mail: String,
-    },
+    professions: String,
+    adresse: String,
+    tel: String,
     informationsComplementaires: mongoose.Schema.Types.Mixed,
     parents: {
-      pere: mongoose.Schema.Types.ObjectId,
-      mere: mongoose.Schema.Types.ObjectId,
+      pere: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
+      mere: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
     },
     conjoints: [
       {
-        idConjoint: mongoose.Schema.Types.ObjectId,
+        idConjoint: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
         dateUnion: Date,
         dateSeparation: Date,
+      },
+    ],
+    enfants: [
+      {
+        idEnfant: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
       },
     ],
   },

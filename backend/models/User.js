@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema(
       enum: ["Active", "Suspended"],
       default: "Active",
     },
+    person: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Person",
+    },
   },
   { timestamps: true }
 );

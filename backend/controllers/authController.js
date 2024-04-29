@@ -1,13 +1,16 @@
 const User = require("../models/User");
+const Person = require("../models/Person");
 const { hashPassowrd, comparePassword } = require("../utils/passwordUtils");
 const { tokenExpiry } = require("../config/config");
 const jwt = require("jsonwebtoken");
+const { addPerson } = require("../utils/personUtils");
 
 const test = (req, res) => {
   res.json("Le test d'authentification fonctionne");
 };
 
 const registerUser = async (req, res, next) => {
+  let person, user;
   try {
     const { email, password } = req.body;
     if (!email) {
@@ -24,18 +27,27 @@ const registerUser = async (req, res, next) => {
         error: "L'adresse e-mail est déjà utilisée",
       });
     }
-
     const passwordHash = await hashPassowrd(password);
+    // creation des enrégistrements
+    const person = await addPerson(req.body);
 
     const user = await User.create({
       email,
       passwordHash,
+      person: person._id,
     });
+
     return res.status(201).json({
       message: "Utilisateur enregistré avec succès",
       userId: user._id,
     });
   } catch (err) {
+    if (person) {
+      await Person.deleteOne({ _id: person._id });
+    }
+    if (user) {
+      await User.deleteOne({ _id: user._id });
+    }
     next(err);
   }
 };
