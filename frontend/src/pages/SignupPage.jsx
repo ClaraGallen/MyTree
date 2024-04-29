@@ -80,8 +80,9 @@ export default function Signup() {
                         <input type="text" id="prenom" value={prenom} onChange={(e) => setPrenom(e.target.value)} required />
                         <label htmlFor="sexe">Genre*:</label>
                         <select id="sexe" value={sexe} onChange={(e) => setSexe(e.target.value)} required>
-                            <option value="Homme">Homme</option>
-                            <option value="Femme">Femme</option>
+                        <option value="">Choisir le sexe</option>
+                        <option value="Homme">Homme</option>
+                        <option value="Femme">Femme</option>
                         </select>
                         <label htmlFor="photo">Photo:</label>
                         <input type="file" id="photo" accept="image/*" onChange={(e) => setPhoto(e.target.files[0])} />
@@ -106,8 +107,6 @@ export default function Signup() {
         <br></br>
         <br></br>
         <br></br>
-
-
         </div>
     );
 }

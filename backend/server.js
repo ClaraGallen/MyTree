@@ -31,7 +31,6 @@ app.use(require("cookie-parser")());
 
 // Routes
 app.use("/auth", require("./routes/authRoutes"));
-app.use("/tree", require("./routes/tree.routes"));
 app.use(
   "/peaple",
   require("./controllers/peapleController").verifySession,
