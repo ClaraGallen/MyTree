@@ -3,7 +3,7 @@ const Person = require("../models/Person");
 const { hashPassowrd, comparePassword } = require("../utils/passwordUtils");
 const { tokenExpiry } = require("../config/config");
 const jwt = require("jsonwebtoken");
-const { addPerson } = require("../utils/personUtils");
+const { addPerson, getPersonByEmail } = require("../utils/personUtils");
 
 const test = (req, res) => {
   res.json("Le test d'authentification fonctionne");
@@ -66,6 +66,8 @@ const loginUser = async (req, res, next) => {
       throw new Error("Le mot de passe est requis");
     }
     const user = await User.findOne({ email: email });
+    const person = await getPersonByEmail(user.email);
+    const personId = person._id;
     if (!user) {
       res.status(404);
       throw new Error("Utilisateur introuvable");
@@ -84,7 +86,7 @@ const loginUser = async (req, res, next) => {
               "Erreur lors de la génération du jeton, veuillez réessayer ultérieurement"
             );
           }
-          return res.cookie("token", token).json({ token, userId: user._id });
+          return res.cookie("token", token).json({ token, personId });
         }
       );
     } else {
