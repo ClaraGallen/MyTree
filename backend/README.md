@@ -116,7 +116,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "tel": "0123456789",
     "mail": "jean.dupont@example.com",
     "informationsComplementaires": "Autres informations pertinentes ici",
-    "relation": "pere/mere/conjoint",
+    "relation": "pere/mere/conjoint/enfant",
     // si Conjoint
     "dateUnion": "2010-03-01",
     "dateSeparation": null
@@ -149,7 +149,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "tel": "9876543210",
     "mail": "jean.dupont.nouveau@example.com",
     "informationsComplementaires": "Mises à jour des informations",
-    "relation": "pere/mere/conjoint",
+    "relation": "pere/mere/conjoint/enfant",
     // si Conjoint
     "dateUnion": "2010-03-01",
     "dateSeparation": null
@@ -217,6 +217,51 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Importation/Exportation de Données
 
+### Exporter l'info d'une personne à travers son ID
+
+- **Endpoint** : `GET /people/{id}`
+- **Description** : Exporter les informations d'une personne à travers son id.
+- **Entrée** : Aucune, authentification requise.
+- **Sortie** : Fichier JSON de l'arbre généalogique.
+
+exemple de sortie:
+
+````json
+{
+  "_id": "60d6c47e4094a45b0468d7c9",
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "email": "jean.dupont@example.com",
+  "sexe": "Homme",
+  "photo": "https://example.com/photo.jpg",
+  "dateNaissance": "1980-01-01T00:00:00.000Z",
+  "dateDeces": null,
+  "professions": "Ingénieur",
+  "adresse": "123 Rue de Paris, Paris, France",
+  "tel": "+33123456789",
+  "informationsComplementaires": {
+    "hobbies": "Lecture, randonnée"
+  },
+  "parents": {
+    "pere": "60d6c47e4094a45b0468d7c8",
+    "mere": "60d6c47e4094a45b0468d7c7"
+  },
+  "conjoints": [
+    {
+      "idConjoint": "60d6c47e4094a45b0468d7c6",
+      "dateUnion": "2005-06-30T00:00:00.000Z",
+      "dateSeparation": null
+    }
+  ],
+  "enfants": [
+    {
+      "idEnfant": "60d6c47e4094a45b0468d7c5"
+    }
+  ],
+  "createdAt": "2022-01-01T00:00:00.000Z",
+  "updatedAt": "2022-01-01T00:00:00.000Z"
+}```
+
 ### Exporter l'Arbre
 
 - **Endpoint** : `GET /export`
@@ -234,7 +279,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   {
     "message": "Arbre importé avec succès"
   }
-  ```
+````
 
 ## Statistiques
 
