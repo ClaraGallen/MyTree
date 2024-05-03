@@ -30,9 +30,6 @@ const updatePerson = async (personId, data) => {
 const getPersonById = async (personId) => {
   try {
     const person = await Person.findById(personId);
-    if (!person) {
-      throw new Error("Person not found");
-    }
     return person;
   } catch (err) {
     throw new Error(err);

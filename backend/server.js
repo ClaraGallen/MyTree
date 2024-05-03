@@ -32,9 +32,9 @@ app.use(require("cookie-parser")());
 // Routes
 app.use("/auth", require("./routes/authRoutes"));
 app.use(
-  "/peaple",
-  require("./controllers/peapleController").verifySession,
-  require("./routes/peapleRoutes")
+  "/people",
+  require("./controllers/peopleController").verifySession,
+  require("./routes/peopleRoutes")
 );
 
 // Middleware qui permet de gérer les erreurs
