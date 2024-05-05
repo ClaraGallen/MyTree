@@ -1,0 +1,10 @@
+.icon-container {
+    display: flex;
+}
+
+.icon {
+    width: 32px; /* Définissez la largeur maximale des icônes */
+    height: 32px; /* Définissez la hauteur maximale des icônes */
+    margin-right: 10px; /* Ajoutez une marge entre les icônes */
+    /* Vous pouvez également ajouter d'autres styles selon vos préférences */
+}

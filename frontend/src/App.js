@@ -3,15 +3,17 @@ import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
-import CreateTreePage from './pages/CreateTreePage';
-import CreateRelationPage from './pages/CreateRelationPage';
 import Login from './pages/LoginPage'; 
 import Register from './pages/SignupPage'; 
 import Admin from './pages/Admin'; 
 import Dashboard from './pages/Dashboard'; 
+import Code from './pages/code'; 
+import TreeTest from './pages/test_tree'; 
 
 import './App.css';
 //import './pages/styles/background.css';
+
+
 
 
 function App() {
@@ -52,12 +54,13 @@ function App() {
         <div className="page-content">
           <Routes>
             <Route exact path="/" element={<HomePage />} />
-            <Route path="/create-tree" element={<CreateTreePage />} />
-            <Route path="/create-relation" element={<CreateRelationPage />} />
             <Route path="/login" element={<Login onLogin={login} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn}/>} />
+            <Route path="/code" element={<Code />} />
+            <Route path="/test" element={<TreeTest />} />
+
           </Routes>
         </div>
       </div>

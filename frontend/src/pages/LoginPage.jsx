@@ -18,9 +18,9 @@ export default function Login({ onLogin }) {
             if (response.status === 200) {
                 // Connexion réussie
                 const token = response.data.token;
-                const userId = response.data.userId;
+                const personId = response.data.personId;
                 localStorage.setItem('token', token);
-                localStorage.setItem('userId', userId);
+                localStorage.setItem('personId', personId);
                 onLogin();
                 window.location.href = '/dashboard';
             } else {

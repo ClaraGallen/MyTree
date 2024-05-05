@@ -1,112 +1,85 @@
 // transformData.jsx
 import React, { useEffect } from 'react';
 import "./styles/code.css";
-import axios from 'axios';
-
 
 
 // Fonction pour formater les données
-const formatData = async () => {
+const formatData = (response) => {
   const formattedData = [];
-  var list_member = [];
 
-  const parentId = localStorage.getItem("personId");
-  const response = await axios.get(`/people/${parentId}`); 
-
+  // Traitement du parent
+  const parentId = response._id.$oid;
   const parent = {
     id: parentId,
-    prenom: response.prenom,
-    nom: response.nom,
+    name: response.prenom,
     children: [],
     partners: [],
     root: true,
-    link: 0,
     level: 0,
-    parents: [],
-    sexe: response.sexe,
-    // ajouter les autres infos
+    parents: []
   };
-
-  if (response.enfants.length !== 0) {
-    response.enfants.forEach(enfant => {
-      const oidValue = enfant.idEnfant;
-      list_member.push([oidValue, parentId, 1]);
-      parent.children.push(oidValue);
-    });
-  };
-
-  if (response.conjoints.length !== 0) {
-    response.conjoints.forEach(conjoint => {
-      const oidValue = conjoint.idConjoint;
-      list_member.push([oidValue, parentId, 0]);
-      parent.partners.push(oidValue);
-    });
-  };
-
-  if (response.parents) {
-    if ("pere" in response.parents) {
-        const pereValue = response.parents.pere;
-        list_member.push([pereValue, parentId, -1]);
-        parent.parents.push(pereValue);
-    }
-    if ("mere" in response.parents) {
-        const mereValue = response.parents.mere;
-        list_member.push([mereValue, parentId, -1]);
-        parent.parents.push(mereValue);
-    };
-};
 
   formattedData.push(parent);
 
-  list_member.forEach(async member => { 
-    const id_tmp = member[0];
-    const element_tmp = formattedData.find(item => item.id === member[1]);
-    const level_tmp = Number(element_tmp.level) + member[2];
-    const response_tmp = await axios.get(`/people/${id_tmp}`);
-    const member_tmp = {
-      id: id_tmp,
-      prenom: response_tmp.prenom,
-      nom: response_tmp.nom,
+  // Traitement des conjoints
+  response.conjoints.forEach((conjoint) => {
+    const conjointId = formattedData.length + 1;
+    const conjointObj = {
+      id: conjointId,
+      name: conjoint.prenom,
+      children: [],
+      partners: [parentId],
+      level: 0,
+      parents: []
+    };
+    parent.partners.push(conjointId);
+    formattedData.push(conjointObj);
+  });
+
+  // Traitement des enfants
+  response.enfants.forEach((enfant) => {
+    const enfantId = formattedData.length + 1;
+    const enfantObj = {
+      id: enfantId,
+      name: enfant.prenom,
       children: [],
       partners: [],
-      link: member[1],
-      level: level_tmp,
-      parents: [],
-      sexe: response_tmp.sexe,
-      // ajouter les autres infos
+      level: -1,
+      parents: [parentId]
     };
-
-    if (response_tmp.enfants.length !== 0) {
-      response_tmp.enfants.forEach(enfant => {
-        const oidValue = enfant.idEnfant;
-        list_member.push([oidValue, id_tmp, 1]);
-        member_tmp.children.push(oidValue);
-      });
-    };
-
-    if (response_tmp.conjoints.length !== 0) {
-      response_tmp.conjoints.forEach(conjoint => {
-        const oidValue = conjoint.idConjoint;
-        list_member.push([oidValue, id_tmp, 0]);
-        member_tmp.partners.push(oidValue);
-      });
-    };
-
-    if (response.parents) {
-      if ("pere" in response.parents) {
-          const pereValue = response.parents.pere;
-          list_member.push([pereValue, id_tmp, -1]);
-          parent.parents.push(pereValue);
-      }
-      if ("mere" in response.parents) {
-          const mereValue = response.parents.mere;
-          list_member.push([mereValue, id_tmp, -1]);
-          parent.parents.push(mereValue);
-      }
-  };
-
-    formattedData.push(member_tmp);
+    parent.children.push(enfantId);
+    formattedData.push(enfantObj);
   });
+
+  // Traitement du père
+  if (response.pere) {
+    const pereId = formattedData.length + 1;
+    const pereObj = {
+      id: pereId,
+      name: response.pere.prenom,
+      children: [parentId],
+      partners: [],
+      level: 1,
+      parents: []
+    };
+    parent.parents.push(pereId);
+    formattedData.push(pereObj);
+  }
+
+  // Traitement de la mère
+  if (response.mere) {
+    const mereId = formattedData.length + 1;
+    const mereObj = {
+      id: mereId,
+      name: response.mere.prenom,
+      children: [parentId],
+      partners: [],
+      level: 1,
+      parents: []
+    };
+    parent.parents.push(mereId);
+    formattedData.push(mereObj);
+  }
 
   console.log(formattedData);
   return formattedData;
@@ -117,9 +90,63 @@ export default function Code() {
   var data = [];
 
   useEffect(() => {
-    data = formatData();
-}, []);
+  const response = {
+    "_id": {
+      "$oid": "662fc7def2861883fc0530db"
+    },
+    "nom": "blaaa",
+    "prenom": "MOI",
+    "sexe": "Homme",
+    "dateNaissance": {
+      "$date": "2000-08-05T22:00:00.000Z"
+    },
+    "enfants": [
+      {
+        "_id": {
+          "$oid": "662fc7def2861883fc0530dc"
+        },
+        "nom": "blaaa",
+        "prenom": "ENFANT 1",
+        "email": "testt7@gmail.com",
+        "sexe": "Homme",
+        "dateNaissance": {
+          "$date": "2000-08-05T22:00:00.000Z"
+        },
+        "tel": "+334964886"
+      }
+    ],
+    "conjoints": [
+      {
+        "_id": {
+          "$oid": "662fc7def2861883fc0530dd"
+        },
+        "nom": "blaaa",
+        "prenom": "CONJOINT",
+        "sexe": "Homme",
+      }
+    ],
+    "pere": {
+      "_id": {
+        "$oid": "662fc7def2861883fc0530de"
+      },
+      "nom": "blaaa",
+      "prenom": "PAPA",
+      "sexe": "Homme",
+    },
+    "mere": {
+      "_id": {
+        "$oid": "662fc7def2861883fc0530df"
+      },
+      "nom": "blaaa",
+      "prenom": "MAMAN",
+      "sexe": "Homme",
+    },
+    "__v": 0
+  };
 
+  // Appel de la fonction pour formater les données
+  data = formatData(response);
+}, []);
 
 useEffect(() => {
   let elements = [];
@@ -305,7 +332,7 @@ useEffect(() => {
       const element = connectors.filter(elem => ((elem.style.left === connector.style.left) && (elem.style.top === connector.style.top)));
       return element.pop();
     }
-  }, [data]);
+  }, []);
 
   return (
     <div id="tree"></div>
