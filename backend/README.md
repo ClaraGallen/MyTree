@@ -176,42 +176,85 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Gestion des Relations Familiales
 
-### Ajouter des Relations Familiales
+### Ajout de Relations Familiales
 
-#### Ajouter un Parent
+- **Endpoint** : `POST /api/people/addRelation/{id?}`
+- **Description** : Ajoute un père, une mère, un conjoint ou un enfant à une personne spécifiée par l'ID fourni ou, si aucun ID n'est fourni, à la personne actuellement connectée. Si l'ID est omis, la relation sera ajoutée à la personne actuellement connectée.
+- **Paramètres** :
+  - `id` (optionnel) : ID de la personne à laquelle la relation doit être ajoutée. Si non spécifié, la relation sera ajoutée à la personne actuellement connectée.
+- **Entrée** :
 
-- **Endpoint**: `POST /people/{personId}/parents`
-- **Description**: Ajoute un parent (père ou mère) à une personne existante.
-- **Entrée**:
   ```json
   {
-    "parentType": "pere",
-    "parentId": "ObjectIdDuParent"
+    "id": "6630e985bf5eb9184ac7ed0d",
+    "email": "testt36@gmail.com",
+    "password": "123",
+    "relation": "conjoint",
+    "nom": "blaaa",
+    "prenom": "bou",
+    "sexe": "Homme",
+    "dateNaissance": "08/06/2000",
+    "dateDeces": "",
+    "professions": "Prof",
+    "adresse": "4 avenue",
+    "tel": "+334964886",
+    "dateUnion": "08/06/2000",
+    "dateSeparation": "04/07/2005"
   }
   ```
-- **Sortie**:
+
+- **Sortie** :
+
   ```json
   {
-    "message": "Parent ajouté avec succès"
+    "message": "Relation ajoutée avec succès",
+    "personId": "identifiantUniquePersonne"
   }
   ```
 
-#### Ajouter un Conjoint
+### Mise à Jour de Relations Familiales
 
-- **Endpoint**: `POST /people/{personId}/conjoints`
-- **Description**: Ajoute un conjoint à une personne existante.
-- **Entrée**:
+- **Endpoint** : `PUT /api/people/updateRelation/{id}`
+- **Description** : Met à jour une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
+- **Paramètres** :
+  - `id` : ID de la personne dont la relation doit être mise à jour.
+- **Entrée** :
+
   ```json
   {
-    "conjointId": "ObjectIdDuConjoint",
-    "dateUnion": "2021-06-01",
-    "dateSeparation": null
+    "relation": "conjoint",
+    "dateUnion": "10/10/2010",
+    "dateSeparation": "10/10/2015"
   }
   ```
-- **Sortie**:
+
+- **Sortie** :
   ```json
   {
-    "message": "Conjoint ajouté avec succès"
+    "message": "Relation mise à jour avec succès",
+    "personId": "identifiantUniquePersonne"
+  }
+  ```
+
+### Suppression de Relations Familiales
+
+- **Endpoint** : `DELETE /api/people/deleteRelation/{id}`
+- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
+- **Paramètres** :
+  - `id` : ID de la personne dont la relation doit être supprimée.
+- **Entrée** :
+
+  ```json
+  {
+    "relation": "conjoint"
+  }
+  ```
+
+- **Sortie** :
+  ```json
+  {
+    "message": "Relation supprimée avec succès",
+    "personId": "identifiantUniquePersonne"
   }
   ```
 

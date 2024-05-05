@@ -30,7 +30,13 @@ const verifySession = (req, res, next) => {
 
 const addRelation = async (req, res, next) => {
   try {
-    const actualPersonId = req.body.id;
+    const actualPersonId = req.params.id ? req.params.id : req.body.id;
+    if (!(await getPersonById(actualPersonId))) {
+      throw new Error("Person ID not found");
+    }
+    if (await getPersonByEmail(email)) {
+      throw new Error("La personne existe déjà");
+    }
     const personToAddData = req.body;
     const addedPersonId = await handleAddRelation(
       actualPersonId,
@@ -41,6 +47,7 @@ const addRelation = async (req, res, next) => {
       personId: addedPersonId,
     });
   } catch (err) {
+    console.error(err);
     next(err);
   }
 };
@@ -50,13 +57,6 @@ const handleAddRelation = async (actualPersonId, personToAddData) => {
   session.startTransaction();
   try {
     const { email, relation, dateUnion, dateSeparation } = personToAddData;
-    if (await getPersonByEmail(email)) {
-      throw new Error("La personne existe déjà");
-    }
-    let actualPerson = await getPersonById(actualPersonId);
-    if (!actualPerson) {
-      throw new Error("Person not found");
-    }
 
     let addedPerson;
     if (relation === "pere") {
@@ -75,7 +75,7 @@ const handleAddRelation = async (actualPersonId, personToAddData) => {
       }
       addedPerson = await addPerson({
         ...personToAddData,
-        enfants: [...enfant, { idEnfant: actualPerson._id }],
+        enfants: [{ idEnfant: actualPerson._id }],
       });
       actualPerson.parents.mere = addedPerson._id;
       actualPerson.markModified("parents.mere");
@@ -102,7 +102,7 @@ const handleAddRelation = async (actualPersonId, personToAddData) => {
       } else {
         addedPerson.parents.mere = actualPerson._id;
       }
-      actualPerson.markModified("enfant");
+      actualPerson.markModified("enfants");
     } else {
       throw new Error("Relation non valide");
     }
@@ -126,20 +126,70 @@ const handleAddRelation = async (actualPersonId, personToAddData) => {
 const getPerson = async (req, res, next) => {
   try {
     const personId = req.params.id;
-    const person = await getPersonById(personId);
+    let person = await getPersonById(personId);
+
+    person = person.toObject();
+    delete person.__v;
+    delete person.createdAt;
+    delete person.updatedAt;
+
     if (!person) {
       throw new Error("Person not found");
     }
     return res.json(person);
   } catch (err) {
-    then(err);
+    next(err);
   }
 };
 
-module.exports = {
+const updateRelation = async (req, res, next) => {
+  try {
+    const actualPersonId = req.params.id ? req.params.id : req.body.id;
+    if (!(await getPersonById(actualPersonId))) {
+      throw new Error("Person ID not found");
+    }
+    const personToAddData = req.body;
+    const addedPersonId = await handleUpdateRelation(
+      actualPersonId,
+      personToAddData
+    );
+    res.json({
+      message: "Relation mise à jour avec succès",
+      personId: addedPersonId,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const deleteRelation = async (req, res, next) => {
+  try {
+    const actualPersonId = req.params.id ? req.params.id : req.body.id;
+    if (!(await getPersonById(actualPersonId))) {
+      throw new Error("Person ID not found");
+    }
+    const personToAddData = req.body;
+    const addedPersonId = await handleDeleteRelation(
+      actualPersonId,
+      personToAddData
+    );
+    res.json({
+      message: "Relation supprimée avec succès",
+      personId: addedPersonId,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const handleDeleteRelation = (module.exports = {
   test,
   verifySession,
   addPerson,
   addRelation,
   getPerson,
-};
+  updateRelation,
+  deleteRelation,
+});
