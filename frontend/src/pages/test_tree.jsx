@@ -74,13 +74,12 @@ export default function TreeTest() {
 
     // Fonction de gestion d'un clic sur un nœud de l'arbre
     const handleNodeClick = () => {
+        click();
         const selectedIcon = localStorage.getItem('selectedIcon');
 
-        if (selectedIcon === "plus") {
-            click();
-        } else {
-            // Faire autre chose si l'icône sélectionnée n'est pas "plus"
-            console.log("L'icône sélectionnée n'est pas 'plus'");
+        if (selectedIcon === "info") {
+            let id_tmp = localStorage.getItem('id_tmp');
+            console.log("info de l'id " + id_tmp);
         }
     };
 

@@ -533,7 +533,11 @@ class Person extends FTNode {
             else this.hide();
             // update dag roots
             this.ft_datahandler.update_roots();
+        } else if (selectedIcon === "info") {
+            localStorage.setItem('id_tmp', this.data.id);
         }
+
+
     };
 
     add_own_union(union_data) {

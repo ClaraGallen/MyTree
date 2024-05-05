@@ -6,8 +6,8 @@ import HomePage from './pages/HomePage';
 import Login from './pages/LoginPage'; 
 import Register from './pages/SignupPage'; 
 import Admin from './pages/Admin'; 
-import Dashboard from './pages/Dashboard'; 
-import Code from './pages/code'; 
+// import Dashboard from './pages/Dashboard'; 
+// import Code from './pages/code'; 
 import TreeTest from './pages/test_tree'; 
 
 import './App.css';
@@ -57,8 +57,8 @@ function App() {
             <Route path="/login" element={<Login onLogin={login} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn}/>} />
-            <Route path="/code" element={<Code />} />
+            {/* <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn}/>} /> */}
+            {/* <Route path="/code" element={<Code />} /> */}
             <Route path="/test" element={<TreeTest />} />
 
           </Routes>

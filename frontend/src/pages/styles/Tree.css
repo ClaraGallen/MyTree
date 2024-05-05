@@ -20,7 +20,7 @@
     transform: translateX(-50%); /* Pour le centrer horizontalement */
     width: 90vw;
     /* overflow: hidden; */
-    z-index: 0; /* Assurez-vous que le tree-here est en arrière-plan */
+    z-index: -1; /* Assurez-vous que le tree-here est en arrière-plan */
 }
 
 .node-label {
@@ -44,5 +44,5 @@
 
 .icon-container {
     position: relative; /* Assurez-vous que les icônes sont positionnées relativement */
-    z-index: 1; /* Assurez-vous que les icônes sont au-dessus du contenu du tree-here */
+    z-index: 0; /* Assurez-vous que les icônes sont au-dessus du contenu du tree-here */
 }
