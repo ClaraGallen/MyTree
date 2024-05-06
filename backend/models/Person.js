@@ -4,6 +4,7 @@ const personSchema = new mongoose.Schema(
   {
     nom: { type: String, required: true },
     prenom: { type: String, required: true },
+    email: { type: String, required: true },
     sexe: { type: String, required: true, enum: ["Homme", "Femme"] },
     photo: String,
     dateNaissance: Date,
@@ -17,16 +18,22 @@ const personSchema = new mongoose.Schema(
       mere: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
     },
     conjoints: [
-      {
-        idConjoint: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
-        dateUnion: Date,
-        dateSeparation: Date,
-      },
+      new mongoose.Schema(
+        {
+          idConjoint: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
+          dateUnion: Date,
+          dateSeparation: Date,
+        },
+        { _id: false }
+      ),
     ],
     enfants: [
-      {
-        idEnfant: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
-      },
+      new mongoose.Schema(
+        {
+          idEnfant: { type: mongoose.Schema.Types.ObjectId, ref: "Person" },
+        },
+        { _id: false }
+      ),
     ],
   },
   { timestamps: true }

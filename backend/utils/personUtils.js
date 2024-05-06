@@ -1,125 +1,47 @@
 const Person = require("../models/Person");
 
 const addPerson = async (data) => {
-  let person;
   try {
-    const {
-      nom,
-      prenom,
-      sexe,
-      photo = null,
-      dateNaissance = null,
-      dateDeces = null,
-      professions = null,
-      adresse = null,
-      tel = null,
-      parents = null,
-      conjoints = [],
-      enfants = [],
-    } = data;
-    if (!nom) {
-      throw new Error("Le nom est requis");
+    if (!data.nom || !data.prenom || !data.sexe || !data.email) {
+      console.error("erreur addPerson: Information manquante");
+      return null;
     }
-    if (!prenom) {
-      throw new Error("Le prenom est requis");
-    }
-    if (!sexe) {
-      throw new Error("Le sexe est requis");
-    }
-
-    const person = await Person.create({
-      nom,
-      prenom,
-      sexe,
-      photo,
-      dateNaissance,
-      dateDeces,
-      professions,
-      adresse,
-      tel,
-      parents,
-      conjoints,
-      enfants,
-    });
-
+    const person = await Person.create(data);
     return person;
   } catch (err) {
-    if (person) {
-      await Person.deleteOne({ _id: person._id });
-    }
     throw err;
+  }
+};
+
+const updatePerson = async (personId, data) => {
+  try {
+    const options = { new: true, runValidators: true, useFindAndModify: false };
+    const fetchedPerson = await Person.findByIdAndUpdate(
+      personId,
+      data,
+      options
+    );
+    return fetchedPerson;
+  } catch (err) {
+    throw new Error(err);
   }
 };
 
 const getPersonById = async (personId) => {
   try {
     const person = await Person.findById(personId);
-    if (!person) {
-      throw new Error("Person not found");
-    }
     return person;
   } catch (err) {
     throw new Error(err);
   }
 };
 
-const updatePerson = async (personId, data) => {
+const getPersonByEmail = async (personEmail) => {
   try {
-    const person = await Person.findById(personId);
+    const person = await Person.findOne({ email: personEmail });
     if (!person) {
-      throw new Error("Person not found");
+      return null;
     }
-    const {
-      nom,
-      prenom,
-      sexe,
-      photo = null,
-      dateNaissance = null,
-      dateDeces = null,
-      professions = null,
-      adresse = null,
-      tel = null,
-      parents = null,
-      conjoints = null,
-      enfants = null,
-    } = data;
-    if (nom) {
-      person.nom = nom;
-    }
-    if (prenom) {
-      person.prenom = prenom;
-    }
-    if (sexe) {
-      person.sexe = sexe;
-    }
-    if (photo) {
-      person.photo = photo;
-    }
-    if (dateNaissance) {
-      person.dateNaissance = dateNaissance;
-    }
-    if (dateDeces) {
-      person.dateDeces = dateDeces;
-    }
-    if (professions) {
-      person.professions = professions;
-    }
-    if (adresse) {
-      person.adresse = adresse;
-    }
-    if (tel) {
-      person.tel = tel;
-    }
-    if (parents) {
-      person.parents = parents;
-    }
-    if (conjoints) {
-      person.conjoints = conjoints;
-    }
-    if (enfants) {
-      person.enfants = enfants;
-    }
-    await person.save();
     return person;
   } catch (err) {
     throw new Error(err);
@@ -130,4 +52,5 @@ module.exports = {
   addPerson,
   getPersonById,
   updatePerson,
+  getPersonByEmail,
 };

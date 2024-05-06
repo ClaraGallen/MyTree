@@ -108,6 +108,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "prenom": "Dupont",
     "sexe": "Homme",
     "photo": "urlPhoto",
+    "email": "JeaDupont@gmail.com",
     "dateNaissance": "1980-01-01",
     "dateDeces": null,
     "professions": "Menuisier",
@@ -115,7 +116,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "tel": "0123456789",
     "mail": "jean.dupont@example.com",
     "informationsComplementaires": "Autres informations pertinentes ici",
-    "relation": "pere/mere/conjoint",
+    "relation": "pere/mere/conjoint/enfant",
     // si Conjoint
     "dateUnion": "2010-03-01",
     "dateSeparation": null
@@ -148,7 +149,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "tel": "9876543210",
     "mail": "jean.dupont.nouveau@example.com",
     "informationsComplementaires": "Mises à jour des informations",
-    "relation": "pere/mere/conjoint",
+    "relation": "pere/mere/conjoint/enfant",
     // si Conjoint
     "dateUnion": "2010-03-01",
     "dateSeparation": null
@@ -175,46 +176,134 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ## Gestion des Relations Familiales
 
-### Ajouter des Relations Familiales
+### Ajout de Relations Familiales
 
-#### Ajouter un Parent
+- **Endpoint** : `POST /api/people/addRelation/{id?}`
+- **Description** : Ajoute un père, une mère, un conjoint ou un enfant à une personne spécifiée par l'ID fourni ou, si aucun ID n'est fourni, à la personne actuellement connectée. Si l'ID est omis, la relation sera ajoutée à la personne actuellement connectée.
+- **Paramètres** :
+  - `id` (optionnel) : ID de la personne à laquelle la relation doit être ajoutée. Si non spécifié, la relation sera ajoutée à la personne actuellement connectée.
+- **Entrée** :
 
-- **Endpoint**: `POST /people/{personId}/parents`
-- **Description**: Ajoute un parent (père ou mère) à une personne existante.
-- **Entrée**:
   ```json
   {
-    "parentType": "pere",
-    "parentId": "ObjectIdDuParent"
+    "id": "6630e985bf5eb9184ac7ed0d",
+    "email": "testt36@gmail.com",
+    "password": "123",
+    "relation": "conjoint",
+    "nom": "blaaa",
+    "prenom": "bou",
+    "sexe": "Homme",
+    "dateNaissance": "08/06/2000",
+    "dateDeces": "",
+    "professions": "Prof",
+    "adresse": "4 avenue",
+    "tel": "+334964886",
+    "dateUnion": "08/06/2000",
+    "dateSeparation": "04/07/2005"
   }
   ```
-- **Sortie**:
+
+- **Sortie** :
+
   ```json
   {
-    "message": "Parent ajouté avec succès"
+    "message": "Relation ajoutée avec succès",
+    "personId": "identifiantUniquePersonne"
   }
   ```
 
-#### Ajouter un Conjoint
+### Mise à Jour de Relations Familiales
 
-- **Endpoint**: `POST /people/{personId}/conjoints`
-- **Description**: Ajoute un conjoint à une personne existante.
-- **Entrée**:
+- **Endpoint** : `PUT /api/people/updateRelation/{id}`
+- **Description** : Met à jour une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
+- **Paramètres** :
+  - `id` : ID de la personne dont la relation doit être mise à jour.
+- **Entrée** :
+
   ```json
   {
-    "conjointId": "ObjectIdDuConjoint",
-    "dateUnion": "2021-06-01",
-    "dateSeparation": null
+    "relation": "conjoint",
+    "dateUnion": "10/10/2010",
+    "dateSeparation": "10/10/2015"
   }
   ```
-- **Sortie**:
+
+- **Sortie** :
   ```json
   {
-    "message": "Conjoint ajouté avec succès"
+    "message": "Relation mise à jour avec succès",
+    "personId": "identifiantUniquePersonne"
+  }
+  ```
+
+### Suppression de Relations Familiales
+
+- **Endpoint** : `DELETE /api/people/deleteRelation/{id}`
+- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
+- **Paramètres** :
+  - `id` : ID de la personne dont la relation doit être supprimée.
+- **Entrée** :
+
+  ```json
+  {
+    "relation": "conjoint"
+  }
+  ```
+
+- **Sortie** :
+  ```json
+  {
+    "message": "Relation supprimée avec succès",
+    "personId": "identifiantUniquePersonne"
   }
   ```
 
 ## Importation/Exportation de Données
+
+### Exporter l'info d'une personne à travers son ID
+
+- **Endpoint** : `GET /people/{id}`
+- **Description** : Exporter les informations d'une personne à travers son id.
+- **Entrée** : Aucune, authentification requise.
+- **Sortie** : Fichier JSON de l'arbre généalogique.
+
+exemple de sortie:
+
+````json
+{
+  "_id": "60d6c47e4094a45b0468d7c9",
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "email": "jean.dupont@example.com",
+  "sexe": "Homme",
+  "photo": "https://example.com/photo.jpg",
+  "dateNaissance": "1980-01-01T00:00:00.000Z",
+  "dateDeces": null,
+  "professions": "Ingénieur",
+  "adresse": "123 Rue de Paris, Paris, France",
+  "tel": "+33123456789",
+  "informationsComplementaires": {
+    "hobbies": "Lecture, randonnée"
+  },
+  "parents": {
+    "pere": "60d6c47e4094a45b0468d7c8",
+    "mere": "60d6c47e4094a45b0468d7c7"
+  },
+  "conjoints": [
+    {
+      "idConjoint": "60d6c47e4094a45b0468d7c6",
+      "dateUnion": "2005-06-30T00:00:00.000Z",
+      "dateSeparation": null
+    }
+  ],
+  "enfants": [
+    {
+      "idEnfant": "60d6c47e4094a45b0468d7c5"
+    }
+  ],
+  "createdAt": "2022-01-01T00:00:00.000Z",
+  "updatedAt": "2022-01-01T00:00:00.000Z"
+}```
 
 ### Exporter l'Arbre
 
@@ -233,7 +322,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   {
     "message": "Arbre importé avec succès"
   }
-  ```
+````
 
 ## Statistiques
 
@@ -294,6 +383,7 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **\_id** : Identifiant unique MongoDB de la personne.
 - **nom** : Nom de famille de la personne (obligatoire).
 - **prenom** : Prénom de la personne (obligatoire).
+- **email** : Email de la personne (obligatoire).
 - **sexe** : Genre de la personne, 'Homme' ou 'Femme' (obligatoire).
 - **photo** : Lien vers une photo de la personne (facultatif).
 - **dateNaissance** : Date de naissance de la personne (facultative).
@@ -303,7 +393,7 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **informationsComplementaires** : Toute autre information supplémentaire (facultatif).
 - **parents** : Objets contenant les identifiants des parents de la personne (facultatif).
 - **conjoints** : Tableau d'objets contenant les identifiants des conjoints de la personne (facultatif).
-- **enfants** : Tableau d'objets contenant les identifiants des enfants de la personne (facultatif).
+- **enfants** : [Tableau d'objets contenant les identifiants des enfants de la personne (facultatif).]
 - **createdAt** : Date de création du document.
 - **updatedAt** : Date de mise à jour du document.
 
@@ -319,6 +409,7 @@ Les mots de passe ne sont jamais stockés en clair dans la base de données. Seu
 "prenom": "Jean",
 "sexe": "Homme",
 "photo": "urlPhoto",
+"email": "JeanDupont@gmail.com",
 "dateNaissance": "1970-05-15",
 "dateDeces": null,
 "professions": "Menuisier",
