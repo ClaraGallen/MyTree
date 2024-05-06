@@ -31,12 +31,6 @@ const verifySession = (req, res, next) => {
 const addRelation = async (req, res, next) => {
   try {
     const actualPersonId = req.params.id ? req.params.id : req.body.id;
-    if (!(await getPersonById(actualPersonId))) {
-      throw new Error("Person ID not found");
-    }
-    if (await getPersonByEmail(email)) {
-      throw new Error("La personne existe déjà");
-    }
     const personToAddData = req.body;
     const addedPersonId = await handleAddRelation(
       actualPersonId,
@@ -57,6 +51,13 @@ const handleAddRelation = async (actualPersonId, personToAddData) => {
   session.startTransaction();
   try {
     const { email, relation, dateUnion, dateSeparation } = personToAddData;
+    if (await getPersonByEmail(email)) {
+      throw new Error("La personne existe déjà");
+    }
+    let actualPerson = await getPersonById(actualPersonId);
+    if (!actualPerson) {
+      throw new Error("Person not found");
+    }
 
     let addedPerson;
     if (relation === "pere") {
@@ -165,15 +166,15 @@ const updateRelation = async (req, res, next) => {
 
 const deleteRelation = async (req, res, next) => {
   try {
-    const actualPersonId = req.params.id ? req.params.id : req.body.id;
+    if (!req.params.id)
+      throw new Error(
+        "Please provide a person ID in the URL to delete the relation."
+      );
+    const actualPersonId = req.params.id;
     if (!(await getPersonById(actualPersonId))) {
       throw new Error("Person ID not found");
     }
-    const personToAddData = req.body;
-    const addedPersonId = await handleDeleteRelation(
-      actualPersonId,
-      personToAddData
-    );
+    const addedPersonId = await handleDeleteRelation(actualPersonId);
     res.json({
       message: "Relation supprimée avec succès",
       personId: addedPersonId,
@@ -184,7 +185,9 @@ const deleteRelation = async (req, res, next) => {
   }
 };
 
-const handleDeleteRelation = (module.exports = {
+const handleDeleteRelation = async () => {};
+
+module.exports = {
   test,
   verifySession,
   addPerson,
@@ -192,4 +195,4 @@ const handleDeleteRelation = (module.exports = {
   getPerson,
   updateRelation,
   deleteRelation,
-});
+};

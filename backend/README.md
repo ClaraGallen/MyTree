@@ -178,7 +178,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Ajout de Relations Familiales
 
-- **Endpoint** : `POST /api/people/addRelation/{id?}`
+- **Endpoint** : `POST /people/addRelation/{id?}`
 - **Description** : Ajoute un père, une mère, un conjoint ou un enfant à une personne spécifiée par l'ID fourni ou, si aucun ID n'est fourni, à la personne actuellement connectée. Si l'ID est omis, la relation sera ajoutée à la personne actuellement connectée.
 - **Paramètres** :
   - `id` (optionnel) : ID de la personne à laquelle la relation doit être ajoutée. Si non spécifié, la relation sera ajoutée à la personne actuellement connectée.
@@ -186,10 +186,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
   ```json
   {
-    "id": "6630e985bf5eb9184ac7ed0d",
     "email": "testt36@gmail.com",
-    "password": "123",
-    "relation": "conjoint",
+    "relation": "pere",
     "nom": "blaaa",
     "prenom": "bou",
     "sexe": "Homme",
@@ -214,7 +212,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Mise à Jour de Relations Familiales
 
-- **Endpoint** : `PUT /api/people/updateRelation/{id}`
+- **Endpoint** : `PATCH /people/updateRelation/{id}`
 - **Description** : Met à jour une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
 - **Paramètres** :
   - `id` : ID de la personne dont la relation doit être mise à jour.
@@ -238,7 +236,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Suppression de Relations Familiales
 
-- **Endpoint** : `DELETE /api/people/deleteRelation/{id}`
+- **Endpoint** : `DELETE /people/deleteRelation/{id}`
 - **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
 - **Paramètres** :
   - `id` : ID de la personne dont la relation doit être supprimée.
