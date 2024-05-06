@@ -612,11 +612,11 @@ class FTDrawer {
         this.svg.call(this.zoom);
 
         // initialize tooltips
-        this._tooltip_div = d3.select("body").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0)
-            .style("visibility", "hidden");
-        this.tooltip(FTDrawer.default_tooltip_func);
+        // this._tooltip_div = d3.select("body").append("div")
+        //     .attr("class", "tooltip")
+        //     .style("opacity", 0)
+        //     .style("visibility", "hidden");
+        // this.tooltip(FTDrawer.default_tooltip_func);
 
         // initialize dag layout maker
         this.layout = d3.sugiyama()
@@ -702,15 +702,14 @@ class FTDrawer {
 
     static default_tooltip_func(node) {
         if (node.is_union()) return;
-        console.log(node.id);
-        var content = `
-                <span style='margin-left: 2.5px;'><b>` + node.get_name() + `</b></span><br>
-                <table style="margin-top: 2.5px;">
-                        <tr><td>born</td><td>` + (node.get_birth_year() || "?") + ` in ` + (node.data.birthplace || "?") + `</td></tr>
-                        <tr><td>died</td><td>` + (node.get_death_year() || "?") + ` in ` + (node.data.deathplace || "?") + `</td></tr>
-                </table>
-                `
-        return content.replace(new RegExp("null", "g"), "?");
+        // console.log(node.id);
+        // var content = `
+        //         <span style='margin-left: 2.5px;'><b>` + node.get_name() + `</b></span><br>
+        //         <table style="margin-top: 2.5px;">
+        //                 <tr><td></td><td>` + (node.get_birth_year() || "?") + "-" +  (node.get_death_year() || "?") + `</td></tr>
+        //         </table>
+        //         `
+        // return content.replace(new RegExp("null", "g"), "?");
     };
 
     tooltip(tooltip_func) {

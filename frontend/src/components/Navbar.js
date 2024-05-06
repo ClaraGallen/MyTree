@@ -17,10 +17,7 @@ const Navbar = ({ isLoggedIn, logout }) => {
           {isLoggedIn ? (
             <>
               <li>
-                <Link to="/dashboard/account" className="nav-link">Mon profil</Link>
-              </li>
-              <li>
-                <Link to="/dashboard/tree" className="nav-link">Arbre</Link>
+                <Link to="/dashboard" className="nav-link">Arbre</Link>
               </li>
               <li>
                 <Link to="/" onClick={logout} className="nav-link">Déconnection</Link>

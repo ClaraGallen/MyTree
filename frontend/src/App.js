@@ -59,7 +59,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             {/* <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn}/>} /> */}
             {/* <Route path="/code" element={<Code />} /> */}
-            <Route path="/test" element={<TreeTest />} />
+            <Route path="/dashboard" element={<TreeTest />} />
 
           </Routes>
         </div>

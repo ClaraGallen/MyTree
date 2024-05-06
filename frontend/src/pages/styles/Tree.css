@@ -1,4 +1,4 @@
-/* main.css */
+/* arbre généalogique */
 
 .person {
     stroke: steelblue;
@@ -15,12 +15,11 @@
 
 #tree-here {
     position: absolute;
-    top: -720px; /* Ajustez cette valeur selon votre besoin */
-    left: 45%; /* Pour le centrer horizontalement */
-    transform: translateX(-50%); /* Pour le centrer horizontalement */
+    top: -720px; 
+    left: 45%; 
+    transform: translateX(-50%);
     width: 90vw;
-    /* overflow: hidden; */
-    z-index: -1; /* Assurez-vous que le tree-here est en arrière-plan */
+    z-index: -1;
 }
 
 .node-label {
@@ -42,7 +41,33 @@
     border-radius: 2px;
 }
 
+
+/* Icones */
+
 .icon-container {
-    position: relative; /* Assurez-vous que les icônes sont positionnées relativement */
-    z-index: 0; /* Assurez-vous que les icônes sont au-dessus du contenu du tree-here */
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    position: absolute;
+    top: 100px;
+    z-index: 0;
+}
+
+.icon {
+    width: 32px; 
+    height: 32px; 
+    margin-top: 12px; 
+}
+
+
+/* Informations personnelles */
+
+.tooltip {
+    background-color: rgba(31, 31, 31, 0.831);
+    border: none;
+    padding: 5px;
+}
+
+.tooltip .p {
+    line-Height: '0.5';
 }
