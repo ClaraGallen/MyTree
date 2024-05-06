@@ -66,6 +66,10 @@ const loginUser = async (req, res, next) => {
       throw new Error("Le mot de passe est requis");
     }
     const user = await User.findOne({ email: email });
+    if (!user) {
+      res.status(404);
+      throw new Error("Utilisateur introuvable");
+    }
     const person = await getPersonByEmail(user.email);
     const personId = person._id;
     if (!user) {
