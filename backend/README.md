@@ -95,88 +95,9 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
-# API Endpoints pour la gestion des Relations
-
-## Ajouter une Relation
-
-- **Endpoint** : `POST /people/addRelation`
-- **Description** : Ajouter une nouvelle Relation à la base de données.
-- **Entrée** :
-  ```json
-  {
-    "nom": "Jean",
-    "prenom": "Dupont",
-    "sexe": "Homme",
-    "photo": "urlPhoto",
-    "email": "JeaDupont@gmail.com",
-    "dateNaissance": "1980-01-01",
-    "dateDeces": null,
-    "professions": "Menuisier",
-    "adresse": "123 rue de l'Exemple",
-    "tel": "0123456789",
-    "mail": "jean.dupont@example.com",
-    "informationsComplementaires": "Autres informations pertinentes ici",
-    "relation": "pere/mere/conjoint/enfant",
-    // si Conjoint
-    "dateUnion": "2010-03-01",
-    "dateSeparation": null
-  }
-  ```
-- **Sortie** :
-  ```json
-  {
-    "message": "Relation ajoutée avec succès",
-    "personId": "identifiantUniquePersonne"
-  }
-  ```
-  Après cette opération, si la relation ajoutée est un père ou une mère, l'utilisateur actuel qui a ajouté cette relation sera considéré comme son enfant.
-
-## Mettre à Jour une Relation
-
-- **Endpoint** : `PUT /people/{personId}`
-- **Description** : Mettre à jour les informations d'une personne existante.
-- **Entrée** :
-  ```json
-  {
-    "nom": "Jean",
-    "prenom": "Dupont modifié",
-    "sexe": "Homme",
-    "photo": "nouvelleUrlPhoto",
-    "dateNaissance": "1980-01-01",
-    "dateDeces": "2040-12-31",
-    "professions": "Architecte",
-    "adresse": "456 nouvelle rue de l'Exemple",
-    "tel": "9876543210",
-    "mail": "jean.dupont.nouveau@example.com",
-    "informationsComplementaires": "Mises à jour des informations",
-    "relation": "pere/mere/conjoint/enfant",
-    // si Conjoint
-    "dateUnion": "2010-03-01",
-    "dateSeparation": null
-  }
-  ```
-- **Sortie** :
-  ```json
-  {
-    "message": "Informations de la relation mises à jour avec succès"
-  }
-  ```
-
-## Supprimer une Relation
-
-- **Endpoint** : `DELETE /people/{personId}`
-- **Description** : Supprimer une personne de la base de données.
-- **Entrée** : Aucune entrée spécifique requise, l'ID est passé dans l'URL.
-- **Sortie** :
-  ```json
-  {
-    "message": "Relation supprimée avec succès"
-  }
-  ```
-
 ## Gestion des Relations Familiales
 
-### Ajout de Relations Familiales
+### Ajout de Relations Familiales (Méthode 1)
 
 - **Endpoint** : `POST /people/addRelation/{id?}`
 - **Description** : Ajoute un père, une mère, un conjoint ou un enfant à une personne spécifiée par l'ID fourni ou, si aucun ID n'est fourni, à la personne actuellement connectée. Si l'ID est omis, la relation sera ajoutée à la personne actuellement connectée.
@@ -198,6 +119,33 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "tel": "+334964886",
     "dateUnion": "08/06/2000",
     "dateSeparation": "04/07/2005"
+  }
+  ```
+
+- **Sortie** :
+
+  ```json
+  {
+    "message": "Relation ajoutée avec succès",
+    "personId": "identifiantUniquePersonne"
+  }
+  ```
+
+### Ajout de Relations Familiales (Méthode 2)
+
+- **Endpoint** : `POST /addRelationByEmail/:email/:id?`
+- **Description** : Cette route permet d'ajouter une relation à une personne existante, identifiée par son email. Si un ID est fourni, la relation est ajoutée à la personne correspondant à cet ID. Sinon, la relation est ajoutée à la personne actuellement connectée. Cette fonctionnalité est particulièrement utile pour établir des relations familiales (père, mère, conjoint, etc.) entre des personnes déjà présentes dans la base de données.
+- **Paramètres** :
+  - `email` : Email de la personne qui deviendra le membre de la relation spécifiée (père, mère, conjoint, etc.).
+  - `id` (optionnel) : ID de la personne à laquelle la relation doit être ajoutée. Si non spécifié, la relation est ajoutée à la personne actuellement connectée.
+- **Corps de la requête** :
+
+  ```json
+  {
+    "relation": "conjoint",
+    // si Conjoint
+    "dateUnion": "2024-01-01",
+    "dateSeparation": "2025-01-01"
   }
   ```
 
@@ -401,6 +349,7 @@ Les mots de passe ne sont jamais stockés en clair dans la base de données. Seu
 
 ## Exemple de Document de la Collection `Persons`
 
+```json
 {
 "\_id": ObjectId("identifiantUniquePersonne"),
 "nom": "Dupont",
@@ -431,3 +380,4 @@ Les mots de passe ne sont jamais stockés en clair dans la base de données. Seu
 }
 ]
 }
+```
