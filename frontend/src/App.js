@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import CreateTreePage from './pages/CreateTreePage';
 import CreateRelationPage from './pages/CreateRelationPage';
+import AdminPage from './pages/CreateAdminPage';
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
           <Route exact path="/" element={<HomePage />} />
           <Route path="/create-tree" element={<CreateTreePage />} />
           <Route path="/create-relation" element={<CreateRelationPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+
         </Routes>
       </div>
     </Router>

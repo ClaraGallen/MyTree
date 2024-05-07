@@ -9,12 +9,12 @@ connectDB();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-  })
-);
+const corsOptions ={
+  origin:'http://localhost:3000', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
 
 // Middleware pour logger les requêtes reçues
 app.use((req, res, next) => {
@@ -36,7 +36,10 @@ app.use(
   require("./controllers/peopleController").verifySession,
   require("./routes/peopleRoutes")
 );
-
+app.use("/delete", require("./routes/deleteUserRoutes"));
+app.use("/users", require("./routes/getAllusersRoutes"));
+app.use("/valid", require("./routes/validUserRoutes"));
+app.use("/share", require("./routes/shareUserResRoutes"));
 // Middleware qui permet de gérer les erreurs
 app.use(require("./utils/errorHandler"));
 

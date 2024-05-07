@@ -18,6 +18,9 @@ export default function Navbar() {
         <li>
           <Link to="/register" className="nav-link">Sign up</Link>
         </li>
+        <li>
+          <Link to="/admin" className="nav-link">Admin</Link>
+        </li>
       </ul>
     </nav>
   );
