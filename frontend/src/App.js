@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
@@ -8,10 +7,12 @@ import Register from './pages/SignupPage';
 import Admin from './pages/Admin'; 
 // import Dashboard from './pages/Dashboard'; 
 // import Code from './pages/code'; 
-import TreeTest from './pages/test_tree'; 
+import TreeTest from './pages/Dashboard'; 
 
 import './App.css';
 //import './pages/styles/background.css';
+import axios from "axios";
+
 
 
 
@@ -19,6 +20,30 @@ import './App.css';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    // Construire l'URL de base à partir des variables d'environnement
+    const baseURL ="http://localhost:5000";
+
+    axios.defaults.baseURL = baseURL;
+
+    // Activer les cookies cross-origin
+    axios.defaults.withCredentials = true;
+
+    // Journaliser chaque requête envoyée
+    axios.interceptors.request.use(
+      (request) => {
+      // console.log(
+        // `Envoi d'une requête à ${request.url} à ${new Date().toISOString()}`
+        //);
+        return request;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+  console.log(axios.defaults.baseURL);
+
+
+  
   useEffect(() => {
     // Vérifier si l'utilisateur est connecté en consultant le localStorage
     const token = localStorage.getItem('token');

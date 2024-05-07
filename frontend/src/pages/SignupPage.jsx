@@ -42,7 +42,8 @@ export default function Signup() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            await axios.post('/auth/register', { email, password: password1, nom, prenom, sexe, photo, dateNaissance, dateDeces, professions, adresse, tel});
+            const response = await axios.post('/auth/register', { email, password: password1, nom, prenom, sexe, photo, dateNaissance, dateDeces, professions, adresse, tel});
+            console.log('response: '+response);
             window.location.href = '/login';
         } catch (error) {
             console.error('Error:', error);

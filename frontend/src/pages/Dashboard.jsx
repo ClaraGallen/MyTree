@@ -1,314 +1,337 @@
-// // transformData.jsx
-// import React, { useEffect } from 'react';
-// import "./styles/code.css";
-// import axios from 'axios';
+/* global d3, FamilyTree, data, setData*/
+
+import React, { useEffect, useState } from 'react';
+import "./styles/Tree.css";
+import "./styles/MainTree.css";
+import plus from "./img/plus.png";
+import plusG from "./img/plusG.png";
+import pointer from "./img/pointer.png";
+import pointerG from "./img/pointerG.png";
+import info from "./img/info.png";
+import infoG from "./img/infoG.png";
+import axios from 'axios';
+
+
+function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (var i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+}
+
+var persons_function = async () => {
+
+    var list_member = [];  //Liste des personnes à ajouter
+    var list_member_add = []; //Liste des personnes déjà ajoutées
+    var persons = {};
+    var unions = {};
+  
+    const parentId = localStorage.getItem("personId");
+    list_member.push(parentId);
+
+    // console.log("début avec : " + parentId);
+    
+    
+    while (list_member.length !== 0){
+
+        try {
+            const response = await axios.get(`/people/${list_member[0]}`);
+            // console.log(response.data._id);
+
+            var dateNaissance = "?";
+            var dateDeces = "?";
+    
+            if (response.data.dateNaissance != null) {
+                dateNaissance = new Date(response.data.dateNaissance);
+                var jourNaissance = dateNaissance.getDate();
+                var moisNaissance = dateNaissance.getMonth() + 1; // Les mois commencent à 0, donc on ajoute 1
+                var anneeNaissance = dateNaissance.getFullYear();
+                dateNaissance = `${jourNaissance}/${moisNaissance}/${anneeNaissance}`;
+            }
+            
+            if (response.data.dateDeces != null) {
+                dateDeces = new Date(response.data.dateDeces);
+                var jourDeces = dateDeces.getDate();
+                var moisDeces = dateDeces.getMonth() + 1; // Les mois commencent à 0, donc on ajoute 1
+                var anneeDeces = dateDeces.getFullYear();
+                dateDeces = `${jourDeces}/${moisDeces}/${anneeDeces}`;
+            }
+        
+            const parent = {
+            id: response.data._id,
+            name: response.data.prenom + " " + response.data.nom,
+            birthyear: dateNaissance,
+            deathyear: dateDeces, 
+            children: [],
+            parents: [],
+            sexe: response.data.sexe,
+            own_unions: [],
+
+            
+            // Ajouter les autres infos
+            
+            
+        };
+            
+            if (response.data.enfants.length !== 0) {
+                response.data.enfants.forEach(enfant => {
+                    const oidValue = enfant.idEnfant;
+                    if (!list_member.includes(oidValue) && !list_member_add.includes(oidValue)) {
+                        list_member.push(oidValue)};
+                    parent.children.push(oidValue);
+            });
+            };
+        
+            if (response.data.conjoints.length !== 0) {
+                response.data.conjoints.forEach(conjoint => {
+                    const oidValue = conjoint.idConjoint;
+                    if (!list_member.includes(oidValue) && !list_member_add.includes(oidValue)) {
+                        list_member.push(oidValue)};
+    
+    
+                    var unionExists = false;
+                    var union;
+                    if (parent.sexe === "Homme"){
+                        union = [parent.id, oidValue];
+                    } else {
+                        union = [oidValue, parent.id];
+                    }
+    
+                    for (var key in unions) {
+                        if (unions.hasOwnProperty(key)) {
+                            var partners = unions[key].partner;
+                            if (arraysEqual(partners, union)) {
+                                unionExists = true;
+                                parent.own_unions.push(unions[key].id);
+                                break;
+                            }
+                        }
+                    }
+                    if (!unionExists){
+                        let nb = Object.keys(unions).length + 1;
+                        var name_union = "u"+ nb;
+                        unions[name_union] = {"id": name_union, "partner": union, "children": []};
+                        parent.own_unions.push(name_union);
+                    }
+                });
+            };
+        
+            if (response.data.parents) {
+                if ("pere" in response.data.parents) {
+                    const pereValue = response.data.parents.pere;
+                    if (!list_member.includes(pereValue) && !list_member_add.includes(pereValue)) {
+                        list_member.push(pereValue)};
+                        parent.parents.push(pereValue);
+    
+                }
+                if ("mere" in response.data.parents) {
+                    const mereValue = response.data.parents.mere;
+                    if (!list_member.includes(mereValue) && !list_member_add.includes(mereValue)) {
+                        list_member.push(mereValue)};
+                    parent.parents.push(mereValue);
+                }
+    
+                var partnerExists = false;
+                const mes_parents = parent.parents;
+    
+                for (var key in unions) {
+                    if (unions.hasOwnProperty(key)) {
+                        var partners = unions[key].partner;
+                        // Vérifier si les parents existent dans la liste des partners de l'élément de l'union
+                        if (arraysEqual(partners, mes_parents)) {
+                            partnerExists = true;
+                            unions[key].children.push(parent.id);
+                            parent.parent_union = unions[key].id;
+                            break;
+                        }
+                    }
+                }
+    
+                if (!partnerExists){
+                    let nb = Object.keys(unions).length + 1;
+                    var name_union = "u"+ nb;
+                    unions[name_union] = {"id": name_union, "partner": parent.parents, "children": [parent.id]};
+                    parent.parent_union = name_union;
+
+                    for (let item of parent.parents) {
+                        // Accéder à l'objet dans persons correspondant à l'identifiant
+                        let person = persons[item];
+                        // Vérifier si la personne existe dans persons
+                        if (person) {
+                            // Ajouter l'union à own_unions de la personne
+                            person.own_unions.push(name_union);
+                        }
+                    }             
+                };
+    
+            };
+    
+                list_member_add.push(parent.id);
+                persons[parent.id] = parent;
+                list_member.shift();
+                // console.log(parent);
+
+        } catch (error){
+            console.error('Error:', error);
+        }
+
+    };
+
+    // console.log(persons);
+    // console.log(unions);
+    return {persons: persons, unions: unions};
+};
+
+
+var links_function = function(data_unions){
+    var links = [];
+    
+    // Parcourir chaque élément de l'objet "unions"
+    for (var unionId in data_unions) {
+        var union = data_unions[unionId];
+        
+        // Ajouter les relations entre les partenaires et les enfants
+        for (var i = 0; i < union.partner.length; i++) {
+            links.push([union.partner[i], unionId]);
+        }
+        
+        for (var j = 0; j < union.children.length; j++) {
+            links.push([unionId, union.children[j]]);
+        }
+    }
+    
+    return links;
+};
+
+var formatData = async () => {
+    const formattedData = {};
+
+    var {persons: data_persons, unions: data_unions} = await persons_function();
+    var data_links = links_function(data_unions);
+
+    formattedData.start = localStorage.getItem("personId");
+    formattedData.persons = data_persons;
+    formattedData.unions = data_unions;
+    formattedData.links = data_links;    
+
+    console.log(formattedData);
+    
+    return formattedData;
+  };
 
 
 
-// // Fonction pour formater les données
-// const formatData = async () => {
-//   const formattedData = [];
-//   var list_member = [];
-
-//   const parentId = localStorage.getItem("personId");
-//   const response = await axios.get(`/people/${parentId}`); 
-
-//   const parent = {
-//     id: parentId,
-//     prenom: response.prenom,
-//     nom: response.nom,
-//     children: [],
-//     partners: [],
-//     root: true,
-//     link: 0,
-//     level: 0,
-//     parents: [],
-//     sexe: response.sexe,
-//     // ajouter les autres infos
-//   };
-
-//   if (response.enfants.length !== 0) {
-//     response.enfants.forEach(enfant => {
-//       const oidValue = enfant.idEnfant;
-//       list_member.push([oidValue, parentId, 1]);
-//       parent.children.push(oidValue);
-//     });
-//   };
-
-//   if (response.conjoints.length !== 0) {
-//     response.conjoints.forEach(conjoint => {
-//       const oidValue = conjoint.idConjoint;
-//       list_member.push([oidValue, parentId, 0]);
-//       parent.partners.push(oidValue);
-//     });
-//   };
-
-//   if (response.parents) {
-//     if ("pere" in response.parents) {
-//         const pereValue = response.parents.pere;
-//         list_member.push([pereValue, parentId, -1]);
-//         parent.parents.push(pereValue);
-//     }
-//     if ("mere" in response.parents) {
-//         const mereValue = response.parents.mere;
-//         list_member.push([mereValue, parentId, -1]);
-//         parent.parents.push(mereValue);
-//     };
-// };
-
-//   formattedData.push(parent);
-
-//   list_member.forEach(async member => { 
-//     const id_tmp = member[0];
-//     const element_tmp = formattedData.find(item => item.id === member[1]);
-//     const level_tmp = Number(element_tmp.level) + member[2];
-//     const response_tmp = await axios.get(`/people/${id_tmp}`);
-//     const member_tmp = {
-//       id: id_tmp,
-//       prenom: response_tmp.prenom,
-//       nom: response_tmp.nom,
-//       children: [],
-//       partners: [],
-//       link: member[1],
-//       level: level_tmp,
-//       parents: [],
-//       sexe: response_tmp.sexe,
-//       // ajouter les autres infos
-//     };
-
-//     if (response_tmp.enfants.length !== 0) {
-//       response_tmp.enfants.forEach(enfant => {
-//         const oidValue = enfant.idEnfant;
-//         list_member.push([oidValue, id_tmp, 1]);
-//         member_tmp.children.push(oidValue);
-//       });
-//     };
-
-//     if (response_tmp.conjoints.length !== 0) {
-//       response_tmp.conjoints.forEach(conjoint => {
-//         const oidValue = conjoint.idConjoint;
-//         list_member.push([oidValue, id_tmp, 0]);
-//         member_tmp.partners.push(oidValue);
-//       });
-//     };
-
-//     if (response.parents) {
-//       if ("pere" in response.parents) {
-//           const pereValue = response.parents.pere;
-//           list_member.push([pereValue, id_tmp, -1]);
-//           parent.parents.push(pereValue);
-//       }
-//       if ("mere" in response.parents) {
-//           const mereValue = response.parents.mere;
-//           list_member.push([mereValue, id_tmp, -1]);
-//           parent.parents.push(mereValue);
-//       }
-//   };
-
-//     formattedData.push(member_tmp);
-//   });
-
-//   console.log(formattedData);
-//   return formattedData;
-// };
-
-// export default function Code() {
-
-//   const data = [];
-
-//   useEffect(() => {
-//     data = formatData();
-// }, []);
+export default function TreeTest() {
+    const [tooltipData, setTooltipData] = useState(null);
+    const [datas, setDatas] = useState(null);
 
 
-// useEffect(() => {
-//   let elements = [];
-//     let root, levels = [], levelMap = [],
-//       tree = document.getElementById('tree'),
-//       startTop, startLeft, gap = 32, size = 64;
-//     startTop = (window.innerHeight / 2) - (size / 2);
-//     startLeft = (window.innerWidth / 2) - (size / 2);
+    useEffect(() => {
 
-//     data.forEach(elem => {
-//       if (levels.indexOf(elem.level) < 0) { levels.push(elem.level); }
-//     });
-//     levels.sort((a, b) => a - b);
+        const fetchData = async () => {
+            const formattedData = await formatData();
+            setDatas(formattedData);
+            setData(formattedData);
+        };
+    
+        fetchData();
+    }, []);
+    
+    useEffect(() => {
+        if (datas) {
+            const svg = d3.select("#tree-here").append("svg")
+                .attr("width", document.body.offsetWidth)
+                .attr("height", document.documentElement.clientHeight);
+            
+            let FT = new FamilyTree(data, svg);
+            FT.draw();
+    
+            // Clean up SVG before unmounting the component
+            return () => {
+                svg.selectAll("*").remove();
+            };
+        }
+    }, [datas]);
+    
 
-//     levels.forEach(level => {
-//       const startAt = data.filter(person => person.level === level);
-//       startAt.forEach(start => {
-//         const person = findPerson(start.id);
-//         plotNode(person, 'self');
-//         plotParents(person);
-//       });
+    useEffect(() => {
+        localStorage.setItem('selectedIcon', "pointer");
+        changeIcon();
+    }, []);
 
-//     });
 
-//     adjustNegatives();
+    function changeIcon() {
+        // Fonction pour obtenir le chemin de l'image en fonction de l'icône
+        const selectedIcon = localStorage.getItem('selectedIcon');
+        const getImagePath = (icon) => {
+            switch (icon) {
+                case "pointer":
+                    return selectedIcon === "pointer" ? pointer : pointerG;
+                case "info":
+                    return selectedIcon === "info" ? info : infoG;
+                case "plus":
+                    return selectedIcon === "plus" ? plus : plusG;
+                default:
+                    return "";
+            }
+        };
 
-//     function plotParents(start) {
-//       if (!start) { return; }
-//       start.parents.reduce((previousId, currentId) => {
-//         const previousParent = findPerson(previousId),
-//           currentParent = findPerson(currentId);
-//         plotNode(currentParent, 'parents', start, start.parents.length);
-//         if (previousParent) { plotConnector(previousParent, currentParent, 'partners'); }
-//         plotConnector(start, currentParent, 'parents');
-//         plotParents(currentParent);
-//         return currentId;
-//       }, 0);
-//     }
+        // Code pour mettre à jour l'affichage des icônes lorsque selectedIcon change
+        const iconContainer = document.getElementById("icon-here");
+        if (iconContainer) {
+            iconContainer.innerHTML = "";
+            const icons = ["pointer", "info", "plus"];
+            icons.forEach(icon => {
+                const img = document.createElement("img");
+                img.className = "icon";
+                img.src = getImagePath(icon);
+                img.alt = icon;
+                img.addEventListener("click", () => localStorage.setItem('selectedIcon', icon));
+                iconContainer.appendChild(img);
+            });
+        }
+    }
 
-//     function plotNode(person, personType, relative, numberOfParents) {
-//       let node = get(person.id), relativeNode, element = {}, thisLevel, exists;
-//       if (node) { return; }
-//       node = document.createElement('div');
-//       node.id = person.id;
-//       node.classList.add('node');
-//       node.classList.add('asset');
-//       node.textContent = person.name;
-//       node.setAttribute('data-level', person.level);
 
-//       thisLevel = findLevel(person.level);
-//       if (!thisLevel) {
-//         thisLevel = { level: person.level, top: startTop };
-//         levelMap.push(thisLevel);
-//       }
+    // Fonction de gestion d'un clic sur un nœud de l'arbre
+    const handleNodeClick = (event) => {
+        click();
+        const selectedIcon = localStorage.getItem('selectedIcon');
+    
+        if (selectedIcon === "info") {
+            let id_tmp = localStorage.getItem('id_tmp');
+            const personData = datas.persons[id_tmp];
+    
+            setTooltipData({
+                name: personData.name,
+                birthday: personData.birthyear,
+                deathday: personData.deathyear,
+                position: {
+                    left: event.pageX + 10, // Ajoute un décalage de 10px à droite
+                    top: event.pageY - 10 // Ajoute un décalage de 10px vers le haut
+                }
+            });
+        };
+    };
 
-//       if (personType === 'self') {
-//         node.style.left = startLeft + 'px';
-//         node.style.top = thisLevel.top + 'px';
-//       } else {
-//         relativeNode = get(relative.id);
-//       }
-//       if (personType === 'partners') {
-//         node.style.left = (parseInt(relativeNode.style.left) + size + (gap * 2)) + 'px';
-//         node.style.top = parseInt(relativeNode.style.top) + 'px';
-//       }
-//       if (personType === 'children') {
-//         node.style.left = (parseInt(relativeNode.style.left) - size) + 'px';
-//         node.style.top = (parseInt(relativeNode.style.top) + size + gap) + 'px';
-//       }
-//       if (personType === 'parents') {
-//         if (numberOfParents === 1) {
-//           node.style.left = parseInt(relativeNode.style.left) + 'px';
-//           node.style.top = (parseInt(relativeNode.style.top) - gap - size) + 'px';
-//         } else {
-//           node.style.left = (parseInt(relativeNode.style.left) - size) + 'px';
-//           node.style.top = (parseInt(relativeNode.style.top) - gap - size) + 'px';
-//         }
-//       }
-//       while (exists = detectCollision(node)) {
-//         node.style.left = (exists.left + size + (gap * 2)) + 'px';
-//       }
-
-//       if (thisLevel.top > parseInt(node.style.top)) {
-//         updateLevel(person.level, 'top', parseInt(node.style.top));
-//       }
-
-//       element.id = node.id;
-//       element.left = parseInt(node.style.left);
-//       element.top = parseInt(node.style.top);
-//       elements.push(element);
-//       tree.appendChild(node);
-//     }
-
-//     function get(id) { return document.getElementById(id); }
-
-//     function findPerson(id) {
-//       const element = data.filter(elem => elem.id === id);
-//       return element.pop();
-//     }
-
-//     function findLevel(level) {
-//       const element = levelMap.filter(elem => elem.level === level);
-//       return element.pop();
-//     }
-
-//     function updateLevel(id, key, value) {
-//       levelMap.forEach(level => {
-//         if (level.level === id) {
-//           level[key] = value;
-//         }
-//       });
-//     }
-
-//     function detectCollision(node) {
-//       const element = elements.filter(elem => {
-//         const left = parseInt(node.style.left);
-//         return ((elem.left === left || (elem.left < left && left < (elem.left + size + gap))) && elem.top === parseInt(node.style.top));
-//       });
-//       return element.pop();
-//     }
-
-//     function adjustNegatives() {
-//       const allNodes = document.querySelectorAll('div.asset');
-//       let minTop = startTop, diff = 0;
-//       for (let i = 0; i < allNodes.length; i++) {
-//         if (parseInt(allNodes[i].style.top) < minTop) { minTop = parseInt(allNodes[i].style.top); }
-//       };
-//       if (minTop < startTop) {
-//         diff = Math.abs(minTop) + gap;
-//         for (let i = 0; i < allNodes.length; i++) {
-//           allNodes[i].style.top = parseInt(allNodes[i].style.top) + diff + 'px';
-//         };
-//       }
-//     }
-
-//     function plotConnector(source, destination, relation) {
-//       let connector = document.createElement('div'),
-//         orientation, comboId, comboIdInverse, start, stop,
-//         x1, y1, x2, y2, length, angle, transform, exists;
-//       // We do not plot a connector if already present
-//       comboId = source.id + '-' + destination.id;
-//       comboIdInverse = destination.id + '-' + source.id;
-//       if (document.getElementById(comboId)) { return; }
-//       if (document.getElementById(comboIdInverse)) { return; }
-
-//       connector.id = comboId;
-//       orientation = relation === 'partners' ? 'h' : 'v';
-//       connector.classList.add('asset');
-//       connector.classList.add('connector');
-//       connector.classList.add(orientation);
-//       start = get(source.id); stop = get(destination.id);
-//       if (relation === 'partners') {
-//         x1 = parseInt(start.style.left) + size; y1 = parseInt(start.style.top) + (size / 2);
-//         x2 = parseInt(stop.style.left); y2 = parseInt(stop.style.top);
-//         length = (x2 - x1) + 'px';
-
-//         connector.style.width = length;
-//         connector.style.left = x1 + 'px';
-//         connector.style.top = y1 + 'px';
-//         // Avoid collision moving down
-//         while (exists = detectConnectorCollision(connector)) {
-//           connector.style.top = (parseInt(exists.style.top) + 4) + 'px';
-//         }
-//       }
-//       if (relation === 'parents') {
-//         x1 = parseInt(start.style.left) + (size / 2); y1 = parseInt(start.style.top);
-//         x2 = parseInt(stop.style.left) + (size / 2); y2 = parseInt(stop.style.top) + (size - 2);
-
-//         length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-//         angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-//         transform = 'rotate(' + angle + 'deg)';
-
-//         connector.style.width = length + 'px';
-//         connector.style.left = x1 + 'px';
-//         connector.style.top = y1 + 'px';
-//         connector.style.transform = transform;
-//       }
-//       tree.appendChild(connector);
-//     }
-
-//     function detectConnectorCollision(connector) {
-//       const connectors = [].slice.call(document.querySelectorAll('div.connector.h'));
-//       const element = connectors.filter(elem => ((elem.style.left === connector.style.left) && (elem.style.top === connector.style.top)));
-//       return element.pop();
-//     }
-//   }, [data]);
-
-//   return (
-//     <div id="tree"></div>
-//   );
-// };
-
+    const click = () => {
+        console.log("La fonction click() est appelée");
+        // appelle la fonction click définie dans familytree.js
+    };
+    
+    return (
+        <div>
+            <div id="tree-here" onClick={handleNodeClick}></div>
+            <div className="icon-container" id="icon-here" onClick={changeIcon}></div>
+            {tooltipData && (
+                <div className="tooltip" style={{ left: tooltipData.position.left, top: tooltipData.position.top }}>
+                    <p>Nom: {tooltipData.name}</p>
+                    <p>Né le: {tooltipData.birthday}</p>
+                    <p>Mort le: {tooltipData.deathday}</p>
+                    <button onClick={() => setTooltipData(null)}>Fermer</button>
+                </div>
+            )}
+        </div>
+    );
+};

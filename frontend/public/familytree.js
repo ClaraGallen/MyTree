@@ -37,13 +37,14 @@ function d3_append_multiline_text(d3element, text, delimiter = "_", css_class = 
 class FTDataHandler {
 
     constructor(data, start_node_id = data.start) {
-
+        console.log(data);
+        console.log(data.links);
         // check if edge list defined
         if (data.links.length > 0) {
 
             // make dag from edge list
             this.dag = d3.dagConnect()(data.links);
-
+            console.log(this.dag);
             // dag must be a node with id undefined. fix if necessary
             if (this.dag.id != undefined) {
                 this.root = this.dag.copy();
@@ -53,6 +54,7 @@ class FTDataHandler {
             }
 
             // get all d3-dag nodes and convert to family tree nodes
+            console.log(this);
             this.nodes = this.dag.descendants().map(node => {
                 if (node.id in data.unions) return new Union(node, this)
                 else if (node.id in data.persons) return new Person(node, this);
@@ -442,6 +444,7 @@ class Person extends FTNode {
     };
 
     get_own_unions() {
+        console.log("pb : " + this.data.own_unions);
         var unions = (this.data.own_unions ?? [])
             .map(id => this.ft_datahandler.find_node_by_id(id))
             .filter(u => u != undefined);
@@ -961,6 +964,7 @@ class FTDrawer {
 class FamilyTree extends FTDrawer {
 
     constructor(data, svg) {
+        console.log(data);
         const ft_datahandler = new FTDataHandler(data);
         super(ft_datahandler, svg);
     };

@@ -1,7 +1,10 @@
 import axios from "axios";
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Construire l'URL de base à partir des variables d'environnement
-const baseURL = process.env.AXIOS_URL + process.env.HTTP_PORT || "http://localhost:5000";
+console.log(process.env.AXIOS_URL + process.env.AXIOS_PORT);
+const baseURL = process.env.AXIOS_URL + process.env.AXIOS_PORT || "http://localhost:5000";
 
 axios.defaults.baseURL = baseURL;
 
