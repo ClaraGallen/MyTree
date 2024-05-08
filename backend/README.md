@@ -134,7 +134,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Ajout de Relations Familiales (Méthode 2)
 
-- **Endpoint** : `POST /addRelationByEmail/:email/:id?`
+- **Endpoint** : `POST /people/addRelationByEmail/:email/:id?`
 - **Description** : Cette route permet d'ajouter une relation à une personne existante, identifiée par son email. Si un ID est fourni, la relation est ajoutée à la personne correspondant à cet ID. Sinon, la relation est ajoutée à la personne actuellement connectée. Cette fonctionnalité est particulièrement utile pour établir des relations familiales (père, mère, conjoint, etc.) entre des personnes déjà présentes dans la base de données.
 - **Paramètres** :
   - `email` : Email de la personne qui deviendra le membre de la relation spécifiée (père, mère, conjoint, etc.).
@@ -174,9 +174,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "relation": {
       "id1": "identifiantUniquePersonne1",
       "id2": "identifiantUniquePersonne2",
-      "relation": "type de relation",
-      "dateUnion": "date de l'union",
-      "dateSeparation": "date de la séparation"
+      "relation": "type de relation"
     }
   }
   ```
@@ -208,7 +206,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 ### Suppression de Relations Familiales
 
 - **Endpoint** : `DELETE /people/deleteRelation/{id1}/{id2?}`
-- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
+- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour des personnes identifiées par l'ID. La relation est définie du point de vue de la personne `id1` par rapport à la personne `id2`. Par exemple, si la relation est "enfant", cela signifie que la personne `id1` est l'enfant de la personne `id2`.
 - **Paramètres** :
   - `id1` : ID de la personne 1.
   - `id2` (optionnel) : ID de la personne 2. Si non spécifié, l'ID de la personne actuellement connectée sera utilisé.
@@ -218,7 +216,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   ```json
   {
     "message": "Relation supprimée avec succès",
-    "personId": "identifiantUniquePersonne"
+    "id1": "identifiantUniquePersonne1",
+    "id2": "identifiantUniquePersonne2"
   }
   ```
 
