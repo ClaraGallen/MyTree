@@ -159,7 +159,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
-### Mise à Jour de Relations Familiales
+### Mise à Jour d'une personne
 
 - **Endpoint** : `PATCH /people/updatePerson/{id?}`
 - **Description** : Met à jour une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
@@ -178,29 +178,39 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 - **Sortie** :
   ```json
   {
-    "message": "Relation mise à jour avec succès",
+    "message": "Personne mise à jour avec succès",
     "personId": "identifiantUniquePersonne"
   }
   ```
 
 ### Suppression de Relations Familiales
 
-- **Endpoint** : `DELETE /people/deleteRelation/{id}`
+- **Endpoint** : `DELETE /people/deleteRelation/{id1}/{id2?}`
 - **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
 - **Paramètres** :
-  - `id` : ID de la personne dont la relation doit être supprimée.
-- **Entrée** :
-
-  ```json
-  {
-    "relation": "conjoint"
-  }
-  ```
+  - `id1` : ID de la personne 1.
+  - `id2` (optionnel) : ID de la personne 2. Si non spécifié, l'ID de la personne actuellement connectée sera utilisé.
+- **Entrée** : Aucune.
 
 - **Sortie** :
   ```json
   {
     "message": "Relation supprimée avec succès",
+    "personId": "identifiantUniquePersonne"
+  }
+  ```
+
+### Supprimer une Personne
+
+- **Endpoint** : `DELETE /people/{id}`
+- **Description** : Supprime une personne de la base de données, identifiée par son ID.
+- **Paramètres** :
+  - `id` : ID de la personne à supprimer.
+- **Entrée** : Aucune.
+- **Sortie** :
+  ```json
+  {
+    "message": "Personne supprimée avec succès",
     "personId": "identifiantUniquePersonne"
   }
   ```
