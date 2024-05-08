@@ -117,6 +117,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "professions": "Prof",
     "adresse": "4 avenue",
     "tel": "+334964886",
+    // si Conjoint
     "dateUnion": "08/06/2000",
     "dateSeparation": "04/07/2005"
   }
@@ -160,17 +161,17 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Mise à Jour de Relations Familiales
 
-- **Endpoint** : `PATCH /people/updateRelation/{id}`
+- **Endpoint** : `PATCH /people/updatePerson/{id?}`
 - **Description** : Met à jour une relation spécifique (père, mère, conjoint, ou enfant) pour une personne identifiée par l'ID.
 - **Paramètres** :
-  - `id` : ID de la personne dont la relation doit être mise à jour.
+  - `id` (optionnel) : ID de la personne à laquelle la relation doit être ajoutée. Si non spécifié, la relation sera ajoutée à la personne actuellement connectée.
 - **Entrée** :
 
   ```json
   {
-    "relation": "conjoint",
-    "dateUnion": "10/10/2010",
-    "dateSeparation": "10/10/2015"
+    "nom": "Doe",
+    "prenom": "John",
+    "adresse": "123 Main St"
   }
   ```
 

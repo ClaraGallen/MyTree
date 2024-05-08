@@ -267,7 +267,7 @@ const getPerson = async (req, res, next) => {
   }
 };
 
-const updateRelation = async (req, res, next) => {
+const updatePerson = async (req, res, next) => {
   try {
     const actualUser = await getUserById(req.userId);
     if (!actualUser) {
@@ -279,7 +279,7 @@ const updateRelation = async (req, res, next) => {
       throw new Error("Person ID not found");
     }
     const personToUpdateData = req.body;
-    const updatedPersonId = await handleUpdateRelation(
+    const updatedPersonId = await handleUpdatePerson(
       personId,
       personToUpdateData
     );
@@ -293,7 +293,7 @@ const updateRelation = async (req, res, next) => {
   }
 };
 
-const handleUpdateRelation = async (personId, personToUpdateData) => {
+const handleUpdatePerson = async (personId, personToUpdateData) => {
   const updatedPerson = await updatePerson(personId, personToUpdateData);
   return updatedPerson._id;
 };
@@ -328,6 +328,6 @@ module.exports = {
   addRelation,
   addRelationByEmail,
   getPerson,
-  updateRelation,
+  updateRelation: updatePerson,
   deleteRelation,
 };

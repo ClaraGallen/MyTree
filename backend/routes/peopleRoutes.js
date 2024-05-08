@@ -12,8 +12,8 @@ router.post(
   require("../controllers/peopleController").addRelationByEmail
 );
 router.patch(
-  "/updateRelation/:id?",
-  require("../controllers/peopleController").updateRelation
+  "/updatePerson/:id?",
+  require("../controllers/peopleController").updatePerson
 );
 
 module.exports = router;
