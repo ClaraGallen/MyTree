@@ -159,6 +159,28 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
+### Obtenir une Relation
+
+- **Endpoint** : `GET /people/getRelation/{id1}/{id2}`
+- **Description** : Récupère les détails de la relation entre deux personnes identifiées par `id1` et `id2`. La relation est définie du point de vue de la personne `id1` par rapport à la personne `id2`. Par exemple, si la relation est "enfant", cela signifie que la personne `id1` est l'enfant de la personne `id2`.
+- **Paramètres** :
+  - `id1` : ID de la personne 1.
+  - `id2` (optionnel) : ID de la personne 2. Si non spécifié, l'ID de la personne actuellement connectée sera utilisé.
+- **Entrée** : Aucune.
+- **Sortie** :
+  ```json
+  {
+    "message": "Relation récupérée avec succès",
+    "relation": {
+      "id1": "identifiantUniquePersonne1",
+      "id2": "identifiantUniquePersonne2",
+      "relation": "type de relation",
+      "dateUnion": "date de l'union",
+      "dateSeparation": "date de la séparation"
+    }
+  }
+  ```
+
 ### Mise à Jour d'une personne
 
 - **Endpoint** : `PATCH /people/updatePerson/{id?}`

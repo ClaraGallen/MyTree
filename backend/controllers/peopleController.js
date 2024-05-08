@@ -33,9 +33,6 @@ const verifySession = (req, res, next) => {
 const addRelation = async (req, res, next) => {
   try {
     const actualUser = await getUserById(req.userId);
-    if (!actualUser) {
-      throw new Error("User not found");
-    }
     let personId = actualUser.person;
     personId = req.params.id ? req.params.id : personId;
     const personToAddData = req.body;
@@ -131,9 +128,6 @@ const handleAddRelation = async (personId, personToAddData) => {
 const addRelationByEmail = async (req, res, next) => {
   try {
     const actualUser = await getUserById(req.userId);
-    if (!actualUser) {
-      throw new Error("User not found");
-    }
     let personId = actualUser.person;
     personId = req.params.id ? req.params.id : personId;
     const personToAddData = req.body;
@@ -270,9 +264,6 @@ const getPerson = async (req, res, next) => {
 const updateRelationController = async (req, res, next) => {
   try {
     const actualUser = await getUserById(req.userId);
-    if (!actualUser) {
-      throw new Error("User not found");
-    }
     let personId = actualUser.person;
     personId = req.params.id ? req.params.id : personId;
     if (!(await getPersonById(personId))) {
@@ -319,7 +310,84 @@ const deleteRelation = async (req, res, next) => {
   }
 };
 
-const handleDeleteRelation = async (actualPersonId) => {};
+const deleteRelationController = async (req, res, next) => {
+  try {
+    const actualUser = await getUserById(req.userId);
+    let personId2 = actualUser.person;
+    personId2 = req.params.id2 ? req.params.id2 : personId2;
+    if (!(await getPersonById(personId2))) {
+      throw new Error("Person ID2 not found");
+    }
+    let personId1 = req.params.id1;
+    if (!(await getPersonById(personId1))) {
+      throw new Error("Person ID1 not found");
+    }
+    const deletedPersonId = await handleDeleteRelation(personId1, personId2);
+    res.json({
+      message: "Relation supprimée avec succès",
+      personId: deletedPersonId,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const handleDeleteRelation = async (personId1, personId2) => {};
+
+const getRelationController = async (req, res, next) => {
+  try {
+    const actualUser = await getUserById(req.userId);
+    let personId2 = actualUser.person;
+    personId2 = req.params.id2 ? req.params.id2 : personId2;
+    if (!(await getPersonById(personId2))) {
+      throw new Error("Person ID2 not found");
+    }
+    let personId1 = req.params.id1;
+    if (!(await getPersonById(personId1))) {
+      throw new Error("Person ID1 not found");
+    }
+    const relation = await handleGetRelation(personId1, personId2);
+    res.json({
+      message: "Relation récupérée avec succès",
+      relation: {
+        id1: personId1,
+        id2: personId2,
+        relation: relation,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const handleGetRelation = async (personId1, personId2) => {
+  let relation;
+  let person2 = await getPersonById(personId2);
+  let child = person2.enfants.some((enfant) => enfant.idEnfant == personId1);
+  if (child) {
+    relation = "enfant";
+    return relation;
+  }
+  let spouse = person2.conjoints.some(
+    (conjoint) => conjoint.idConjoint == personId1
+  );
+  if (spouse) {
+    relation = "conjoint";
+    return relation;
+  }
+  let pere = person2.parents.pere == personId1;
+  if (pere) {
+    relation = "pere";
+    return relation;
+  }
+  let mere = person2.parents.mere == personId1;
+  if (mere) {
+    relation = "mere";
+    return relation;
+  }
+};
 
 module.exports = {
   test,
@@ -328,6 +396,7 @@ module.exports = {
   addRelation,
   addRelationByEmail,
   getPerson,
+  getRelationController,
   updateRelationController,
-  deleteRelation,
+  deleteRelationController,
 };
