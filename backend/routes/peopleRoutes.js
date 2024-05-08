@@ -23,5 +23,9 @@ router.delete(
   "/deleteRelation/:id1/:id2?",
   require("../controllers/peopleController").deleteRelationController
 );
+router.delete(
+  "/deletePerson/:id",
+  require("../controllers/peopleController").deletePersonController
+);
 
 module.exports = router;

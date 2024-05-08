@@ -223,7 +223,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Supprimer une Personne
 
-- **Endpoint** : `DELETE /people/{id}`
+- **Endpoint** : `DELETE /people/deletePerson/{id}`
 - **Description** : Supprime une personne de la base de données, identifiée par son ID.
 - **Paramètres** :
   - `id` : ID de la personne à supprimer.

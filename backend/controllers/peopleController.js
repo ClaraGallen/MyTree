@@ -446,6 +446,83 @@ const handleDeleteRelation = async (personId1, personId2) => {
   }
 };
 
+const deletePersonController = async (req, res, next) => {
+  try {
+    const personId = req.params.id;
+    if (personId == req.userId) {
+      throw new Error("Vous ne pouvez pas supprimer votre propre personne");
+    }
+    const deletedPerson = await handleDeletePerson(personId);
+    res.json({
+      message: "Personne supprimée avec succès",
+      personId: deletedPerson._id,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const handleDeletePerson = async (personId) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    let person = await getPersonById(personId);
+    if (!person) {
+      throw new Error("Person not found");
+    }
+
+    if (person.parents.pere) {
+      let father = await getPersonById(person.parents.pere);
+      father.enfants = father.enfants.filter(
+        (enfant) => enfant.idEnfant.toString() !== personId
+      );
+      father.markModified("enfants");
+      await father.save({ session });
+    }
+    if (person.parents.mere) {
+      let mother = await getPersonById(person.parents.mere);
+      mother.enfants = mother.enfants.filter(
+        (enfant) => enfant.idEnfant.toString() !== personId
+      );
+      mother.markModified("enfants");
+      await mother.save({ session });
+    }
+    for (let child of person.enfants) {
+      let enfant = await getPersonById(child.idEnfant);
+      enfant.parents = {
+        pere:
+          enfant.parents.pere && enfant.parents.pere.toString() === personId
+            ? null
+            : enfant.parents.pere,
+        mere:
+          enfant.parents.mere && enfant.parents.mere.toString() === personId
+            ? null
+            : enfant.parents.mere,
+      };
+      enfant.markModified("parents");
+      await enfant.save({ session });
+    }
+    for (let conjoint of person.conjoints) {
+      let partner = await getPersonById(conjoint.idConjoint);
+      partner.conjoints = partner.conjoints.filter(
+        (conjoint) => conjoint.idConjoint.toString() !== personId
+      );
+      partner.markModified("conjoints");
+      await partner.save({ session });
+    }
+
+    await person.deleteOne({ session });
+    await session.commitTransaction();
+    return person;
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    session.endSession();
+  }
+};
+
 module.exports = {
   test,
   verifySession,
@@ -456,4 +533,5 @@ module.exports = {
   getRelationController,
   updateRelationController,
   deleteRelationController,
+  deletePersonController,
 };
