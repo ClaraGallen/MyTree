@@ -13,7 +13,7 @@ router.post(
 );
 router.patch(
   "/updatePerson/:id?",
-  require("../controllers/peopleController").updatePerson
+  require("../controllers/peopleController").updateRelationController
 );
 
 module.exports = router;

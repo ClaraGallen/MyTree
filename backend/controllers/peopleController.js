@@ -267,7 +267,7 @@ const getPerson = async (req, res, next) => {
   }
 };
 
-const updatePerson = async (req, res, next) => {
+const updateRelationController = async (req, res, next) => {
   try {
     const actualUser = await getUserById(req.userId);
     if (!actualUser) {
@@ -328,6 +328,6 @@ module.exports = {
   addRelation,
   addRelationByEmail,
   getPerson,
-  updateRelation: updatePerson,
+  updateRelationController,
   deleteRelation,
 };
