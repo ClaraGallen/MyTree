@@ -5,12 +5,11 @@ import HomePage from './pages/HomePage';
 import Login from './pages/LoginPage'; 
 import Register from './pages/SignupPage'; 
 import Admin from './pages/Admin'; 
-// import Dashboard from './pages/Dashboard'; 
-// import Code from './pages/code'; 
 import TreeTest from './pages/Dashboard'; 
 
 import './App.css';
 //import './pages/styles/background.css';
+
 import axios from "axios";
 
 
@@ -20,27 +19,12 @@ import axios from "axios";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Construire l'URL de base à partir des variables d'environnement
-    const baseURL ="http://localhost:5000";
+    //Configuration axios
 
+    const baseURL ="http://localhost:5000"; // Construire l'URL de base à partir des variables d'environnement
     axios.defaults.baseURL = baseURL;
-
-    // Activer les cookies cross-origin
-    axios.defaults.withCredentials = true;
-
-    // Journaliser chaque requête envoyée
-    axios.interceptors.request.use(
-      (request) => {
-      // console.log(
-        // `Envoi d'une requête à ${request.url} à ${new Date().toISOString()}`
-        //);
-        return request;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-  console.log(axios.defaults.baseURL);
+    axios.defaults.withCredentials = true;// Activer les cookies cross-origin
+    console.log(axios.defaults.baseURL);
 
 
   
@@ -82,8 +66,6 @@ function App() {
             <Route path="/login" element={<Login onLogin={login} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<Admin />} />
-            {/* <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn}/>} /> */}
-            {/* <Route path="/code" element={<Code />} /> */}
             <Route path="/dashboard" element={<TreeTest />} />
 
           </Routes>

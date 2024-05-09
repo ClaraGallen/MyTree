@@ -39,6 +39,7 @@ class FTDataHandler {
     constructor(data, start_node_id = data.start) {
         console.log(data);
         console.log(data.links);
+        console.log(Object.values(data.persons).length);
         // check if edge list defined
         if (data.links.length > 0) {
 
@@ -108,6 +109,7 @@ class FTDataHandler {
     find_node_by_id(id) {
         return this.nodes.find(node => node.id == id);
     };
+    
 
 };
 
@@ -527,16 +529,16 @@ class Person extends FTNode {
     click() {
         const selectedIcon = localStorage.getItem('selectedIcon');
 
-        console.log("selectedicone : " + selectedIcon);
         // Vérifiez si l'icône sélectionnée est "plus"
         if (selectedIcon === "plus") {
             // extend if there are uncollapsed neighbor unions
+            console.log(this); 
             if (this.is_extendable()) this.show();
             // collapse if fully extended
             else this.hide();
             // update dag roots
             this.ft_datahandler.update_roots();
-        } else if (selectedIcon === "info") {
+        } else if (selectedIcon === "info" || selectedIcon === "link") {
             localStorage.setItem('id_tmp', this.data.id);
         }
 

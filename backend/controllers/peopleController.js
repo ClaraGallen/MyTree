@@ -31,6 +31,7 @@ const verifySession = (req, res, next) => {
 };
 
 const addRelation = async (req, res, next) => {
+  console.log(req.body);
   try {
     const actualUser = await getUserById(req.userId);
     let personId = actualUser.person;
