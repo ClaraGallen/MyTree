@@ -15,10 +15,10 @@
 
 #tree-here {
     position: absolute;
-    top: -720px; 
-    left: 45%; 
+    top: -820px; 
+    left: 50%; 
     transform: translateX(-50%);
-    width: 90vw;
+    width: 100%;
     z-index: -1;
 }
 

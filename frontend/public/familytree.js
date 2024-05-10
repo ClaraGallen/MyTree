@@ -15,13 +15,22 @@ Array.prototype.remove = function() {
 };
 
 
-function d3_append_multiline_text(d3element, text, delimiter = "_", css_class = undefined, line_sep = 14,
+function d3_append_multiline_text(d3element, node, text, delimiter = "_", css_class = undefined, line_sep = 14,
     line_offset = undefined, x = 13, dominant_baseline = "central") {
-    // adds a multi-line text label to a d3 element
+    // Ajoute un label de texte multiligne à un élément d3
     if (!text) return;
+
+    // Détermine la couleur en fonction du genre
+    const color = node.get_gender() === "F" ? "#BE4CD0" : "#1C72AE";
+
+    // Ajoute le texte avec la couleur appropriée
     const d3text = d3element.append("text")
         .attr("class", css_class)
-        .attr("dominant-baseline", dominant_baseline);
+        .attr("dominant-baseline", dominant_baseline)
+        .attr("fill", color)
+        .style("font-weight", "bold");
+
+
     const arr = text.split(delimiter);
     if (!line_offset) { line_offset = -line_sep * (arr.length - 1) / 2; }
     if (arr != undefined) {
@@ -32,7 +41,8 @@ function d3_append_multiline_text(d3element, text, delimiter = "_", css_class = 
                 .attr("x", x);
         }
     }
-};
+}
+
 
 class FTDataHandler {
 
@@ -412,6 +422,10 @@ class Person extends FTNode {
         return this.data.deathplace;
     };
 
+    get_gender() {
+        return this.data.sexe[0];
+    }
+
     get_neighbors() {
         return this.get_own_unions().concat(this.get_parent_unions());
     };
@@ -631,7 +645,7 @@ class FTDrawer {
             .coord(d3.coordVert());
 
         // defaults
-        this.orientation("horizontal");
+        this.orientation("vertical");
         this.transition_duration(750);
         this.link_path(FTDrawer.default_link_path_func);
         this.node_label(FTDrawer.default_node_label_func);
@@ -869,6 +883,7 @@ class FTDrawer {
         nodeEnter.each(function(node) {
             d3_append_multiline_text(
                 d3.select(this),
+                node,
                 this_object.node_label_func(node),
                 FTDrawer.label_delimiter,
                 "node-label",

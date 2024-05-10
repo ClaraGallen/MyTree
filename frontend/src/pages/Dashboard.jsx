@@ -278,9 +278,13 @@ export default function TreeTest() {
     useEffect(() => {
 
         if (!alone) {
+
+            const svgWidth = window.innerWidth * 0.95; // Définir la largeur de l'élément SVG
+            const svgHeight = window.innerHeight * 1; // Définir la hauteur de l'élément SVG
+
             const svg = d3.select("#tree-here").append("svg")
-                .attr("width", document.body.offsetWidth)
-                .attr("height", document.documentElement.clientHeight);
+            .attr("width", svgWidth)
+            .attr("height", svgHeight);
             
             let FT = new FamilyTree(data, svg);
             FT.draw();
@@ -337,12 +341,19 @@ export default function TreeTest() {
     const infoPerson = (event) => {
         const personData = datas.persons[localStorage.getItem('id_tmp')];
 
+        const birthdayDate = personData.birth ? new Date(personData.birth) : null;
+        const deathdayDate = personData.death ? new Date(personData.death) : null;
+
+        const formattedBirthday = birthdayDate ? birthdayDate.toISOString().substring(0, 10) : "";
+        const formattedDeathday = deathdayDate ? deathdayDate.toISOString().substring(0, 10) : "";
+
+        
         setInfoPP({
             id: personData.id,
             prenom: personData.prenom,
             nom: personData.nom,
-            birthday: personData.birth,
-            deathday: personData.death,
+            dateNaissance: formattedBirthday,
+            dateDeces: formattedDeathday,
             tel: personData.tel,
             adresse: personData.adresse,
             email: personData.email,
@@ -353,6 +364,9 @@ export default function TreeTest() {
                 top: event.pageY - 10 // Ajoute un décalage de 10px vers le haut
             }
         });
+        
+        console.log(infoPP);
+
     };
 
 
@@ -417,17 +431,29 @@ export default function TreeTest() {
         }
     }
 
+
     const updateMember = async (idMember) => {
-
-        console.log(infoPP);
-
+        // Formater la date de naissance si elle est présente
+        const formattedBirthday = infoPP.dateNaissance ? new Date(infoPP.dateNaissance) : null;
+        // Formater la date de décès si elle est présente
+        const formattedDeathday = infoPP.dateDeces ? new Date(infoPP.dateDeces) : null;
+    
+        // Créer un objet contenant les données à envoyer
+        const requestData = {
+            ...infoPP,
+            dateNaissance: formattedBirthday,
+            dateDeces: formattedDeathday
+        };
+    
         try {
-            const response = await axios.patch(`/people/updatePerson/${idMember}`, infoPP);
+            const response = await axios.patch(`/people/updatePerson/${idMember}`, requestData);
+            console.log("Membre mis à jour avec succès:", response.data);
         } catch (error) {
-            console.log("erreur pendant la mise à jour du membre: " + error);
+            console.log("Erreur pendant la mise à jour du membre:", error);
             setError(error);        
         }
-    }
+    };
+    
 
     const deleteMember = async (id) => {
         
@@ -485,7 +511,7 @@ export default function TreeTest() {
                                     <input
                                     type="date"
                                     name="birthday"
-                                    value={infoPP.birthday ? infoPP.birthday.substring(0, 10) : ""}
+                                    value={infoPP.dateNaissance}
                                     onChange={changePP}
                                     />
                                     <br />
@@ -493,7 +519,7 @@ export default function TreeTest() {
                                     <input
                                     type="date"
                                     name="deathday"
-                                    value={infoPP.deathday ? infoPP.deathday.substring(0, 10) : ""}
+                                    value={infoPP.dateDeces}
                                     onChange={changePP}
                                     />
                                     <br />
@@ -603,7 +629,7 @@ export default function TreeTest() {
                                                 <strong>(</strong>
                                                 <input
                                                     type="date"
-                                                    value={conjoint.dateUnion ? conjoint.dateUnion.substring(0, 10) : ""} // Mettre la date par défaut si disponible
+                                                    value={conjoint.dateUnion} // Mettre la date par défaut si disponible
                                                     onChange={(e) => {
                                                         const newConjoints = [...linkPP.conjoints];
                                                         newConjoints[index] = { ...conjoint, dateUnion: e.target.value };
@@ -615,7 +641,7 @@ export default function TreeTest() {
                                                 <strong> - </strong>
                                                 <input
                                                     type="date"
-                                                    value={conjoint.dateSeparation ? conjoint.dateSeparation.substring(0, 10) : ""} // Mettre la date par défaut si disponible
+                                                    value={conjoint.dateSeparation} // Mettre la date par défaut si disponible
                                                     onChange={(e) => {
                                                         const newConjoints = [...linkPP.conjoints];
                                                         newConjoints[index] = { ...conjoint, dateSeparation: e.target.value };
