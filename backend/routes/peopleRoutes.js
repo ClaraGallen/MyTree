@@ -6,13 +6,6 @@ router.get("/test", require("../controllers/peopleController").test);
 router.get("/:id", require("../controllers/peopleController").getPerson);
 router.post(
   "/addRelation/:id?",
-  (req, res, next) => {
-    if (req.body.image || req.files) {
-      upload.single("image")(req, res, next);
-    } else {
-      next();
-    }
-  },
   require("../controllers/peopleController").addRelation
 );
 router.post(
