@@ -5,6 +5,7 @@ const {
   updatePerson,
 } = require("../utils/personUtils");
 const mongoose = require("mongoose");
+const { deleteFile, dir } = require("../utils/imageUtils");
 
 const handleAddRelation = async (personId, personToAddData) => {
   const session = await mongoose.startSession();
@@ -209,6 +210,10 @@ const handleGetRelation = async (personId1, personId2) => {
 };
 
 const handleUpdatePerson = async (personId, personToUpdateData) => {
+  const person = await getPersonById(personId);
+  if (person.photo && personToUpdateData.photo) {
+    deleteFile(`${dir}/${person.photo}`);
+  }
   const updatedPerson = await updatePerson(personId, personToUpdateData);
   return updatedPerson._id;
 };
@@ -337,7 +342,10 @@ const handleDeletePerson = async (personId) => {
       await partner.save({ session });
     }
 
+    const photo = person.photo;
     await person.deleteOne({ session });
+    deleteFile(`${dir}/${photo}`);
+
     await session.commitTransaction();
     return person;
   } catch (err) {

@@ -6,6 +6,7 @@ router.get("/test", require("../controllers/peopleController").test);
 router.get("/:id", require("../controllers/peopleController").getPerson);
 router.post(
   "/addRelation/:id?",
+  upload.single("photo"),
   require("../controllers/peopleController").addRelation
 );
 router.post(
@@ -18,6 +19,7 @@ router.get(
 );
 router.patch(
   "/updatePerson/:id?",
+  upload.single("photo"),
   require("../controllers/peopleController").updateRelationController
 );
 router.delete(

@@ -112,6 +112,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "nom": "blaaa",
     "prenom": "bou",
     "sexe": "Homme",
+    "photo": "urlPhoto",
     "dateNaissance": "08/06/2000",
     "dateDeces": "",
     "professions": "Prof",
@@ -191,7 +192,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   {
     "nom": "Doe",
     "prenom": "John",
-    "adresse": "123 Main St"
+    "adresse": "123 Main St",
+    "photo": "nouveau urlPhoto" // Cette action supprime l'ancienne image et ajoute la nouvelle
   }
   ```
 
