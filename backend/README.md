@@ -342,7 +342,7 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **prenom** : Prénom de la personne (obligatoire).
 - **email** : Email de la personne (obligatoire).
 - **sexe** : Genre de la personne, 'Homme' ou 'Femme' (obligatoire).
-- **photo** : Lien vers une photo de la personne (facultatif).
+- **photo** : Nom de la photo de la personne (facultatif).
 - **dateNaissance** : Date de naissance de la personne (facultative).
 - **dateDeces** : Date de décès de la personne (facultative).
 - **professions** : Liste des professions de la personne (facultatif).

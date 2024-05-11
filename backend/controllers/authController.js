@@ -13,6 +13,7 @@ const registerUser = async (req, res, next) => {
   let person, user;
   try {
     const { email, password } = req.body;
+    let data = req.body;
     if (!email) {
       res.status(400);
       throw new Error("L'adresse e-mail est requise");
@@ -29,7 +30,7 @@ const registerUser = async (req, res, next) => {
     }
     const passwordHash = await hashPassowrd(password);
     // creation des enrégistrements
-    const person = await addPerson(req.body);
+    const person = await addPerson(data);
     if (!person) {
       throw new Error("Erreur lors de l'ajout de la personne");
     }

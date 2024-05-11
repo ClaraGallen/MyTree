@@ -14,11 +14,11 @@ const deleteFile = (dir) => {
   try {
     fs.unlinkSync(dir);
     console.log("File deleted!");
-    return true;
+    return true; // File existed and was deleted
   } catch (error) {
     if (error.code === "ENOENT") {
       console.error("File does not exist: ", dir);
-      return false;
+      return false; // File does not exist
     } else {
       console.error("Error deleting file: ", error);
       return false;
@@ -28,14 +28,14 @@ const deleteFile = (dir) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    // Utiliser le chemin absolu pour la destination
     cb(null, dir);
   },
   filename: function (req, file, cb) {
-    if (!req.userId) {
-      cb(new Error("User not authenticated!"), null);
-    } else {
-      cb(null, req.userId);
-    }
+    const safeDate = new Date().toISOString().replace(/:/g, "-");
+    const filename = safeDate + "-" + file.originalname;
+    req.body.photo = filename;
+    cb(null, filename);
   },
 });
 
