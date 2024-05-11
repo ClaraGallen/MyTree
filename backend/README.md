@@ -237,6 +237,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "personId": "identifiantUniquePersonne"
   }
   ```
+- **Remarque** : Après la suppression, la photo de l'utilisateur sera également supprimée.
 
 ## Importation/Exportation de Données
 
