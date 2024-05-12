@@ -90,18 +90,159 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Changer de Rôle
 
-- **Endpoint** : `PATCH /users/{userId}/role`
-- **Description** : Changer le rôle d'un utilisateur.
-- **Entrée** :
+### Supprimer un Utilisateur
+
+- **Endpoint** : `DELETE /delete/:email`
+- **Description** : Supprime un utilisateur de la base de données en utilisant son email.
+- **Paramètres** :
+  - `email` : L'email de l'utilisateur à supprimer.
+- **Entrée** : Aucune.
+
+### Lister les Utilisateurs
+
+- **Endpoint** : `GET /users/list`
+- **Description** : Récupère une liste de tous les utilisateurs.
+- **Entrée** : Aucune.
+- **Sortie** :
+
+  ```json
+  [
+    {
+      "_id": "6637f9de212a5dd35f768959",
+      "email": "test1@gmail.com",
+      "role": "user",
+      "status": "accepte",
+      "createdAt": "2024-05-05T21:27:58.559Z",
+      "updatedAt": "2024-05-05T21:27:58.559Z",
+      "__v": 0
+    },
+    {
+      "_id": "6638a81fc8ab1e33178efbbc",
+      "email": "test2@gmail.com",
+      "role": "user",
+      "status": "refuse",
+      "person": "6638a81fc8ab1e33178efbba",
+      "createdAt": "2024-05-06T09:51:27.388Z",
+      "updatedAt": "2024-05-08T16:28:24.980Z",
+      "__v": 0
+    }
+    // Autres utilisateurs...
+  ]
+  ```
+
+- **Endpoint supplémentaire** : `GET /users/list/:status`
+- **Description** : Récupère une liste des utilisateurs filtrés par leur statut.
+- **Paramètres** :
+  - `status` : Le statut des utilisateurs à lister (ex. actif, inactif).
+- **Sortie** :
+  ```json
+  [
+    {
+      "_id": "6637f9de212a5dd35f768959",
+      "email": "test1@gmail.com",
+      "role": "user",
+      "status": "en attente",
+      "person": "6638a81fc8ab1e33178e789a",
+      "createdAt": "2024-05-05T21:27:58.559Z",
+      "updatedAt": "2024-05-05T21:27:58.559Z",
+      "__v": 0
+    },
+    {
+      "_id": "6638a81fc8ab1e33178efbbc",
+      "email": "test2@gmail.com",
+      "role": "user",
+      "status": "en attente",
+      "person": "6638a81fc8ab1e33178efbba",
+      "createdAt": "2024-05-06T09:51:27.388Z",
+      "updatedAt": "2024-05-08T16:28:24.980Z",
+      "__v": 0
+    }
+    // Autres utilisateurs...
+  ]
+  ```
+
+### Valider les Informations d'un Utilisateur
+
+- **Endpoint** : `GET /valid/info/:id`
+- **Description** : Récupérer le profil d'un utilisateur à travers son ID.
+- **Paramètres** :
+  - `id` : ID de l'utilisateur.
+- **Entrée** : Aucune.
+- **Sortie** :
+
   ```json
   {
-    "newRole": "admin"
+    "_id": "6640c69870d013fff60a4ab0",
+    "email": "s1@exp.com",
+    "role": "admin",
+    "status": "accepte",
+    "person": {
+      "_id": "6640c69870d013fff60a4aae",
+      "nom": "Jean",
+      "prenom": "Dupont",
+      "email": "s1@exp.com",
+      "sexe": "Homme",
+      "photo": "2024-05-12T13-39-36.327Z-frame.png",
+      "dateNaissance": "1980-01-01T00:00:00.000Z",
+      "dateDeces": null,
+      "professions": "Menuisier",
+      "adresse": "123 rue de l'Exemple",
+      "tel": "0123456789",
+      "conjoints": [],
+      "enfants": [],
+      "createdAt": "2024-05-12T13:39:36.666Z",
+      "updatedAt": "2024-05-12T13:39:36.666Z",
+      "__v": 0
+    },
+    "createdAt": "2024-05-12T13:39:36.689Z",
+    "updatedAt": "2024-05-12T13:47:18.556Z",
+    "__v": 0
   }
   ```
+
+- **Endpoint supplémentaire** : `PUT /valid/:id/:status`
+- **Description** : Met à jour le statut d'un utilisateur.
+- **Paramètres** :
+  - `id` : ID de l'utilisateur dont le statut doit être mis à jour.
+  - `status` : Nouveau statut de l'utilisateur (ex. actif, inactif).
+- **Entrée** : Aucune.
 - **Sortie** :
   ```json
   {
-    "message": "Rôle utilisateur mis à jour avec succès"
+    "result": {
+      "_id": "6640c69870d013fff60a4ab0",
+      "email": "s1@exp.com",
+      "role": "user",
+      "status": "accepte", //Le status a été mis à jour
+      "person": "6640c69870d013fff60a4aae",
+      "createdAt": "2024-05-12T13:39:36.689Z",
+      "updatedAt": "2024-05-12T14:20:33.462Z",
+      "__v": 0
+    }
+  }
+  ```
+
+### Partager les Ressources d'un Utilisateur
+
+- **Endpoint** : `PUT /share/:id/:role`
+- **Description** : Attribue ou met à jour le rôle d'un utilisateur concernant l'accès aux ressources partagées.
+- **Paramètres** :
+  - `id` : ID de l'utilisateur à qui le rôle est attribué.
+  - `role` : Rôle à attribuer à l'utilisateur (ex. admin, user).
+- **Entrée** : Aucune.
+- **Sortie** :
+  ```json
+  {
+    "result": {
+      "_id": "6640c69870d013fff60a4ab0",
+      "email": "s1@exp.com",
+      "role": "admin", //Le role a été mis à jour
+      "status": "accepte",
+      "person": "6640c69870d013fff60a4aae",
+      "createdAt": "2024-05-12T13:39:36.689Z",
+      "updatedAt": "2024-05-12T14:20:33.462Z",
+      "__v": 0
+    }
   }
   ```
 
