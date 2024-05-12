@@ -88,27 +88,35 @@ const loginUser = async (req, res, next) => {
     }
     const person = await getPersonByEmail(user.email);
     const personId = person._id;
-    if (!user) {
-      res.status(404);
-      throw new Error("Utilisateur introuvable");
-    }
+    const role = user.role;
+    const status = user.status;
     const hashed = user.passwordHash;
     const match = await comparePassword(password, hashed);
     if (match) {
-      return jwt.sign(
-        { userId: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: tokenExpiry },
-        (err, token) => {
-          if (err) {
-            console.error(err);
-            throw new Error(
-              "Erreur lors de la génération du jeton, veuillez réessayer ultérieurement"
-            );
+      if (status === "accepte") {
+        return jwt.sign(
+          { userId: user._id },
+          process.env.JWT_SECRET,
+          { expiresIn: tokenExpiry },
+          (err, token) => {
+            if (err) {
+              console.error(err);
+              throw new Error(
+                "Erreur lors de la génération du jeton, veuillez réessayer ultérieurement"
+              );
+            }
+            return res.cookie("token", token).json({ token, personId, role });
           }
-          return res.cookie("token", token).json({ token, personId });
-        }
-      );
+        );
+      } else if (status === "en attente") {
+        throw new Error(
+          "Votre demande d'inscription est en attente de validation"
+        );
+      } else if (status === "refuse") {
+        throw new Error("Votre demande d'inscription a été refusée");
+      } else {
+        throw new Error("Erreur de statut de l'utilisateur");
+      }
     } else {
       res.status(401);
       throw new Error("Adresse e-mail ou mot de passe invalide");
