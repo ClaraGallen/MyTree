@@ -403,7 +403,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 exemple de sortie:
 
-````json
+```json
 {
   "_id": "60d6c47e4094a45b0468d7c9",
   "nom": "Dupont",
@@ -435,7 +435,8 @@ exemple de sortie:
       "idEnfant": "60d6c47e4094a45b0468d7c5"
     }
   ]
-}```
+}
+```
 
 ## Statistiques (En cours de développement)
 
@@ -548,4 +549,7 @@ Les mots de passe ne sont jamais stockés en clair dans la base de données. Seu
 ]
 }
 ```
-````
+
+```
+
+```
