@@ -56,7 +56,27 @@
 .icon {
     width: 32px; 
     height: 32px; 
-    margin-top: 12px; 
+    margin-bottom: 12px; 
+}
+
+/* Statistiques */
+
+/* styles.css */
+
+.statistics-container {
+    font-family: Arial, sans-serif;
+    color: #888;
+    margin-left: 60px;
+}
+
+.statistics-container h2 {
+    font-size: 14px;
+}
+
+.statistics-container p {
+    font-size: 12px;
+    text-align: left;
+
 }
 
 
@@ -86,6 +106,20 @@
 
 .presentation {
     justify-content: center;
+}
+
+.img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.action {
+    background-color: transparent;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
 }
 
 #alone {

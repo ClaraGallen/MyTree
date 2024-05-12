@@ -112,6 +112,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "nom": "blaaa",
     "prenom": "bou",
     "sexe": "Homme",
+    "photo": "urlPhoto",
     "dateNaissance": "08/06/2000",
     "dateDeces": "",
     "professions": "Prof",
@@ -191,7 +192,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   {
     "nom": "Doe",
     "prenom": "John",
-    "adresse": "123 Main St"
+    "adresse": "123 Main St",
+    "photo": "nouveau urlPhoto" // Cette action supprime l'ancienne image et ajoute la nouvelle
   }
   ```
 
@@ -206,7 +208,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 ### Suppression de Relations Familiales
 
 - **Endpoint** : `DELETE /people/deleteRelation/{id1}/{id2?}`
-- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour des personnes identifiées par l'ID. La relation est définie du point de vue de la personne `id1` par rapport à la personne `id2`. Par exemple, si la relation est "enfant", cela signifie que la personne `id1` est l'enfant de la personne `id2`.
+- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour des personnes identifiées par l'ID.
 - **Paramètres** :
   - `id1` : ID de la personne 1.
   - `id2` (optionnel) : ID de la personne 2. Si non spécifié, l'ID de la personne actuellement connectée sera utilisé.
@@ -242,7 +244,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 - **Endpoint** : `GET /people/{id}`
 - **Description** : Exporter les informations d'une personne à travers son id.
-- **Entrée** : Aucune, authentification requise.
+- **Entrée** : Aucune.
 - **Sortie** : Fichier JSON de l'arbre généalogique.
 
 exemple de sortie:
@@ -254,7 +256,7 @@ exemple de sortie:
   "prenom": "Jean",
   "email": "jean.dupont@example.com",
   "sexe": "Homme",
-  "photo": "https://example.com/photo.jpg",
+  "photo": "photo.jpg",
   "dateNaissance": "1980-01-01T00:00:00.000Z",
   "dateDeces": null,
   "professions": "Ingénieur",
@@ -278,31 +280,10 @@ exemple de sortie:
     {
       "idEnfant": "60d6c47e4094a45b0468d7c5"
     }
-  ],
-  "createdAt": "2022-01-01T00:00:00.000Z",
-  "updatedAt": "2022-01-01T00:00:00.000Z"
+  ]
 }```
 
-### Exporter l'Arbre
-
-- **Endpoint** : `GET /export`
-- **Description** : Exporter l'arbre généalogique au format JSON.
-- **Entrée** : Aucune, authentification requise.
-- **Sortie** : Fichier JSON de l'arbre généalogique.
-
-### Importer l'Arbre
-
-- **Endpoint** : `POST /import`
-- **Description** : Importer un arbre généalogique à partir d'un fichier JSON.
-- **Entrée** : Fichier JSON de l'arbre généalogique.
-- **Sortie** :
-  ```json
-  {
-    "message": "Arbre importé avec succès"
-  }
-````
-
-## Statistiques
+## Statistiques (En cours de développement)
 
 ### Obtenir les Statistiques
 
@@ -363,7 +344,7 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **prenom** : Prénom de la personne (obligatoire).
 - **email** : Email de la personne (obligatoire).
 - **sexe** : Genre de la personne, 'Homme' ou 'Femme' (obligatoire).
-- **photo** : Lien vers une photo de la personne (facultatif).
+- **photo** : Nom de la photo de la personne (facultatif).
 - **dateNaissance** : Date de naissance de la personne (facultative).
 - **dateDeces** : Date de décès de la personne (facultative).
 - **professions** : Liste des professions de la personne (facultatif).
@@ -413,3 +394,4 @@ Les mots de passe ne sont jamais stockés en clair dans la base de données. Seu
 ]
 }
 ```
+````

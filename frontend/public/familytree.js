@@ -403,11 +403,20 @@ class Person extends FTNode {
     };
 
     get_name() {
-        return this.data.name;
+
+        return this.data.prenom + " " + this.data.nom;
     };
 
     get_birth_year() {
-        return this.data.birthyear;
+
+        var anneeNaissance = "";
+
+        if (this.data.birth) {
+            anneeNaissance = new Date(this.data.birth);
+            anneeNaissance = anneeNaissance.getFullYear();
+        }
+
+        return anneeNaissance;
     };
 
     get_birth_place() {
@@ -415,7 +424,14 @@ class Person extends FTNode {
     };
 
     get_death_year() {
-        return this.data.deathyear;
+
+        var aneeDeces = "";
+
+        if (this.data.death) {
+            aneeDeces = new Date(this.data.death);
+            aneeDeces = aneeDeces.getFullYear();
+        }
+        return aneeDeces;
     };
 
     get_death_place() {

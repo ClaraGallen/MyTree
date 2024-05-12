@@ -1,6 +1,7 @@
 /* global d3, FamilyTree, data, setData*/
 
 import React, { useEffect, useState } from 'react';
+
 import "./styles/Tree.css";
 
 import plus from "./img/plus.png";
@@ -45,44 +46,25 @@ var persons_function = async () => {
 
         try {
             const response = await axios.get(`/people/${list_member[0]}`);
-            // console.log(response.data._id);
-
-            var dateNaissance = "?";
-            var dateDeces = "?";
-    
-            if (response.data.dateNaissance != null) {
-                dateNaissance = new Date(response.data.dateNaissance);
-                dateNaissance = dateNaissance.getFullYear();
-            }
-            
-            if (response.data.dateDeces != null) {
-                dateDeces = new Date(response.data.dateDeces);
-                dateDeces = dateDeces.getFullYear();
-            }
         
             const parent = {
                 id: response.data._id,
                 prenom: response.data.prenom,
                 nom: response.data.nom,
-                name: response.data.prenom + " " + response.data.nom,
-                birthyear: dateNaissance,
-                deathyear: dateDeces,
                 birth: response.data.dateNaissance || "",
                 death: response.data.dateDeces || "",
+                sexe: response.data.sexe,
                 children: [],
                 parents: [],
-                sexe: response.data.sexe,
                 own_unions: [],
-                conjoints: []
-
-                // Ajouter les autres infos
+                conjoints: [],
+                profession: response.data.profession || "",
+                adresse: response.data.adresse || "",
+                tel: response.data.tel || "",
+                email: response.data.email || "",
+                photo: response.data.photo || ""
             };
             
-            parent.profession = response.data.profession ?? "";
-            parent.adresse = response.data.adresse ?? "";
-            parent.tel = response.data.tel ?? "";
-            parent.email = response.data.email ?? "";
-            parent.photo = response.data.photo ?? "";
 
             if (response.data.enfants.length !== 0) {
                 response.data.enfants.forEach(enfant => {
@@ -129,14 +111,14 @@ var persons_function = async () => {
             };
         
             if (response.data.parents) {
-                if ("pere" in response.data.parents) {
+                if (response.data.parents.pere) {
                     const pereValue = response.data.parents.pere;
                     if (!list_member.includes(pereValue) && !list_member_add.includes(pereValue)) {
                         list_member.push(pereValue)};
                         parent.parents.push(pereValue);
 
                 }
-                if ("mere" in response.data.parents) {
+                if (response.data.parents.mere) {
                     const mereValue = response.data.parents.mere;
                     if (!list_member.includes(mereValue) && !list_member_add.includes(mereValue)) {
                         list_member.push(mereValue)};
@@ -187,7 +169,7 @@ var persons_function = async () => {
             console.error('Error:', error);
             localStorage.removeItem('personId');
             localStorage.removeItem('token');
-            window.location('/login');
+            window.location.href = '/login'; // Redirection vers la page de connexion
         }
 
     };
@@ -279,12 +261,12 @@ export default function TreeTest() {
 
         if (!alone) {
 
-            const svgWidth = window.innerWidth * 0.95; // Définir la largeur de l'élément SVG
-            const svgHeight = window.innerHeight * 1; // Définir la hauteur de l'élément SVG
-
+            // const svgWidth = window.innerWidth * 0.95; // Définir la largeur de l'élément SVG
+            // const svgHeight = window.innerHeight * 1; // Définir la hauteur de l'élément SVG
+        
             const svg = d3.select("#tree-here").append("svg")
-            .attr("width", svgWidth)
-            .attr("height", svgHeight);
+                .attr("width", document.body.offsetWidth * 0.95)
+                .attr("height", document.documentElement.clientHeight * 1);
             
             let FT = new FamilyTree(data, svg);
             FT.draw();
@@ -298,10 +280,53 @@ export default function TreeTest() {
     
 
     useEffect(() => {
+        if (!isLoading)
         localStorage.setItem('selectedIcon', "pointer");
         changeIcon();
-    }, [datas]);
+        display_statistics();
+    }, [isLoading]);
 
+
+    function calculateAverageChildrenPerUnion() {
+        let totalChildrenCount = 0;
+        let totalUnionCount = 0;
+    
+        Object.keys(datas.unions).forEach(unionKey => {
+            const union = datas.unions[unionKey];
+            totalChildrenCount += union.children.length;
+            totalUnionCount++;
+        });
+    
+        const averageChildrenPerUnion = totalChildrenCount / totalUnionCount;
+        return averageChildrenPerUnion.toFixed(2);
+    }
+    
+
+    function display_statistics() {
+
+        if (datas){
+            const statHereElement = document.getElementById('stat-here');
+            const personsArray = Object.values(datas.persons);
+            const hommesCount = personsArray.filter(person => person.sexe === 'Homme').length;
+            const femmesCount = personsArray.filter(person => person.sexe === 'Femme').length;
+
+            const totalPersons = hommesCount + femmesCount;
+            const averageChildren = calculateAverageChildrenPerUnion();
+        
+            const statisticsElement = document.createElement('div');
+            statisticsElement.classList.add('statistics-container');
+            
+            statisticsElement.innerHTML = `
+                <h2>Statistiques de la famille</h2>
+                <p>Hommes: ${hommesCount}</p>
+                <p>Femmes: ${femmesCount}</p>
+                <p>Total: ${totalPersons}</p>
+                <p>Nombre moyen d'enfants par union: ${averageChildren}</p>
+            `;
+            statHereElement.appendChild(statisticsElement);
+        }
+    }
+    
 
     function changeIcon() {
         // Fonction pour obtenir le chemin de l'image en fonction de l'icône
@@ -341,19 +366,12 @@ export default function TreeTest() {
     const infoPerson = (event) => {
         const personData = datas.persons[localStorage.getItem('id_tmp')];
 
-        const birthdayDate = personData.birth ? new Date(personData.birth) : null;
-        const deathdayDate = personData.death ? new Date(personData.death) : null;
-
-        const formattedBirthday = birthdayDate ? birthdayDate.toISOString().substring(0, 10) : "";
-        const formattedDeathday = deathdayDate ? deathdayDate.toISOString().substring(0, 10) : "";
-
-        
         setInfoPP({
             id: personData.id,
             prenom: personData.prenom,
             nom: personData.nom,
-            dateNaissance: formattedBirthday,
-            dateDeces: formattedDeathday,
+            dateNaissance: personData.birth,
+            dateDeces: personData.death,
             tel: personData.tel,
             adresse: personData.adresse,
             email: personData.email,
@@ -364,9 +382,6 @@ export default function TreeTest() {
                 top: event.pageY - 10 // Ajoute un décalage de 10px vers le haut
             }
         });
-        
-        console.log(infoPP);
-
     };
 
 
@@ -376,6 +391,7 @@ export default function TreeTest() {
         setLinkPP({
             prenom: personData.prenom,
             nom: personData.nom,
+            photo: personData.photo,
             children: personData.children.map(child => data.persons[child]),
             parents: personData.parents.map(parent => data.persons[parent]),
             conjoints: personData.conjoints.map(conjoint => conjoint),
@@ -413,8 +429,52 @@ export default function TreeTest() {
 
     const changePP = (e) => {
         const { name, value } = e.target;
-        setInfoPP({ ...infoPP, [name]: value });
+        // Si le champ de date est modifié, formater la date au format requis
+        if (name === "birthday" || name === "deathday") {
+            // Mettre à jour l'état avec la date formatée
+            setInfoPP(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
+        } else {
+            // Si d'autres champs sont modifiés, mettre à jour l'état directement
+            setInfoPP(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
+        }
     };
+
+    const changeLink = (e, index) => {
+        const { name, value } = e.target;
+    
+        // Vérifier le nom pour déterminer quelle propriété est mise à jour
+        if (name === "union") {
+            setLinkPP(prevState => ({
+                ...prevState,
+                conjoints: prevState.conjoints.map((conjoint, i) => {
+                    if (i === index) {
+                        return { ...conjoint, dateUnion: value };
+                    } else {
+                        return conjoint;
+                    }
+                })
+            }));
+        } else if (name === "divorce") {
+            setLinkPP(prevState => ({
+                ...prevState,
+                conjoints: prevState.conjoints.map((conjoint, i) => {
+                    if (i === index) {
+                        return { ...conjoint, dateDivorce: value };
+                    } else {
+                        return conjoint;
+                    }
+                })
+            }));
+        }
+    }
+    
+    
 
 
     const deleteRelation = async (idMember) => {
@@ -430,7 +490,6 @@ export default function TreeTest() {
             setError(error);
         }
     }
-
 
     const updateMember = async (idMember) => {
         // Formater la date de naissance si elle est présente
@@ -453,13 +512,45 @@ export default function TreeTest() {
             setError(error);        
         }
     };
-    
 
-    const deleteMember = async (id) => {
-        
+    const deleteMember = async () => {
+
+        const id = localStorage.getItem('id_tmp');
+
+        try {
+            await axios.delete(`/people/deletePerson/${id}`);
+            
+        } catch (error) {
+            console.log(error);
+            setError(error);
+        }        
     }
     
+    const updateRelation = async (idConjoint) => {
+        const person = datas.persons[localStorage.getItem('id_tmp')];
 
+        const dateUnion = linkPP.dateUnion ? new Date(linkPP.dateUnion) : null;
+        const dateSeparation = linkPP.dateSeparation ? new Date(linkPP.dateSeparation) : null;
+    
+        const requestData = {
+            dateUnion: dateUnion,
+            dateSeparation: dateSeparation,
+            relation: "conjoint"
+        };
+
+        try {
+
+            console.log(requestData);
+            await deleteRelation(idConjoint);
+            await axios.post(`/people/addRelationByEmail/${person.email}/${idConjoint}`, requestData);
+            
+        } catch (error) {
+            console.log(error);
+            setError(error);
+        }
+
+
+    }
 
     return (
         <div>
@@ -483,10 +574,21 @@ export default function TreeTest() {
                 <div>
                     <div id="tree-here" onClick={handleNodeClick}></div>
                     <div className="icon-container" id="icon-here" onClick={changeIcon}></div>
+                    <div  id="stat-here"></div>
                     {(infoPP || linkPP)&& (
                         <div className="tooltip" style={{ left: ((infoPP && infoPP.position.left) || (linkPP && linkPP.position.left)),
                                                         top: ((infoPP && infoPP.position.top) || (linkPP && linkPP.position.top)) }}>
                             <button onClick={() => {setInfoPP(null); setLinkPP(null)}}>X</button>
+                            <br />
+                            {error && <p className="error-message">{error}</p>}
+                            {infoPP && infoPP.photo && <img
+                                src={`/people/uploads/${infoPP.photo}`}
+                                alt="personne"
+                            />}
+                            {linkPP && linkPP.photo && <img
+                                src={`/people/uploads/${linkPP.photo}`}
+                                alt="personne"
+                            />}
                             <br />
                             <input
                                 type="text"
@@ -510,16 +612,16 @@ export default function TreeTest() {
                                     Né le :
                                     <input
                                     type="date"
-                                    name="birthday"
-                                    value={infoPP.dateNaissance}
+                                    name="dateNaissance"
+                                    value={infoPP.dateNaissance ? infoPP.dateNaissance.substring(0, 10) : ""}
                                     onChange={changePP}
                                     />
                                     <br />
                                     Mort le :
                                     <input
                                     type="date"
-                                    name="deathday"
-                                    value={infoPP.dateDeces}
+                                    name="dateDeces"
+                                    value={infoPP.dateDeces ? infoPP.dateDeces.substring(0, 10) : ""}
                                     onChange={changePP}
                                     />
                                     <br />
@@ -573,19 +675,19 @@ export default function TreeTest() {
                                         <div key={index}>
                                             <input
                                                 type="text"
-                                                value={child.name}
+                                                value={child.prenom + " " + child.nom}
                                                 onChange={(e) => {
                                                     const newChildren = [...linkPP.children];
                                                     newChildren[index] = e.target.value;
                                                     setLinkPP({ ...linkPP, children: newChildren });
                                                 }}
                                             />
-                                            <button onClick={() => {
+                                            <button className="action"onClick={() => {
                                                 deleteRelation(child.id);
                                                 const newChildren = [...linkPP.children];
                                                 newChildren.splice(index, 1); // Supprime l'enfant au clic du bouton "X"
                                                 setLinkPP({ ...linkPP, children: newChildren });
-                                            }}>X</button>
+                                            }}>❌</button>
                                         </div>
                                     ))}
                                     <div>
@@ -595,19 +697,19 @@ export default function TreeTest() {
                                             <div key={index}>
                                                 <input
                                                     type="text"
-                                                    value={parent.name}
+                                                    value={parent.prenom + " " + parent.nom}
                                                     onChange={(e) => {
                                                         const newParents = [...linkPP.parents];
                                                         newParents[index] = e.target.value;
                                                         setLinkPP({ ...linkPP, parents: newParents });
                                                     }}
                                                 />
-                                                <button onClick={() => {
+                                                <button className="action" onClick={() => {
                                                     deleteRelation(parent.id);
                                                     const newParents = [...linkPP.parents];
                                                     newParents.splice(index, 1); // Supprime le parent au clic du bouton "X"
                                                     setLinkPP({ ...linkPP, parents: newParents });
-                                                }}>X</button>
+                                                }}>❌</button>
                                             </div>
                                         ))}
                                     </div>
@@ -618,7 +720,7 @@ export default function TreeTest() {
                                             <div key={index}>
                                                 <input
                                                     type="text"
-                                                    value={data.persons[conjoint.idConjoint].name}
+                                                    value={data.persons[conjoint.idConjoint].prenom + " " + data.persons[conjoint.idConjoint].nom}
                                                     onChange={(e) => {
                                                         const newConjoints = [...linkPP.conjoints];
                                                         newConjoints[index] = e.target.value;
@@ -629,11 +731,13 @@ export default function TreeTest() {
                                                 <strong>(</strong>
                                                 <input
                                                     type="date"
-                                                    value={conjoint.dateUnion} // Mettre la date par défaut si disponible
+                                                    name="union"
+                                                    value={conjoint.dateUnion ? new Date(conjoint.dateUnion).toISOString().substring(0, 10) : ""} // Convertir en objet Date et puis en chaîne de caractères ISO
                                                     onChange={(e) => {
                                                         const newConjoints = [...linkPP.conjoints];
                                                         newConjoints[index] = { ...conjoint, dateUnion: e.target.value };
                                                         setLinkPP({ ...linkPP, conjoints: newConjoints });
+                                                        changeLink(e, index)
                                                     }}
                                                     style={{ margin: "0px" }}
     
@@ -641,21 +745,26 @@ export default function TreeTest() {
                                                 <strong> - </strong>
                                                 <input
                                                     type="date"
-                                                    value={conjoint.dateSeparation} // Mettre la date par défaut si disponible
+                                                    name="divorce"
+                                                    value={conjoint.dateSeparation ? new Date(conjoint.dateSeparation).toISOString().substring(0, 10) : ""} // Convertir en objet Date et puis en chaîne de caractères ISO
                                                     onChange={(e) => {
                                                         const newConjoints = [...linkPP.conjoints];
                                                         newConjoints[index] = { ...conjoint, dateSeparation: e.target.value };
                                                         setLinkPP({ ...linkPP, conjoints: newConjoints });
+                                                        changeLink(e, link)
                                                     }}
                                                     style={{ margin: "0px" }}
                                                 />
                                                 <strong>)</strong>
-                                                <button onClick={() => {
+                                                <button className="action" onClick={() => {
+                                                    updateRelation(conjoint.idConjoint)                                                    
+                                                }}>✅</button>
+                                                <button className="action" onClick={() => {
                                                     deleteRelation(conjoint.idConjoint);
                                                     const newConjoints = [...linkPP.conjoints];
                                                     newConjoints.splice(index, 1);
                                                     setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                }}>X</button>
+                                                }}>❌</button>
                                             </div>
                                         ))}
                                     </div>
@@ -668,7 +777,6 @@ export default function TreeTest() {
                                         </div>
                                     )}
                                     <div>
-                                    {error && <p className="error-message">{error}</p>}
                                     </div>
                                 </div>
                             )}

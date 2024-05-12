@@ -42,6 +42,7 @@ export default function Signup() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
+            console.log(photo);
             const response = await axios.post('/auth/register', { email, password: password1, nom, prenom, sexe, photo, dateNaissance, dateDeces, professions, adresse, tel});
             console.log('response: '+response);
             window.location.href = '/login';
@@ -87,7 +88,7 @@ export default function Signup() {
                         </select>
                         <label htmlFor="photo">Photo:</label>
                         <input type="file" id="photo" accept="image/*" onChange={(e) => setPhoto(e.target.files[0])} />
-                        <label htmlFor="dateNaissance">Date de naissnce:</label>
+                        <label htmlFor="dateNaissance">Date de naissance:</label>
                         <input type="date" id="dateNaissance" value={dateNaissance} onChange={(e) => setDateNaissance(e.target.value)} />
                         <label htmlFor="dateDeces">Date de mort:</label>
                         <input type="date" id="dateDeces" value={dateDeces} onChange={(e) => setDateDeces(e.target.value)} />

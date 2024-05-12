@@ -33,11 +33,20 @@ const NewRelationForm = ({ setShowForm }) => {
         }
     });
 
-    const addRelation = async (e) => {
+    const addRelation = async () => {
 
-        e.preventDefault(); // Empêche le comportement par défaut de la soumission du formulaire
+        // e.preventDefault(); // Empêche le comportement par défaut de la soumission du formulaire
 
-        console.log(dataNewRelation);
+        if (
+            dataNewRelation.newPersonData.prenom.trim() === "" ||
+            dataNewRelation.newPersonData.nom.trim() === "" ||
+            dataNewRelation.newPersonData.sexe.trim() === "" ||
+            dataNewRelation.newPersonData.email.trim() === ""
+        ) {
+
+            alert("Veuillez remplir tous les champs obligatoires (Prénom, Nom, Genre, e-mail");
+            return;
+        }
 
         var id = localStorage.getItem("id_tmp");
         const dataRelation = {
@@ -52,13 +61,11 @@ const NewRelationForm = ({ setShowForm }) => {
         try {
             if (dataNewRelation.withExistingPerson) {
                 var idMember = dataNewRelation.personId;
-                console.log("existe deja");
+
                 const response = await axios.post(`/people/addRelationByEmail/${data.persons[idMember].email}/${id}`, dataRelation);
                 console.log("Relation ajoutée avec succès :", response.data);
-                console.log("envoyé : " + data.persons[idMember].email + dataNewRelation.type + id);
 
             } else {
-                console.log("nouvelle personne");
                 // Si c'est une nouvelle personne, envoyez les données de la nouvelle personne avec les informations de la relation
                 const newPersonData = {
                     ...dataNewRelation.newPersonData,
@@ -69,7 +76,7 @@ const NewRelationForm = ({ setShowForm }) => {
                 console.log("Relation ajoutée avec succès :", response.data);
             }
 
-            setShowForm(false);
+            window.location.reload();
 
         } catch (error) {
             console.error("Erreur lors de l'ajout de la relation :", error);
@@ -252,7 +259,7 @@ const NewRelationForm = ({ setShowForm }) => {
                     )}
                 </tbody>
             </table>
-            <button type="submit">Ajouter</button>
+            <button type="button" onClick={() => addRelation()}>Ajouter</button>
         </form>
     );
 }

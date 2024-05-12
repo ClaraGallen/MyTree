@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 // Middleware qui permet de traiter les données de la Request
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(require("cookie-parser")());
 
 // Routes
