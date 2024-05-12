@@ -149,7 +149,7 @@ const NewRelationForm = ({ setShowForm }) => {
                                         console.log(personId);
                                         return (
                                             <option key={personId} value={personId}>
-                                                {data.persons[personId].name}
+                                                {data.persons[personId].prenom + " " + data.persons[personId].nom}
                                             </option>
                                         );
                                     } else {

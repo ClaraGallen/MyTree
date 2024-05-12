@@ -46,6 +46,7 @@ var persons_function = async () => {
 
         try {
             const response = await axios.get(`/people/${list_member[0]}`);
+            console.log(response);
         
             const parent = {
                 id: response.data._id,
@@ -226,6 +227,7 @@ export default function TreeTest() {
     const [isLoading, setIsLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [error, setError] = useState(' ');
+    const [image, setImage] = useState(null);
 
 
 
@@ -315,7 +317,7 @@ export default function TreeTest() {
         
             const statisticsElement = document.createElement('div');
             statisticsElement.classList.add('statistics-container');
-            
+
             statisticsElement.innerHTML = `
                 <h2>Statistiques de la famille</h2>
                 <p>Hommes: ${hommesCount}</p>
@@ -491,27 +493,40 @@ export default function TreeTest() {
         }
     }
 
+
     const updateMember = async (idMember) => {
-        // Formater la date de naissance si elle est présente
-        const formattedBirthday = infoPP.dateNaissance ? new Date(infoPP.dateNaissance) : null;
-        // Formater la date de décès si elle est présente
-        const formattedDeathday = infoPP.dateDeces ? new Date(infoPP.dateDeces) : null;
-    
-        // Créer un objet contenant les données à envoyer
-        const requestData = {
-            ...infoPP,
-            dateNaissance: formattedBirthday,
-            dateDeces: formattedDeathday
-        };
-    
         try {
-            const response = await axios.patch(`/people/updatePerson/${idMember}`, requestData);
+            // Formater la date de naissance si elle est présente
+            const formattedBirthday = infoPP.dateNaissance ? new Date(infoPP.dateNaissance) : null;
+            // Formater la date de décès si elle est présente
+            const formattedDeathday = infoPP.dateDeces ? new Date(infoPP.dateDeces) : null;
+    
+            // Créer un objet FormData pour envoyer les données avec la photo
+            const formData = new FormData();
+            formData.append('nom', infoPP.nom);
+            formData.append('prenom', infoPP.prenom);
+            formData.append('dateNaissance', formattedBirthday);
+            formData.append('dateDeces', formattedDeathday);
+            formData.append('professions', infoPP.professions);
+            formData.append('adresse', infoPP.adresse);
+            formData.append('tel', infoPP.tel);
+            formData.append('email', infoPP.email);
+            formData.append('photo', image); // Ajouter la nouvelle photo
+    
+            // Envoyer la requête PATCH au serveur
+            const response = await axios.patch(`/people/updatePerson/${idMember}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data' // Spécifier le type de contenu multipart/form-data
+                }
+            });
+    
             console.log("Membre mis à jour avec succès:", response.data);
         } catch (error) {
             console.log("Erreur pendant la mise à jour du membre:", error);
-            setError(error);        
+            setError(error);
         }
     };
+    
 
     const deleteMember = async () => {
 
@@ -580,32 +595,42 @@ export default function TreeTest() {
                                                         top: ((infoPP && infoPP.position.top) || (linkPP && linkPP.position.top)) }}>
                             <button onClick={() => {setInfoPP(null); setLinkPP(null)}}>X</button>
                             <br />
-                            {error && <p className="error-message">{error}</p>}
-                            {infoPP && infoPP.photo && <img
-                                src={`/people/uploads/${infoPP.photo}`}
-                                alt="personne"
-                            />}
-                            {linkPP && linkPP.photo && <img
-                                src={`/people/uploads/${linkPP.photo}`}
-                                alt="personne"
-                            />}
-                            <br />
-                            <input
-                                type="text"
-                                name="prénom"
-                                value={infoPP ? infoPP.prenom : linkPP.prenom}
-                                onChange={changePP}
-                                style={{ fontSize: "18px", marginLeft: "0px", textAlign: "center" }}
-                            />
-                            <br />
-                            <input
-                                type="text"
-                                name="nom"
-                                value={infoPP ? infoPP.nom : linkPP.nom}
-                                onChange={changePP}
-                                style={{ fontSize: "18px", textTransform: "uppercase", marginLeft: "0px", textAlign: "center" }}
-                            />
-                            <br />
+                            {error && typeof error === 'string' && <p className="error-message">{error}</p>}
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            {infoPP && infoPP.photo && <img
+                                                src={`${axios.defaults.baseURL}/people/uploads/${infoPP.photo}`}
+                                                alt="personne"
+                                                className="img"
+                                            />}
+                                            {linkPP && linkPP.photo && <img
+                                                src={`${axios.defaults.baseURL}/people/uploads/${linkPP.photo}`}
+                                                alt="personne"
+                                                className="img"
+                                            />}
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="prenom"
+                                                value={infoPP ? infoPP.prenom : linkPP.prenom}
+                                                onChange={changePP}
+                                                style={{ fontSize: "18px", marginLeft: "0px", textAlign: "center" }}
+                                            />
+                                            <br />
+                                            <input
+                                                type="text"
+                                                name="nom"
+                                                value={infoPP ? infoPP.nom : linkPP.nom}
+                                                onChange={changePP}
+                                                style={{ fontSize: "18px", textTransform: "uppercase", marginLeft: "0px", textAlign: "center" }}
+                                            />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <br />
                             {infoPP ? (
                                 <div>
@@ -661,6 +686,14 @@ export default function TreeTest() {
                                         placeholder="profession"
                                         value={infoPP.profession}
                                         onChange={changePP}
+                                    />
+                                    <br />
+                                    <label htmlFor="photo">Photo :</label>
+                                    <input
+                                        type="file"
+                                        id="photo"
+                                        accept="image/*"
+                                        onChange={(e) => setImage(e.target.files[0])}
                                     />
                                     <br />
                                     <br />
