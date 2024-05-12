@@ -9,84 +9,71 @@ import "./styles/dialog.css"
 import { Switch, switchClasses } from '@mui/base/Switch';
 import axios from 'axios';
 import { useState } from 'react';
+import Button from '@mui/material/Button';
+
 export default function Dialog(data) {
-
-    // m_id : id de l'utilisateur selctionnée 
-    // setAnchorE1 est une fonction qui permette de naviguer entre Role et status 
-
-
-
-    const handleRefresh = () => {
-        window.location.reload();
-      };
     const [anchorEl, setAnchorEl] = React.useState(null);
     const label = { slotProps: { input: { 'aria-label': 'Demo switch' } } };
-    
-    const [switchStateUser, setSwitchStateUser] = useState(data.user);
+    const [switchStateUser, setSwitchStateUser] = useState(data.user);  // reccupere l'etat initial de l'utilisateur  (format booleen)
     const [switchStateAdmin, setSwitchStateAdmin] = useState(data.admin);
-    const [switchStateActive, setSwitchStateActive] = useState(data.active);
+    const [switchStateActive, setSwitchStateActive] = useState(data.active); // reccupere la status initiale de l'utilisateur (format booleen)
     const [switchStateAttente, setSwitchStateAttente] = useState(data.attente);
     const [switchStateRefuse, setSwitchStateRefuse] = useState(data.refuse);
-    const handleUpdate = async (status) => {
-        try {
-          axios.put(`http://localhost:5000/valid/${data.id}/${status}`);
-        } catch (error) {
-          console.error('Error deleting item:', error);
-        }
-      };
-    
-    const handleStatusSwitchStateActive=()=>{
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popper' : undefined;
+    // open component or close component 
+    const handleClick = (event) => {
+        setAnchorEl(anchorEl ? null : event.currentTarget);
+    };
+    // change user status with switch  
+    const handleStatusSwitchStateActive = () => {
         setSwitchStateActive(true)
         setSwitchStateAttente(false)
         setSwitchStateRefuse(false)
         handleUpdate("Active")
-
     }
-const handleStatusSwitchStateAttente=()=>{
-    setSwitchStateActive(false)
-    setSwitchStateAttente(true)
-    setSwitchStateRefuse(false)
-    handleUpdate("en attente")
-
-
-}
-
-const handleStatusSwitchStateRefuse=()=>{
-    setSwitchStateActive(false)
-    setSwitchStateAttente(false)
-    setSwitchStateRefuse(true)
-    handleUpdate("refuse")
-
-
-}
-
-
-
-
-
-
-
-
+    const handleStatusSwitchStateAttente = () => {
+        setSwitchStateActive(false)
+        setSwitchStateAttente(true)
+        setSwitchStateRefuse(false)
+        handleUpdate("en attente")
+    }
+    const handleStatusSwitchStateRefuse = () => {
+        setSwitchStateActive(false)
+        setSwitchStateAttente(false)
+        setSwitchStateRefuse(true)
+        handleUpdate("refuse")
+    }
+    // change user role
     const handleSwitchChangeAdmin = () => {
         setSwitchStateAdmin(true);
         setSwitchStateUser(false);
+        handleUpdateUserToAdmin('admin')
     };
     const handleSwitchChangeUser = () => {
         setSwitchStateUser(true);
         setSwitchStateAdmin(false);
-
+        handleUpdateUserToAdmin('user')
     };
-    // logic de l'application 
-    const handleClick = (event) => {
-        setAnchorEl(anchorEl ? null : event.currentTarget);
-        console.log(data.active)
+    // refresh page 
+    const handleRefresh = () => {
+        window.location.reload();
     };
-
-
-
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popper' : undefined;
-
+    // request to api (valid user and render user to admin)
+    const handleUpdate = async (status) => {
+        try {
+            axios.put(`http://localhost:5000/valid/${data.id}/${status}`);
+        } catch (error) {
+            console.error('Error deleting item:', error);
+        }
+    };
+    const handleUpdateUserToAdmin = async (role) => {
+        try {
+            axios.put(`http://localhost:5000/share/${data.id}/${role}`);
+        } catch (error) {
+            console.error('Error deleting item:', error);
+        }
+    };
     return (
         <div>
             <TriggerButton aria-describedby={id} type="button" onClick={handleClick}>
@@ -121,9 +108,6 @@ const handleStatusSwitchStateRefuse=()=>{
                                         </td>
 
                                     </tr>
-
-
-
                                     <br />
                                     <label>Utilisateur
                                         <Switch
@@ -192,8 +176,16 @@ const handleStatusSwitchStateRefuse=()=>{
                                     />
                                 </td>
                             </tr>
-
                         </TabPanel>
+                        <div class="controle" >
+                            <Button autoFocus onClick={handleClick}>
+                                Cancel
+                            </Button>
+                            <Button autoFocus onClick={handleRefresh}>
+                                confirmer
+                            </Button>
+                        </div>
+
                     </Tabs>
 
                 </StyledPopperDiv>
@@ -201,51 +193,7 @@ const handleStatusSwitchStateRefuse=()=>{
         </div >
     );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// code css 
 const Root = styled('span')(
     ({ theme }) => `
     box-sizing: border-box;
@@ -335,22 +283,7 @@ const Root = styled('span')(
       margin: 0;
     }
     `,
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//css design 
+); 
 const blue = {
     50: '#F0F7FF',
     100: '#C2E0FF',
@@ -433,7 +366,7 @@ const StyledPopperDiv = styled('div')(
     font-weight: 500;
     opacity: 1;
     margin: 0.25rem 0;
-    height:150px;
-    width:200px
+    height:230px;
+    width:180px
   `,
 );

@@ -5,6 +5,7 @@
 
 # My ignore
 dbCred
+uploads
 
 # User-specific files
 *.rsuser

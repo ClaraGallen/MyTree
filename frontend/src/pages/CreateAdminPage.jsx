@@ -4,7 +4,8 @@ import Grid from '@mui/material/Grid';
 import { DataGrid } from '@mui/x-data-grid';
 import axios from 'axios';
 import Dialog from '../components/Dialog';
-
+import CancelAccept from '../components/CancelAccept';
+import Profile from '../components/profile'
 function Table() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,20 +30,7 @@ function Table() {
     }
   };
 
-  const handleRefresh = () => {
-    window.location.reload();
-  };
-  const handleDelete = async (email) => {
-    try {
-      console.log(email)
-      axios.delete(`http://localhost:5000/delete/${email}`);
-    } catch (error) {
-      console.error('Error deleting item:', error);
-    }
-    handleRefresh() // Refresh items after deletion
-
-  };
-
+  
   // la colaration des cellules selon status
   var green = "#2ECC71"
   const renderCell = (params) => {
@@ -89,6 +77,20 @@ function Table() {
       editable: true,
       renderCell,
     },
+    {
+      field: 'profile',
+      headerName: 'profile',
+      width: 110,
+      editable: true,
+      renderCell : (params) => {
+        return (
+          <Profile id={params.row._id} >
+
+          </Profile>        
+          
+          )
+    }
+    },
 
     {
       field: 'Edit',
@@ -97,16 +99,14 @@ function Table() {
       width: 100,
       renderCell: (params) => {
         return (
-
           <Dialog
-           id={params.row._id} 
-           active={params.row.status === "Active" ? true : false}
-           attente={params.row.status === "en attente" ? true : false}
-           refuse={params.row.status === "refusé" ? true : false}
-           admin={params.row.role === "admin" ? true : false}
-           user={params.row.role === "user" ? true : false}
+            id={params.row._id}
+            active={params.row.status === "Active" ? true : false}
+            attente={params.row.status === "en attente" ? true : false}
+            refuse={params.row.status === "refusé" ? true : false}
+            admin={params.row.role === "admin" ? true : false}
+            user={params.row.role === "user" ? true : false}
           ></Dialog>
-
         );
       },
     },
@@ -118,10 +118,7 @@ function Table() {
       width: 180,
       renderCell: (params) => {
         return (
-          <button onClick={async () => await handleDelete(params.row.email)}>Delete</button>
-
-
-
+          <CancelAccept email={params.row.email}></CancelAccept>
         );
       },
     },
@@ -143,4 +140,3 @@ function Table() {
 
 }
 export default Table;
-  
