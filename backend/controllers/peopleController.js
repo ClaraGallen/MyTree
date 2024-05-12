@@ -1,10 +1,14 @@
-const {
-  addPerson,
-  getPersonByEmail,
-  getPersonById,
-} = require("../utils/personUtils");
+const { addPerson, getPersonById } = require("../utils/personUtils");
+const { getUserById } = require("../utils/userUtils");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
+const {
+  handleAddRelation,
+  handleAddExistingRelation,
+  handleGetRelation,
+  handleUpdatePerson,
+  handleDeleteRelation,
+  handleDeletePerson,
+} = require("../handlers/peopleHandlers");
 
 const test = (req, res, next) => {
   res.json("Le test de route 'peaple' fonctionne");
@@ -30,16 +34,30 @@ const verifySession = (req, res, next) => {
 
 const addRelation = async (req, res, next) => {
   try {
-    const actualPersonId = req.params.id ? req.params.id : req.body.id;
-    if (!(await getPersonById(actualPersonId))) {
-      throw new Error("Person ID not found");
-    }
-    if (await getPersonByEmail(email)) {
-      throw new Error("La personne existe déjà");
-    }
+    const actualUser = await getUserById(req.userId);
+    let personId = actualUser.person;
+    personId = req.params.id ? req.params.id : personId;
     const personToAddData = req.body;
-    const addedPersonId = await handleAddRelation(
-      actualPersonId,
+    const addedPersonId = await handleAddRelation(personId, personToAddData);
+    res.json({
+      message: "Relation ajoutée avec succès",
+      personId: addedPersonId,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const addRelationByEmail = async (req, res, next) => {
+  try {
+    const actualUser = await getUserById(req.userId);
+    let personId = actualUser.person;
+    personId = req.params.id ? req.params.id : personId;
+    const personToAddData = req.body;
+    const addedPersonId = await handleAddExistingRelation(
+      personId,
+      req.params.email,
       personToAddData
     );
     res.json({
@@ -52,81 +70,13 @@ const addRelation = async (req, res, next) => {
   }
 };
 
-const handleAddRelation = async (actualPersonId, personToAddData) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const { email, relation, dateUnion, dateSeparation } = personToAddData;
-
-    let addedPerson;
-    if (relation === "pere") {
-      if (actualPerson.parents && actualPerson.parents.pere) {
-        throw new Error("La personne a déjà un père");
-      }
-      addedPerson = await addPerson({
-        ...personToAddData,
-        enfants: [{ idEnfant: actualPerson._id }],
-      });
-      actualPerson.parents.pere = addedPerson._id;
-      actualPerson.markModified("parents.pere");
-    } else if (relation === "mere") {
-      if (actualPerson.parents && actualPerson.parents.mere) {
-        throw new Error("La personne a déjà une mère");
-      }
-      addedPerson = await addPerson({
-        ...personToAddData,
-        enfants: [{ idEnfant: actualPerson._id }],
-      });
-      actualPerson.parents.mere = addedPerson._id;
-      actualPerson.markModified("parents.mere");
-    } else if (relation === "conjoint") {
-      addedPerson = await addPerson(personToAddData);
-      actualPerson.conjoints.push({
-        idConjoint: addedPerson._id,
-        dateUnion,
-        dateSeparation,
-      });
-      addedPerson.conjoints.push({
-        idConjoint: actualPerson._id,
-        dateUnion,
-        dateSeparation,
-      });
-      actualPerson.markModified("conjoints");
-    } else if (relation === "enfant") {
-      addedPerson = await addPerson(personToAddData);
-      actualPerson.enfants.push({
-        idEnfant: addedPerson._id,
-      });
-      if (actualPerson.sexe === "Homme") {
-        addedPerson.parents.pere = actualPerson._id;
-      } else {
-        addedPerson.parents.mere = actualPerson._id;
-      }
-      actualPerson.markModified("enfants");
-    } else {
-      throw new Error("Relation non valide");
-    }
-
-    await actualPerson.save();
-
-    if (relation === "conjoint" || relation === "enfant") {
-      await addedPerson.save();
-    }
-    await session.commitTransaction();
-    return addedPerson._id;
-  } catch (err) {
-    console.error("Transaction error in addRelation:", err);
-    await session.abortTransaction();
-    throw new Error(err);
-  } finally {
-    session.endSession();
-  }
-};
-
 const getPerson = async (req, res, next) => {
   try {
     const personId = req.params.id;
     let person = await getPersonById(personId);
+    if (!person) {
+      throw new Error("Person not found");
+    }
 
     person = person.toObject();
     delete person.__v;
@@ -142,20 +92,52 @@ const getPerson = async (req, res, next) => {
   }
 };
 
-const updateRelation = async (req, res, next) => {
+const getRelationController = async (req, res, next) => {
   try {
-    const actualPersonId = req.params.id ? req.params.id : req.body.id;
-    if (!(await getPersonById(actualPersonId))) {
+    const actualUser = await getUserById(req.userId);
+    let personId2 = actualUser.person;
+    personId2 = req.params.id2 ? req.params.id2 : personId2;
+    if (!(await getPersonById(personId2))) {
+      throw new Error("Person ID2 not found");
+    }
+    let personId1 = req.params.id1;
+    if (!(await getPersonById(personId1))) {
+      throw new Error("Person ID1 not found");
+    }
+    const relation = await handleGetRelation(personId1, personId2);
+    if (!relation) {
+      throw new Error("Les deux personnes n'ont pas de relation");
+    }
+    res.json({
+      message: "Relation récupérée avec succès",
+      relation: {
+        id1: personId1,
+        id2: personId2,
+        relation: relation,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const updateRelationController = async (req, res, next) => {
+  try {
+    const actualUser = await getUserById(req.userId);
+    let personId = actualUser.person;
+    personId = req.params.id ? req.params.id : personId;
+    if (!(await getPersonById(personId))) {
       throw new Error("Person ID not found");
     }
-    const personToAddData = req.body;
-    const addedPersonId = await handleUpdateRelation(
-      actualPersonId,
-      personToAddData
+    const personToUpdateData = req.body;
+    const updatedPersonId = await handleUpdatePerson(
+      personId,
+      personToUpdateData
     );
     res.json({
       message: "Relation mise à jour avec succès",
-      personId: addedPersonId,
+      personId: updatedPersonId,
     });
   } catch (err) {
     console.error(err);
@@ -163,20 +145,23 @@ const updateRelation = async (req, res, next) => {
   }
 };
 
-const deleteRelation = async (req, res, next) => {
+const deleteRelationController = async (req, res, next) => {
   try {
-    const actualPersonId = req.params.id ? req.params.id : req.body.id;
-    if (!(await getPersonById(actualPersonId))) {
-      throw new Error("Person ID not found");
+    const actualUser = await getUserById(req.userId);
+    let personId2 = actualUser.person;
+    personId2 = req.params.id2 ? req.params.id2 : personId2;
+    if (!(await getPersonById(personId2))) {
+      throw new Error("Person ID2 not found");
     }
-    const personToAddData = req.body;
-    const addedPersonId = await handleDeleteRelation(
-      actualPersonId,
-      personToAddData
-    );
+    let personId1 = req.params.id1;
+    if (!(await getPersonById(personId1))) {
+      throw new Error("Person ID1 not found");
+    }
+    const deletedPersonIds = await handleDeleteRelation(personId1, personId2);
     res.json({
       message: "Relation supprimée avec succès",
-      personId: addedPersonId,
+      id1: deletedPersonIds.personId1,
+      id2: deletedPersonIds.personId2,
     });
   } catch (err) {
     console.error(err);
@@ -184,12 +169,32 @@ const deleteRelation = async (req, res, next) => {
   }
 };
 
-const handleDeleteRelation = (module.exports = {
+const deletePersonController = async (req, res, next) => {
+  try {
+    const personId = req.params.id;
+    if (personId == req.userId) {
+      throw new Error("Vous ne pouvez pas supprimer votre propre personne");
+    }
+    const deletedPerson = await handleDeletePerson(personId);
+    res.json({
+      message: "Personne supprimée avec succès",
+      personId: deletedPerson._id,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+module.exports = {
   test,
   verifySession,
   addPerson,
   addRelation,
+  addRelationByEmail,
   getPerson,
-  updateRelation,
-  deleteRelation,
-});
+  getRelationController,
+  updateRelationController,
+  deleteRelationController,
+  deletePersonController,
+};
