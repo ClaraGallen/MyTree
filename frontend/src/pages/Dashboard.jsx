@@ -37,16 +37,12 @@ var persons_function = async () => {
     const parentId = localStorage.getItem("personId");
     list_member.push(parentId);
 
-    console.log(list_member);
-
-    // console.log("début avec : " + parentId);
     
     
     while (list_member.length !== 0){
 
         try {
             const response = await axios.get(`/people/${list_member[0]}`);
-            console.log(response);
         
             const parent = {
                 id: response.data._id,
@@ -164,7 +160,6 @@ var persons_function = async () => {
             list_member_add.push(parent.id);
             persons[parent.id] = parent;
             list_member.shift();
-            // console.log(parent);
 
         } catch (error){
             console.error('Error:', error);
@@ -175,8 +170,6 @@ var persons_function = async () => {
 
     };
 
-    console.log(persons);
-    console.log(unions);
     return {persons: persons, unions: unions};
 };
 
@@ -233,7 +226,6 @@ export default function TreeTest() {
 
     const toggleForm = () => {
         setShowForm(!showForm);
-        console.log(showForm);
     };
 
     
@@ -264,11 +256,11 @@ export default function TreeTest() {
         if (!alone) {
 
             // const svgWidth = window.innerWidth * 0.95; // Définir la largeur de l'élément SVG
-            // const svgHeight = window.innerHeight * 1; // Définir la hauteur de l'élément SVG
+            const svgHeight = window.innerHeight * 1; // Définir la hauteur de l'élément SVG
         
             const svg = d3.select("#tree-here").append("svg")
                 .attr("width", document.body.offsetWidth * 0.95)
-                .attr("height", document.documentElement.clientHeight * 1);
+                .attr("height", svgHeight * 1);
             
             let FT = new FamilyTree(data, svg);
             FT.draw();
@@ -381,7 +373,7 @@ export default function TreeTest() {
             photo: personData.photo,
             position: {
                 left: event.pageX + 10, // Ajoute un décalage de 10px à droite
-                top: event.pageY - 10 // Ajoute un décalage de 10px vers le haut
+                top: event.pageY - 100 // Ajoute un décalage de 10px vers le haut
             }
         });
     };
@@ -410,6 +402,7 @@ export default function TreeTest() {
     // Fonction de gestion d'un clic sur un nœud de l'arbre
     const handleNodeClick = async (event) => {
         await click();
+        
         let id_tmp = localStorage.getItem('id_tmp');
         console.log(id_tmp);
         const selectedIcon = localStorage.getItem('selectedIcon');
@@ -480,12 +473,13 @@ export default function TreeTest() {
 
 
     const deleteRelation = async (idMember) => {
-        console.log(idMember);
         var id = localStorage.getItem('id_tmp');
         try {
             const response = await axios.delete(`/people/deleteRelation/${id}/${idMember}`);
             // Gérer la réponse si nécessaire
             console.log("Relation supprimée avec succès :", response.data);
+            window.location.reload();
+
         } catch (error) {
             // Gérer les erreurs d'appel API
             console.error("Erreur lors de la suppression de la relation :", error);
@@ -497,9 +491,9 @@ export default function TreeTest() {
     const updateMember = async (idMember) => {
         try {
             // Formater la date de naissance si elle est présente
-            const formattedBirthday = infoPP.dateNaissance ? new Date(infoPP.dateNaissance) : null;
+            const formattedBirthday = infoPP.dateNaissance ? new Date(infoPP.dateNaissance) : "";
             // Formater la date de décès si elle est présente
-            const formattedDeathday = infoPP.dateDeces ? new Date(infoPP.dateDeces) : null;
+            const formattedDeathday = infoPP.dateDeces ? new Date(infoPP.dateDeces) : "";
     
             // Créer un objet FormData pour envoyer les données avec la photo
             const formData = new FormData();
@@ -521,6 +515,8 @@ export default function TreeTest() {
             });
     
             console.log("Membre mis à jour avec succès:", response.data);
+            window.location.reload();
+
         } catch (error) {
             console.log("Erreur pendant la mise à jour du membre:", error);
             setError(error);
@@ -534,6 +530,8 @@ export default function TreeTest() {
 
         try {
             await axios.delete(`/people/deletePerson/${id}`);
+            window.location.reload();
+
             
         } catch (error) {
             console.log(error);
@@ -555,9 +553,10 @@ export default function TreeTest() {
 
         try {
 
-            console.log(requestData);
             await deleteRelation(idConjoint);
             await axios.post(`/people/addRelationByEmail/${person.email}/${idConjoint}`, requestData);
+            window.location.reload();
+
             
         } catch (error) {
             console.log(error);
@@ -569,30 +568,26 @@ export default function TreeTest() {
 
     return (
         <div>
-            
             {alone ? (
-            <div id="alone">
-                <div id="alone_content">
-                    <h1>Vous n'avez pas encore de famille.</h1>
-                    <br/>
-                    {!isLoading ? (
-                        <div id="alone_form"><NewRelationForm /></div>
-                    ) : (
-                        <>loading...</>
-                    )}
+                <div id="alone">
+                    <div id="alone_content">
+                        <h1>Vous n'avez pas encore de famille.</h1>
+                        <br />
+                        {!isLoading ? (
+                            <div id="alone_form"><NewRelationForm /></div>
+                        ) : (
+                            <>loading...</>
+                        )}
+                    </div>
                 </div>
-            </div>
-        
-                
-
             ) : (
-                <div>
+                <div className='printable-content'>
                     <div id="tree-here" onClick={handleNodeClick}></div>
                     <div className="icon-container" id="icon-here" onClick={changeIcon}></div>
-                    <div  id="stat-here"></div>
-                    {(infoPP || linkPP)&& (
+                    <div id="stat-here"></div>
+                    {(infoPP || linkPP) && (
                         <div className="tooltip" style={{ left: ((infoPP && infoPP.position.left) || (linkPP && linkPP.position.left)),
-                                                        top: ((infoPP && infoPP.position.top) || (linkPP && linkPP.position.top)) }}>
+                                                            top: ((infoPP && infoPP.position.top) || (linkPP && linkPP.position.top)) }}>
                             <button onClick={() => {setInfoPP(null); setLinkPP(null)}}>X</button>
                             <br />
                             {error && typeof error === 'string' && <p className="error-message">{error}</p>}
@@ -634,185 +629,222 @@ export default function TreeTest() {
                             <br />
                             {infoPP ? (
                                 <div>
-                                    Né le :
-                                    <input
-                                    type="date"
-                                    name="dateNaissance"
-                                    value={infoPP.dateNaissance ? infoPP.dateNaissance.substring(0, 10) : ""}
-                                    onChange={changePP}
-                                    />
-                                    <br />
-                                    Mort le :
-                                    <input
-                                    type="date"
-                                    name="dateDeces"
-                                    value={infoPP.dateDeces ? infoPP.dateDeces.substring(0, 10) : ""}
-                                    onChange={changePP}
-                                    />
-                                    <br />
-                                    <br />
-                                    Contacts :
-                                    <br />
-                                    <input
-                                        type="text"
-                                        name="email"
-                                        placeholder="adresse mail"
-                                        value={infoPP.email}
-                                        onChange={changePP}
-                                    />
-                                    <br />
-                                    <input
-                                        type="text"
-                                        name="tel"
-                                        placeholder="téléphone"
-                                        value={infoPP.tel}
-                                        onChange={changePP}
-                                    />
-                                    <br />
-                                    <input
-                                        type="text"
-                                        name="adresse"
-                                        placeholder="adresse"
-                                        value={infoPP.adresse}
-                                        onChange={changePP}
-                                    />
-                                    <br />
-                                    <br />
-                                    Profession :
-                                    <br />
-                                    <input
-                                        type="text"
-                                        name="profession"
-                                        placeholder="profession"
-                                        value={infoPP.profession}
-                                        onChange={changePP}
-                                    />
-                                    <br />
-                                    <label htmlFor="photo">Photo :</label>
-                                    <input
-                                        type="file"
-                                        id="photo"
-                                        accept="image/*"
-                                        onChange={(e) => setImage(e.target.files[0])}
-                                    />
-                                    <br />
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <strong>Né(e) le :</strong>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="date"
+                                                        name="dateNaissance"
+                                                        value={infoPP.dateNaissance ? infoPP.dateNaissance.substring(0, 10) : ""}
+                                                        onChange={changePP}
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Décédé(e) le :</strong>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="date"
+                                                        name="dateDeces"
+                                                        value={infoPP.dateDeces ? infoPP.dateDeces.substring(0, 10) : ""}
+                                                        onChange={changePP}
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Contacts :</strong>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name="email"
+                                                        placeholder="adresse mail"
+                                                        value={infoPP.email}
+                                                        onChange={changePP}
+                                                    />
+                                                    <br />
+                                                    <input
+                                                        type="text"
+                                                        name="tel"
+                                                        placeholder="téléphone"
+                                                        value={infoPP.tel}
+                                                        onChange={changePP}
+                                                    />
+                                                    <br />
+                                                    <input
+                                                        type="text"
+                                                        name="adresse"
+                                                        placeholder="adresse"
+                                                        value={infoPP.adresse}
+                                                        onChange={changePP}
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Profession :</strong>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name="profession"
+                                                        placeholder="profession"
+                                                        value={infoPP.profession}
+                                                        onChange={changePP}
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Photo :</strong>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="file"
+                                                        id="photo"
+                                                        accept="image/*"
+                                                        onChange={(e) => setImage(e.target.files[0])}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                     <br />
                                     <button onClick={() => updateMember(infoPP.id)}>Enregistrer</button>
                                     <button onClick={() => deleteMember(infoPP.id)}>Supprimer ce membre</button>
                                 </div>
                             ) : (
                                 <div>
-                                    <strong>Enfants :</strong>
-                                    <br />
-                                    {linkPP.children.map((child, index) => (
-                                        <div key={index}>
-                                            <input
-                                                type="text"
-                                                value={child.prenom + " " + child.nom}
-                                                onChange={(e) => {
-                                                    const newChildren = [...linkPP.children];
-                                                    newChildren[index] = e.target.value;
-                                                    setLinkPP({ ...linkPP, children: newChildren });
-                                                }}
-                                            />
-                                            <button className="action"onClick={() => {
-                                                deleteRelation(child.id);
-                                                const newChildren = [...linkPP.children];
-                                                newChildren.splice(index, 1); // Supprime l'enfant au clic du bouton "X"
-                                                setLinkPP({ ...linkPP, children: newChildren });
-                                            }}>❌</button>
-                                        </div>
-                                    ))}
-                                    <div>
-                                        <strong>Parents :</strong>
-                                        <br />
-                                        {linkPP.parents.map((parent, index) => (
-                                            <div key={index}>
-                                                <input
-                                                    type="text"
-                                                    value={parent.prenom + " " + parent.nom}
-                                                    onChange={(e) => {
-                                                        const newParents = [...linkPP.parents];
-                                                        newParents[index] = e.target.value;
-                                                        setLinkPP({ ...linkPP, parents: newParents });
-                                                    }}
-                                                />
-                                                <button className="action" onClick={() => {
-                                                    deleteRelation(parent.id);
-                                                    const newParents = [...linkPP.parents];
-                                                    newParents.splice(index, 1); // Supprime le parent au clic du bouton "X"
-                                                    setLinkPP({ ...linkPP, parents: newParents });
-                                                }}>❌</button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div>
-                                        <strong>Conjoints :</strong>
-                                        <br />
-                                        {linkPP.conjoints.map((conjoint, index) => (
-                                            <div key={index}>
-                                                <input
-                                                    type="text"
-                                                    value={data.persons[conjoint.idConjoint].prenom + " " + data.persons[conjoint.idConjoint].nom}
-                                                    onChange={(e) => {
-                                                        const newConjoints = [...linkPP.conjoints];
-                                                        newConjoints[index] = e.target.value;
-                                                        setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                    }}
-                                                />
-                                                <br />
-                                                <strong>(</strong>
-                                                <input
-                                                    type="date"
-                                                    name="union"
-                                                    value={conjoint.dateUnion ? new Date(conjoint.dateUnion).toISOString().substring(0, 10) : ""} // Convertir en objet Date et puis en chaîne de caractères ISO
-                                                    onChange={(e) => {
-                                                        const newConjoints = [...linkPP.conjoints];
-                                                        newConjoints[index] = { ...conjoint, dateUnion: e.target.value };
-                                                        setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                        changeLink(e, index)
-                                                    }}
-                                                    style={{ margin: "0px" }}
-    
-                                                />
-                                                <strong> - </strong>
-                                                <input
-                                                    type="date"
-                                                    name="divorce"
-                                                    value={conjoint.dateSeparation ? new Date(conjoint.dateSeparation).toISOString().substring(0, 10) : ""} // Convertir en objet Date et puis en chaîne de caractères ISO
-                                                    onChange={(e) => {
-                                                        const newConjoints = [...linkPP.conjoints];
-                                                        newConjoints[index] = { ...conjoint, dateSeparation: e.target.value };
-                                                        setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                        changeLink(e, link)
-                                                    }}
-                                                    style={{ margin: "0px" }}
-                                                />
-                                                <strong>)</strong>
-                                                <button className="action" onClick={() => {
-                                                    updateRelation(conjoint.idConjoint)                                                    
-                                                }}>✅</button>
-                                                <button className="action" onClick={() => {
-                                                    deleteRelation(conjoint.idConjoint);
-                                                    const newConjoints = [...linkPP.conjoints];
-                                                    newConjoints.splice(index, 1);
-                                                    setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                }}>❌</button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <br />
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <strong>Enfants :</strong>
+                                                </td>
+                                                <td>
+                                                    {linkPP.children.map((child, index) => (
+                                                        <div key={index}>
+                                                            <input
+                                                                type="text"
+                                                                value={child.prenom + " " + child.nom}
+                                                                onChange={(e) => {
+                                                                    const newChildren = [...linkPP.children];
+                                                                    newChildren[index] = e.target.value;
+                                                                    setLinkPP({ ...linkPP, children: newChildren });
+                                                                }}
+                                                            />
+                                                            <button className="action" onClick={() => {
+                                                                deleteRelation(child.id);
+                                                                const newChildren = [...linkPP.children];
+                                                                newChildren.splice(index, 1);
+                                                                setLinkPP({ ...linkPP, children: newChildren });
+                                                            }}>❌</button>
+                                                        </div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Parents :</strong>
+                                                </td>
+                                                <td>
+                                                    {linkPP.parents.map((parent, index) => (
+                                                        <div key={index}>
+                                                            <input
+                                                                type="text"
+                                                                value={parent.prenom + " " + parent.nom}
+                                                                onChange={(e) => {
+                                                                    const newParents = [...linkPP.parents];
+                                                                    newParents[index] = e.target.value;
+                                                                    setLinkPP({ ...linkPP, parents: newParents });
+                                                                }}
+                                                            />
+                                                            <button className="action" onClick={() => {
+                                                                deleteRelation(parent.id);
+                                                                const newParents = [...linkPP.parents];
+                                                                newParents.splice(index, 1);
+                                                                setLinkPP({ ...linkPP, parents: newParents });
+                                                            }}>❌</button>
+                                                        </div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>Conjoints :</strong>
+                                                </td>
+                                                <td>
+                                                    {linkPP.conjoints.map((conjoint, index) => (
+                                                        <div key={index}>
+                                                            <input
+                                                                type="text"
+                                                                value={data.persons[conjoint.idConjoint].prenom + " " + data.persons[conjoint.idConjoint].nom}
+                                                                onChange={(e) => {
+                                                                    const newConjoints = [...linkPP.conjoints];
+                                                                    newConjoints[index] = e.target.value;
+                                                                    setLinkPP({ ...linkPP, conjoints: newConjoints });
+                                                                }}
+                                                            />
+                                                            <br />
+                                                            <strong>(</strong>
+                                                            <input
+                                                                type="date"
+                                                                name="union"
+                                                                value={conjoint.dateUnion ? new Date(conjoint.dateUnion).toISOString().substring(0, 10) : ""}
+                                                                onChange={(e) => {
+                                                                    const newConjoints = [...linkPP.conjoints];
+                                                                    newConjoints[index] = { ...conjoint, dateUnion: e.target.value };
+                                                                    setLinkPP({ ...linkPP, conjoints: newConjoints });
+                                                                    changeLink(e, index)
+                                                                }}
+                                                                style={{ margin: "0px" }}
+                                                            />
+                                                            <strong> - </strong>
+                                                            <input
+                                                                type="date"
+                                                                name="divorce"
+                                                                value={conjoint.dateSeparation ? new Date(conjoint.dateSeparation).toISOString().substring(0, 10) : ""}
+                                                                onChange={(e) => {
+                                                                    const newConjoints = [...linkPP.conjoints];
+                                                                    newConjoints[index] = { ...conjoint, dateSeparation: e.target.value };
+                                                                    setLinkPP({ ...linkPP, conjoints: newConjoints });
+                                                                    changeLink(e, link)
+                                                                }}
+                                                                style={{ margin: "0px" }}
+                                                            />
+                                                            <strong>)</strong>
+                                                            <button className="action" onClick={() => {
+                                                                updateRelation(conjoint.idConjoint)
+                                                            }}>✅</button>
+                                                            <button className="action" onClick={() => {
+                                                                deleteRelation(conjoint.idConjoint);
+                                                                const newConjoints = [...linkPP.conjoints];
+                                                                newConjoints.splice(index, 1);
+                                                                setLinkPP({ ...linkPP, conjoints: newConjoints });
+                                                            }}>❌</button>
+                                                        </div>
+                                                    ))}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                     {showForm ? (
-                                        <NewRelationForm setShowForm={setShowForm}  />
+                                        <NewRelationForm setShowForm={setShowForm} />
                                     ) : (
                                         <div>
                                             <button onClick={toggleForm}>Nouvelle Relation</button>
                                         </div>
                                     )}
-                                    <div>
-                                    </div>
                                 </div>
                             )}
+                            <br />
                         </div>
                     )}
                 </div>

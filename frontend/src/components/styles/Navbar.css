@@ -53,3 +53,10 @@
 .navContainer {
   padding-bottom: 20px;
 }
+
+
+@media print {
+  .navbar {
+    display: none !important;
+  }
+}
