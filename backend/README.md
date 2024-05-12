@@ -46,6 +46,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   ```
 
 **Remarque 1** : Le premier utilisateur inscrit sera automatiquement un administrateur.
+
 **Remarque 2** : Si l'utilisateur est déjà ajouté par un autre membre de la famille et vient d'être inscrit, il trouvera un arbre généalogique déjà créé avec ses relations.
 
 ### Connexion
@@ -69,7 +70,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   ```
 
 **Remarque 1** : Si l'utilisateur est approuvé par l'administrateur, l'API retournera la sortie mentionnée. Si l'utilisateur est en attente ou refusé, l'API renverra un message d'erreur.
-**remarque 2** : Le token expirera après une durée spécifiée dans le fichier config/config.js.
+
+**Remarque 2** : Le token expirera après une durée spécifiée dans le fichier config/config.js.
 
 ### Déconnexion
 
