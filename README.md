@@ -44,6 +44,14 @@ npm install
 npm start
 ```
 
+Si cela cause un problème, utilisez la commande suivante pour nettoyer le cache npm :
+
+```bash
+npm cache clean --force
+npm install react@18 react-dom@18
+npm install --legacy-peer-deps
+```
+
 ### Back-end
 
 ```bash
