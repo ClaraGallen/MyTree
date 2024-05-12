@@ -36,6 +36,10 @@ app.use(
   require("./controllers/peopleController").verifySession,
   require("./routes/peopleRoutes")
 );
+app.use("/delete", require("./routes/deleteUserRoutes"));
+app.use("/users", require("./routes/getAllusersRoutes"));
+app.use("/valid", require("./routes/validUserRoutes"));
+app.use("/share", require("./routes/shareUserResRoutes"));
 
 // Middleware qui permet de gérer les erreurs
 app.use(require("./utils/errorHandler"));

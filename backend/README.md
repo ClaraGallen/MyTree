@@ -59,7 +59,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   ```json
   {
     "token": "jwt.token.ici",
-    "userId": "identifiantUniqueUtilisateur"
+    "userId": "identifiantUniqueUtilisateur",
+    "isAdmin": true/false
   }
   ```
 
