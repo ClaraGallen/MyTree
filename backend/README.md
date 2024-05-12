@@ -8,6 +8,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 - **`/config`** : Contient les fichiers de configuration pour différentes parties de l'application comme la base de données, l'authentification et les variables d'environnement.
 - **`/controllers`** : Logique de traitement des requêtes. Chaque contrôleur gère la logique pour un aspect spécifique de l'application (par exemple, les utilisateurs, les arbres généalogiques, etc.).
+- **`/handlers`** : Ce dossier contient les handlers utilisés par les contrôleurs pour traiter et gérer les données.
 - **`/models`** : Définit les schémas de la base de données MongoDB pour différentes entités comme les utilisateurs et les relations.
 - **`/routes`** : Définit les routes de l'API RESTful qui exposent les fonctionnalités du serveur.
 - **`/middleware`** : Contient les fonctions middleware pour la gestion des erreurs, l'authentification, la journalisation, et d'autres tâches transversales.
@@ -44,6 +45,10 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
+**Remarque 1** : Le premier utilisateur inscrit sera automatiquement un administrateur.
+
+**Remarque 2** : Si l'utilisateur est déjà ajouté par un autre membre de la famille et vient d'être inscrit, il trouvera un arbre généalogique déjà créé avec ses relations.
+
 ### Connexion
 
 - **Endpoint** : `POST /auth/login`
@@ -64,11 +69,15 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
+**Remarque** : Si l'utilisateur est approuvé par l'administrateur, l'API retournera la sortie mentionnée. Si l'utilisateur est en attente ou refusé, l'API renverra un message d'erreur.
+
 ### Déconnexion
 
 - **Endpoint** : `GET /auth/logout`
 - **Description** : Déconnecter un utilisateur et invalider le token.
 - **Entrée** : Aucune, authentification requise.
+
+**Remarque** : Le premier utilisateur inscrit sera automatiquement un administrateur.
 
 - **Sortie** :
   ```json
@@ -238,7 +247,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "personId": "identifiantUniquePersonne"
   }
   ```
-- **Remarque** : Après la suppression, la photo de l'utilisateur sera également supprimée.
+  **Remarque** : Après la suppression, la photo de l'utilisateur sera également supprimée.
 
 ## Importation/Exportation de Données
 

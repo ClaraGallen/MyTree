@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Accepte", "en attente", "refuse"],
-      default: "Active",
+      default: "en attente",
     },
     person: {
       type: mongoose.Schema.Types.ObjectId,

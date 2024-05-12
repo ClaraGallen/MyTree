@@ -4,6 +4,7 @@ const { hashPassowrd, comparePassword } = require("../utils/passwordUtils");
 const { tokenExpiry } = require("../config/config");
 const jwt = require("jsonwebtoken");
 const { addPerson, getPersonByEmail } = require("../utils/personUtils");
+const { handleUpdatePerson } = require("../handlers/peopleHandlers");
 
 const test = (req, res) => {
   res.json("Le test d'authentification fonctionne");
@@ -22,6 +23,13 @@ const registerUser = async (req, res, next) => {
       res.status(400);
       throw new Error("Le mot de passe est requis");
     }
+    // Le premier utilisateur sera un administrateur
+    const count = await User.countDocuments({});
+    if (count === 0) {
+      data.role = "admin";
+      data.status = "Accepte";
+    }
+
     const exist = await User.findOne({ email });
     if (exist) {
       return res.status(409).json({
@@ -29,10 +37,16 @@ const registerUser = async (req, res, next) => {
       });
     }
     const passwordHash = await hashPassowrd(password);
-    // creation des enrégistrements
-    const person = await addPerson(data);
-    if (!person) {
-      throw new Error("Erreur lors de l'ajout de la personne");
+
+    //Si l'utilisateur est déjà ajouté par un autre membre de la famille et vient d'être inscrit, il trouvera un arbre généalogique déjà créé avec ses relations.
+    let person = await getPersonByEmail(email);
+    if (person) {
+      await handleUpdatePerson(person._id, data);
+    } else {
+      person = await addPerson(data);
+      if (!person) {
+        throw new Error("Erreur lors de l'ajout de la personne");
+      }
     }
 
     const user = await User.create({
@@ -55,6 +69,7 @@ const registerUser = async (req, res, next) => {
     next(err);
   }
 };
+
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
