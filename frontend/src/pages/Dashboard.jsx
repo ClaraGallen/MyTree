@@ -12,7 +12,8 @@ import info from "./img/info.png";
 import infoG from "./img/infoG.png";
 import link from "./img/link.png";
 import linkG from "./img/linkG.png";
-
+import bar from "./img/bar.png";
+import barG from "./img/barG.png";
 import axios from 'axios';
 
 // TreeTest.js
@@ -55,11 +56,11 @@ var persons_function = async () => {
                 parents: [],
                 own_unions: [],
                 conjoints: [],
-                profession: response.data.profession || "",
+                professions: response.data.professions || "",
                 adresse: response.data.adresse || "",
                 tel: response.data.tel || "",
                 email: response.data.email || "",
-                photo: response.data.photo || ""
+                photo: response.data.photo ? response.data.photo:  ""
             };
             
 
@@ -274,11 +275,12 @@ export default function TreeTest() {
     
 
     useEffect(() => {
-        if (!isLoading)
-        localStorage.setItem('selectedIcon', "pointer");
-        changeIcon();
-        display_statistics();
-    }, [isLoading]);
+        if (!alone) {
+            localStorage.setItem('selectedIcon', "pointer");
+            changeIcon();
+            // display_statistics();
+        }
+    }, [alone]);
 
 
     function calculateAverageChildrenPerUnion() {
@@ -312,8 +314,9 @@ export default function TreeTest() {
 
             statisticsElement.innerHTML = `
                 <h2>Statistiques de la famille</h2>
-                <p>Hommes: ${hommesCount}</p>
-                <p>Femmes: ${femmesCount}</p>
+                <p style="color: #1C72AE;">Hommes: ${hommesCount}</p>
+                <p style="color: #BE4CD0;">Femmes: ${femmesCount}</p>
+                
                 <p>Total: ${totalPersons}</p>
                 <p>Nombre moyen d'enfants par union: ${averageChildren}</p>
             `;
@@ -335,6 +338,8 @@ export default function TreeTest() {
                     return selectedIcon === "plus" ? plus : plusG;
                 case "link":
                     return selectedIcon === "link" ? link : linkG;
+                    case "bar":
+                        return selectedIcon === "bar" ? bar : barG;
                 default:
                     return "";
             }
@@ -344,7 +349,7 @@ export default function TreeTest() {
         const iconContainer = document.getElementById("icon-here");
         if (iconContainer) {
             iconContainer.innerHTML = "";
-            const icons = ["pointer", "info", "plus", "link"];
+            const icons = ["pointer", "info", "plus", "link", "bar"];
             icons.forEach(icon => {
                 const img = document.createElement("img");
                 img.className = "icon";
@@ -353,6 +358,16 @@ export default function TreeTest() {
                 img.addEventListener("click", () => localStorage.setItem('selectedIcon', icon));
                 iconContainer.appendChild(img);
             });
+        }
+        
+        const statHereElement = document.getElementById('stat-here');
+        if (selectedIcon !== "bar" && statHereElement) {
+            statHereElement.innerHTML = "";
+        }
+    
+        // Afficher les statistiques si l'icône "bar" est sélectionnée
+        if (selectedIcon === "bar") {
+            display_statistics();
         }
     }
 
@@ -369,8 +384,8 @@ export default function TreeTest() {
             tel: personData.tel,
             adresse: personData.adresse,
             email: personData.email,
-            profession: personData.profession,
-            photo: personData.photo,
+            professions: personData.professions,
+            photo: personData.photo ? personData.photo : "",
             position: {
                 left: event.pageX + 10, // Ajoute un décalage de 10px à droite
                 top: event.pageY - 100 // Ajoute un décalage de 10px vers le haut
@@ -505,8 +520,11 @@ export default function TreeTest() {
             formData.append('adresse', infoPP.adresse);
             formData.append('tel', infoPP.tel);
             formData.append('email', infoPP.email);
-            formData.append('photo', image); // Ajouter la nouvelle photo
+            if (image) console.log("image");
+            if (image) formData.append('photo', image); // Ajouter la nouvelle photo
+        
     
+            console.log(formData);
             // Envoyer la requête PATCH au serveur
             const response = await axios.patch(`/people/updatePerson/${idMember}`, formData, {
                 headers: {
@@ -515,7 +533,7 @@ export default function TreeTest() {
             });
     
             console.log("Membre mis à jour avec succès:", response.data);
-            window.location.reload();
+            // window.location.reload();
 
         } catch (error) {
             console.log("Erreur pendant la mise à jour du membre:", error);
@@ -694,9 +712,9 @@ export default function TreeTest() {
                                                 <td>
                                                     <input
                                                         type="text"
-                                                        name="profession"
+                                                        name="professions"
                                                         placeholder="profession"
-                                                        value={infoPP.profession}
+                                                        value={infoPP.professions}
                                                         onChange={changePP}
                                                     />
                                                 </td>

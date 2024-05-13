@@ -8,12 +8,9 @@ const Navbar = ({ isLoggedIn, logout }) => {
     <div className="navContainer">
       <nav className="navbar">
         <div className="logo-container">
-          <h1 className="logo">My Tree</h1>
+          <h1 className="nav-link"><Link to="/" className="logo">My Tree</Link></h1>
         </div>
         <ul className="nav-links">
-          <li>
-            <Link to="/" className="nav-link">Accueil</Link>
-          </li>
           {isLoggedIn ? (
             <>
               <li>

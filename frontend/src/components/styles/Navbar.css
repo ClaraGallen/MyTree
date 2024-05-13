@@ -49,6 +49,13 @@
   left: 0;
 }
 
+.nav-link .logo:hover::after,
+.nav-link .logo:focus::after,
+.nav-link .logo:active::after {
+  content: none; /* Annuler le contenu des pseudo-éléments */
+  display: none; /* Masquer les pseudo-éléments */
+  /* Réinitialiser ou supprimer d'autres styles selon vos besoins */
+}
 
 .navContainer {
   padding-bottom: 20px;
@@ -60,3 +67,21 @@
     display: none !important;
   }
 }
+
+
+@media screen and (max-width: 768px) {
+  .logo-container {
+    padding-right: 12px; /* Réduire l'espace à droite du logo */
+    margin-left: 10px;
+  }
+
+  .logo {
+    font-size: 20px; /* Réduire la taille du logo */
+  }
+
+  .nav-links {
+    font-size: 16px; /* Réduire la taille des liens de navigation */
+    gap: 8px; /* Réduire l'espace entre les liens */
+  }
+}
+
