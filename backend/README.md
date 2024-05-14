@@ -513,43 +513,41 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 
 ## Sécurité
 
-Les mots de passe ne sont jamais stockés en clair dans la base de données. Seul le hash du mot de passe, généré à l'aide d'un algorithme de cryptage fort, est stocké dans la collection `Users`.
+- Les mots de passe ne sont jamais stockés en clair dans la base de données. Seul le hash du mot de passe, généré à l'aide d'un algorithme de cryptage fort, est stocké dans la collection `Users`.
+
+- Certaines routes sont limitées et ne peuvent être accessibles que par des utilisateurs spécifiques. Les permissions sont gérées au niveau du serveur pour assurer la sécurité et l'intégrité des données.
 
 ## Exemple de Document de la Collection `Persons`
 
 ```json
 {
-"\_id": ObjectId("identifiantUniquePersonne"),
-"nom": "Dupont",
-"prenom": "Jean",
-"sexe": "Homme",
-"photo": "urlPhoto",
-"email": "JeanDupont@gmail.com",
-"dateNaissance": "1970-05-15",
-"dateDeces": null,
-"professions": "Menuisier",
-"adresse": "123 rue de l'Exemple",
-"tel": "0123456789"
-"informationsComplementaires": "Informations diverses ici",
-"parents": {
-"pere": ObjectId("identifiantPere"),
-"mere": ObjectId("identifiantMere")
-},
-"conjoints": [
-{
-"idConjoint": ObjectId("identifiantConjoint"),
-"dateUnion": "1995-06-20",
-"dateSeparation": "2005-04-15"
+  "\_id": ObjectId("identifiantUniquePersonne"),
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "sexe": "Homme",
+  "photo": "urlPhoto",
+  "email": "JeanDupont@gmail.com",
+  "dateNaissance": "1970-05-15",
+  "dateDeces": null,
+  "professions": "Menuisier",
+  "adresse": "123 rue de l'Exemple",
+  "tel": "0123456789",
+  "informationsComplementaires": "Informations diverses ici",
+  "parents": {
+    "pere": ObjectId("identifiantPere"),
+    "mere": ObjectId("identifiantMere")
+  },
+  "conjoints": [
+    {
+      "idConjoint": ObjectId("identifiantConjoint"),
+      "dateUnion": "1995-06-20",
+      "dateSeparation": "2005-04-15"
+    }
+  ],
+  "enfants": [
+    {
+      "idEnfant": ObjectId("identifiantEnfant"),
+    }
+  ]
 }
-],
-"enfants": [
-{
-"idEnfant": ObjectId("identifiantEnfant"),
-}
-]
-}
-```
-
-```
-
 ```
