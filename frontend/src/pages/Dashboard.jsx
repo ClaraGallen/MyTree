@@ -305,23 +305,37 @@ export default function TreeTest() {
             const personsArray = Object.values(datas.persons);
             const hommesCount = personsArray.filter(person => person.sexe === 'Homme').length;
             const femmesCount = personsArray.filter(person => person.sexe === 'Femme').length;
-
             const totalPersons = hommesCount + femmesCount;
             const averageChildren = calculateAverageChildrenPerUnion();
         
             const statisticsElement = document.createElement('div');
             statisticsElement.classList.add('statistics-container');
-
+        
+            // Création du tableau pour afficher les statistiques
             statisticsElement.innerHTML = `
                 <h2>Statistiques de la famille</h2>
-                <p style="color: #1C72AE;">Hommes: ${hommesCount}</p>
-                <p style="color: #BE4CD0;">Femmes: ${femmesCount}</p>
-                
-                <p>Total: ${totalPersons}</p>
-                <p>Nombre moyen d'enfants par union: ${averageChildren}</p>
+                <table>
+                    <tr>
+                    <td style="color: #1C72AE;">Hommes:</td>
+                    <td style="color: #1C72AE;">${hommesCount}</td>
+                </tr>
+                <tr>
+                    <td style="color: #BE4CD0;">Femmes:</td>
+                    <td style="color: #BE4CD0;">${femmesCount}</td>
+                    </tr>
+                    <tr>
+                        <td>Total:</td>
+                        <td>${totalPersons}</td>
+                    </tr>
+                    <tr>
+                        <td>Nombre moyen d'enfants par union:</td>
+                        <td>${averageChildren}</td>
+                    </tr>
+                </table>
             `;
             statHereElement.appendChild(statisticsElement);
         }
+        
     }
     
 
@@ -491,7 +505,7 @@ export default function TreeTest() {
         var id = localStorage.getItem('id_tmp');
         try {
             const response = await axios.delete(`/people/deleteRelation/${id}/${idMember}`);
-            // Gérer la réponse si nécessaire
+
             console.log("Relation supprimée avec succès :", response.data);
             window.location.reload();
 
@@ -520,20 +534,16 @@ export default function TreeTest() {
             formData.append('adresse', infoPP.adresse);
             formData.append('tel', infoPP.tel);
             formData.append('email', infoPP.email);
-            if (image) console.log("image");
-            if (image) formData.append('photo', image); // Ajouter la nouvelle photo
+            if (image) formData.append('photo', image);
         
-    
-            console.log(formData);
-            // Envoyer la requête PATCH au serveur
             const response = await axios.patch(`/people/updatePerson/${idMember}`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data' // Spécifier le type de contenu multipart/form-data
+                    'Content-Type': 'multipart/form-data' 
                 }
             });
     
             console.log("Membre mis à jour avec succès:", response.data);
-            // window.location.reload();
+            window.location.reload();
 
         } catch (error) {
             console.log("Erreur pendant la mise à jour du membre:", error);
@@ -560,12 +570,9 @@ export default function TreeTest() {
     const updateRelation = async (idConjoint) => {
         const person = datas.persons[localStorage.getItem('id_tmp')];
 
-        const dateUnion = linkPP.dateUnion ? new Date(linkPP.dateUnion) : null;
-        const dateSeparation = linkPP.dateSeparation ? new Date(linkPP.dateSeparation) : null;
-    
         const requestData = {
-            dateUnion: dateUnion,
-            dateSeparation: dateSeparation,
+            dateUnion: linkPP.dateUnion ? new Date(linkPP.dateUnion) : null,
+            dateSeparation: linkPP.dateSeparation ? new Date(linkPP.dateSeparation) : null,
             relation: "conjoint"
         };
 
