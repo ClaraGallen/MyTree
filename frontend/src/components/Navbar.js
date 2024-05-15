@@ -3,7 +3,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './styles/Navbar.css';
 
-const Navbar = ({ isLoggedIn, logout }) => {
+const Navbar = ({ isLoggedIn, logout, isAdmin}) => {
+  console.log(isAdmin)
+
   return (
     <div className="navContainer">
       <nav className="navbar">
@@ -16,6 +18,11 @@ const Navbar = ({ isLoggedIn, logout }) => {
               <li>
                 <Link to="/dashboard" className="nav-link">Arbre</Link>
               </li>
+              {isAdmin ? (
+                <li>
+                  <Link to="/admin" className='nav-link'>Admin</Link>
+                </li>
+              ) : (<></>)}
               <li>
                 <Link to="/" onClick={logout} className="nav-link">Déconnection</Link>
               </li>

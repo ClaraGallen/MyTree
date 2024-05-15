@@ -13,7 +13,7 @@ export default function Signup() {
     const [nom, setNom] = useState('');
     const [prenom, setPrenom] = useState('');
     const [sexe, setSexe] = useState('');
-    const [photo, setPhoto] = useState(null);
+    const [photo, setPhoto] = useState('');
     const [dateNaissance, setDateNaissance] = useState('');
     const [dateDeces, setDateDeces] = useState('');
     const [professions, setProfessions] = useState('');

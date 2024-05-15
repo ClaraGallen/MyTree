@@ -166,6 +166,7 @@ var persons_function = async () => {
             console.error('Error:', error);
             localStorage.removeItem('personId');
             localStorage.removeItem('token');
+            localStorage.removeItem('role');
             window.location.href = '/login'; // Redirection vers la page de connexion
         }
 
