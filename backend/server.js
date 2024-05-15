@@ -11,7 +11,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://192.168.59.111:5173",
     credentials: true,
   })
 );
@@ -36,6 +36,10 @@ app.use(
   require("./controllers/peopleController").verifySession,
   require("./routes/peopleRoutes")
 );
+app.use("/delete", require("./routes/deleteUserRoutes"));
+app.use("/users", require("./routes/getAllUsersRoutes"));
+app.use("/valid", require("./routes/validUserRoutes"));
+app.use("/share", require("./routes/shareUserResRoutes"));
 
 // Middleware qui permet de gérer les erreurs
 app.use(require("./utils/errorHandler"));
