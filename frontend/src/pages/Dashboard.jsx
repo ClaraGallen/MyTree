@@ -166,7 +166,6 @@ var persons_function = async () => {
             console.error('Error:', error);
             localStorage.removeItem('personId');
             localStorage.removeItem('token');
-            localStorage.removeItem('role');
             window.location.href = '/login'; // Redirection vers la page de connexion
         }
 
@@ -570,24 +569,31 @@ export default function TreeTest() {
     
     const updateRelation = async (idConjoint) => {
         const person = datas.persons[localStorage.getItem('id_tmp')];
+        const conjoint = linkPP.conjoints.find((conjoint) => conjoint.idConjoint === idConjoint);
 
-        const requestData = {
-            dateUnion: linkPP.dateUnion ? new Date(linkPP.dateUnion) : null,
-            dateSeparation: linkPP.dateSeparation ? new Date(linkPP.dateSeparation) : null,
-            relation: "conjoint"
-        };
-
-        try {
-
-            await deleteRelation(idConjoint);
-            await axios.post(`/people/addRelationByEmail/${person.email}/${idConjoint}`, requestData);
-            window.location.reload();
-
+        if (conjoint) {
+            const requestData = {
+                dateUnion: conjoint.dateUnion ? new Date(conjoint.dateUnion) : null,
+                dateSeparation: conjoint.dateSeparation ? new Date(conjoint.dateSeparation) : null,
+                relation: "conjoint"
+            }
             
-        } catch (error) {
-            console.log(error);
-            setError(error);
+            console.log(requestData);
+            try {
+    
+                await deleteRelation(idConjoint);
+                await axios.post(`/people/addRelationByEmail/${person.email}/${idConjoint}`, requestData);
+                window.location.reload();
+    
+                
+            } catch (error) {
+                console.log(error);
+                setError(error);
+            }
         }
+
+
+        console.log(linkPP);
 
 
     }
@@ -760,11 +766,7 @@ export default function TreeTest() {
                                                             <input
                                                                 type="text"
                                                                 value={child.prenom + " " + child.nom}
-                                                                onChange={(e) => {
-                                                                    const newChildren = [...linkPP.children];
-                                                                    newChildren[index] = e.target.value;
-                                                                    setLinkPP({ ...linkPP, children: newChildren });
-                                                                }}
+                                                                readOnly
                                                             />
                                                             <button className="action" onClick={() => {
                                                                 deleteRelation(child.id);
@@ -786,11 +788,7 @@ export default function TreeTest() {
                                                             <input
                                                                 type="text"
                                                                 value={parent.prenom + " " + parent.nom}
-                                                                onChange={(e) => {
-                                                                    const newParents = [...linkPP.parents];
-                                                                    newParents[index] = e.target.value;
-                                                                    setLinkPP({ ...linkPP, parents: newParents });
-                                                                }}
+                                                                readOnly
                                                             />
                                                             <button className="action" onClick={() => {
                                                                 deleteRelation(parent.id);
@@ -812,11 +810,7 @@ export default function TreeTest() {
                                                             <input
                                                                 type="text"
                                                                 value={data.persons[conjoint.idConjoint].prenom + " " + data.persons[conjoint.idConjoint].nom}
-                                                                onChange={(e) => {
-                                                                    const newConjoints = [...linkPP.conjoints];
-                                                                    newConjoints[index] = e.target.value;
-                                                                    setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                                }}
+                                                                readOnly
                                                             />
                                                             <br />
                                                             <strong>(</strong>
@@ -828,7 +822,6 @@ export default function TreeTest() {
                                                                     const newConjoints = [...linkPP.conjoints];
                                                                     newConjoints[index] = { ...conjoint, dateUnion: e.target.value };
                                                                     setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                                    changeLink(e, index)
                                                                 }}
                                                                 style={{ margin: "0px" }}
                                                             />
@@ -841,7 +834,6 @@ export default function TreeTest() {
                                                                     const newConjoints = [...linkPP.conjoints];
                                                                     newConjoints[index] = { ...conjoint, dateSeparation: e.target.value };
                                                                     setLinkPP({ ...linkPP, conjoints: newConjoints });
-                                                                    changeLink(e, link)
                                                                 }}
                                                                 style={{ margin: "0px" }}
                                                             />

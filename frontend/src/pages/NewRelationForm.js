@@ -13,7 +13,7 @@ const toggleNewRelationForm = () => {
 };
 
 const NewRelationForm = ({ setShowForm }) => {
-
+    const [image, setImage] = useState('');
     const [dataNewRelation, setDataNewRelation] = useState({
         type: '',
         fromDate: '',
@@ -29,13 +29,15 @@ const NewRelationForm = ({ setShowForm }) => {
             dateDeces: '',
             professions: '',
             adresse: '',
-            tel: ''
+            tel: '',
+            photo: ''
         }
     });
 
     const addRelation = async () => {
 
         // e.preventDefault(); // Empêche le comportement par défaut de la soumission du formulaire
+        console.log(dataNewRelation);
 
         if (
             dataNewRelation.newPersonData.prenom.trim() === "" ||
@@ -47,18 +49,33 @@ const NewRelationForm = ({ setShowForm }) => {
             alert("Veuillez remplir tous les champs obligatoires (Prénom, Nom, Genre, e-mail");
             return;
         }
-
-        var id = localStorage.getItem("id_tmp");
-        const dataRelation = {
-            relation: dataNewRelation.type,
-        };
-    
-        if (dataNewRelation.type === 'conjoint') {
-            dataRelation.dateUnion = dataNewRelation.dateUnion;
-            dataRelation.dateSeparation = dataNewRelation.dateSeparation;
-        }
-    
         try {
+            const formData = new FormData();
+            formData.append('prenom', dataNewRelation.newPersonData.prenom);
+            formData.append('nom', dataNewRelation.newPersonData.nom);
+            formData.append('sexe', dataNewRelation.newPersonData.sexe);
+            formData.append('email', dataNewRelation.newPersonData.email);
+            if (image) formData.append('photo', image);
+            formData.append('professions', dataNewRelation.newPersonData.professions);
+            formData.append('tel', dataNewRelation.newPersonData.tel);
+            formData.append('adresse', dataNewRelation.newPersonData.adresse);
+
+            const formattedBirthday = dataNewRelation.newPersonData.dateNaissance ? new Date(dataNewRelation.newPersonData.dateNaissance) : "";
+            const formattedDeathday = dataNewRelation.newPersonData.dateDeces ? new Date(dataNewRelation.newPersonData.dateDeces) : "";
+            
+            formData.append('dateNaissance', formattedBirthday);
+            formData.append('dateDeces', formattedDeathday);
+
+            var id = localStorage.getItem("id_tmp");
+            const dataRelation = {
+                relation: dataNewRelation.type,
+            };
+        
+            if (dataNewRelation.type === 'conjoint') {
+                dataRelation.dateUnion = dataNewRelation.fromDate ? new Date(dataNewRelation.fromDate) : "";
+                dataRelation.dateSeparation = dataNewRelation.toDate ? new Date(dataNewRelation.toDate) : "";
+            }
+        
             if (dataNewRelation.withExistingPerson) {
                 var idMember = dataNewRelation.personId;
 
@@ -67,16 +84,15 @@ const NewRelationForm = ({ setShowForm }) => {
 
             } else {
                 // Si c'est une nouvelle personne, envoyez les données de la nouvelle personne avec les informations de la relation
-                const newPersonData = {
-                    ...dataNewRelation.newPersonData,
-                    ...dataRelation
-                };
-                console.log(newPersonData);
-                const response = await axios.post(`/people/addRelation/${id}`, newPersonData);
+                for (const key in dataRelation) {
+                    formData.append(key, dataRelation[key]);
+                }
+                console.log(formData);
+                const response = await axios.post(`/people/addRelation/${id}`, formData);
                 console.log("Relation ajoutée avec succès :", response.data);
             }
 
-            window.location.reload();
+            // window.location.reload();
 
         } catch (error) {
             console.error("Erreur lors de l'ajout de la relation :", error);
@@ -252,6 +268,17 @@ const NewRelationForm = ({ setShowForm }) => {
                                         placeholder="email"
                                         value={dataNewRelation.newPersonData.email}
                                         onChange={(e) => setDataNewRelation({ ...dataNewRelation, newPersonData: { ...dataNewRelation.newPersonData, email: e.target.value } })}
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Photo: </td>
+                                <td>
+                                <input
+                                        type="file"
+                                        id="photo"
+                                        accept="image/*"
+                                        onChange={(e) => setImage(e.target.files[0]) }
                                     />
                                 </td>
                             </tr>
