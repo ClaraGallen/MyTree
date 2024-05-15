@@ -4,6 +4,7 @@ const { hashPassowrd, comparePassword } = require("../utils/passwordUtils");
 const { tokenExpiry } = require("../config/config");
 const jwt = require("jsonwebtoken");
 const { addPerson, getPersonByEmail } = require("../utils/personUtils");
+const { handleUpdatePerson } = require("../handlers/peopleHandlers");
 
 const test = (req, res) => {
   res.json("Le test d'authentification fonctionne");
@@ -22,6 +23,13 @@ const registerUser = async (req, res, next) => {
       res.status(400);
       throw new Error("Le mot de passe est requis");
     }
+    // Le premier utilisateur sera un administrateur
+    const count = await User.countDocuments({});
+    if (count === 0) {
+      data.role = "admin";
+      data.status = "Active";
+    }
+
     const exist = await User.findOne({ email });
     if (exist) {
       return res.status(409).json({
@@ -29,10 +37,16 @@ const registerUser = async (req, res, next) => {
       });
     }
     const passwordHash = await hashPassowrd(password);
-    // creation des enrégistrements
-    const person = await addPerson(data);
-    if (!person) {
-      throw new Error("Erreur lors de l'ajout de la personne");
+
+    //Si l'utilisateur est déjà ajouté par un autre membre de la famille et vient d'être inscrit, il trouvera un arbre généalogique déjà créé avec ses relations.
+    let person = await getPersonByEmail(email);
+    if (person) {
+      await handleUpdatePerson(person._id, data);
+    } else {
+      person = await addPerson(data);
+      if (!person) {
+        throw new Error("Erreur lors de l'ajout de la personne");
+      }
     }
 
     const user = await User.create({
@@ -55,6 +69,7 @@ const registerUser = async (req, res, next) => {
     next(err);
   }
 };
+
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -73,27 +88,35 @@ const loginUser = async (req, res, next) => {
     }
     const person = await getPersonByEmail(user.email);
     const personId = person._id;
-    if (!user) {
-      res.status(404);
-      throw new Error("Utilisateur introuvable");
-    }
+    const role = user.role;
+    const status = user.status;
     const hashed = user.passwordHash;
     const match = await comparePassword(password, hashed);
     if (match) {
-      return jwt.sign(
-        { userId: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: tokenExpiry },
-        (err, token) => {
-          if (err) {
-            console.error(err);
-            throw new Error(
-              "Erreur lors de la génération du jeton, veuillez réessayer ultérieurement"
-            );
+      if (status === "Active") {
+        return jwt.sign(
+          { userId: user._id },
+          process.env.JWT_SECRET,
+          { expiresIn: tokenExpiry },
+          (err, token) => {
+            if (err) {
+              console.error(err);
+              throw new Error(
+                "Erreur lors de la génération du jeton, veuillez réessayer ultérieurement"
+              );
+            }
+            return res.cookie("token", token).json({ token, personId, role });
           }
-          return res.cookie("token", token).json({ token, personId });
-        }
-      );
+        );
+      } else if (status === "en attente") {
+        throw new Error(
+          "Votre demande d'inscription est en attente de validation"
+        );
+      } else if (status === "refuse") {
+        throw new Error("Votre demande d'inscription a été refusée");
+      } else {
+        throw new Error("Erreur de statut de l'utilisateur");
+      }
     } else {
       res.status(401);
       throw new Error("Adresse e-mail ou mot de passe invalide");

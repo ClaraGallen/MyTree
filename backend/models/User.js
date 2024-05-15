@@ -22,8 +22,8 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Active", "Suspended"],
-      default: "Active",
+      enum: ["Active", "en attente", "refuse"],
+      default: "en attente",
     },
     person: {
       type: mongoose.Schema.Types.ObjectId,

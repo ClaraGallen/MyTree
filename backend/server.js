@@ -29,8 +29,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(require("cookie-parser")());
 
-// Routes
+// Routes authentification
 app.use("/auth", require("./routes/authRoutes"));
+
+// Routes gestion des personnes (le plus important)
 app.use(
   "/people",
   require("./controllers/peopleController").verifySession,
@@ -38,6 +40,12 @@ app.use(
 );
 app.use("/delete", require("./routes/deleteUserRoutes"));
 app.use("/users", require("./routes/getAllUsersRoutes"));
+app.use("/valid", require("./routes/validUserRoutes"));
+app.use("/share", require("./routes/shareUserResRoutes"));
+
+// Routes admin
+app.use("/delete", require("./routes/deleteUserRoutes"));
+app.use("/users", require("./routes/getAllusersRoutes"));
 app.use("/valid", require("./routes/validUserRoutes"));
 app.use("/share", require("./routes/shareUserResRoutes"));
 
