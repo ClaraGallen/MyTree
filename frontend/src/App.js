@@ -18,7 +18,7 @@ function App() {
   //Configuration axios
 
   // const baseURL ="http://localhost:5000";  //ordinateur
-  const baseURL = "http://192.168.56.1:5000"; //telephone
+  const baseURL = "https://192.168.56.1"; //telephone
   axios.defaults.baseURL = baseURL;
   axios.defaults.withCredentials = true; // Activer les cookies cross-origin
   console.log(axios.defaults.baseURL);

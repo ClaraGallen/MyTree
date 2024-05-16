@@ -4,8 +4,36 @@
     "uninstalled": []
   },
   "config_munge": {
-    "files": {}
+    "files": {
+      "res/xml/config.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<feature name=\"CertificatesPlugin\"><param name=\"android-package\" value=\"de.martinreinhardt.cordova.plugins.CertificatesPlugin\" /></feature>",
+              "count": 1
+            }
+          ]
+        }
+      }
+    }
   },
-  "installed_plugins": {},
-  "dependent_plugins": {}
+  "installed_plugins": {
+    "cordova-plugin-certificates": {
+      "PACKAGE_NAME": "com.example.MyTree"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [
+    {
+      "id": "cordova-plugin-certificates.Certificates",
+      "file": "plugins/cordova-plugin-certificates/www/certificate.js",
+      "pluginId": "cordova-plugin-certificates",
+      "clobbers": [
+        "cordova.plugins.certificates"
+      ]
+    }
+  ],
+  "plugin_metadata": {
+    "cordova-plugin-certificates": "0.6.4"
+  }
 }
