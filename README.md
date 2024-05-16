@@ -2,6 +2,13 @@
 
 Bienvenue dans le dépôt du projet MyTree, une application de généalogie moderne qui permet aux utilisateurs de créer, de gérer et de visualiser leur arbre généalogique.
 
+## Auteurs
+
+Ce projet a été développé par :
+
+- **Ghassene Ben Slimene** - Développement du back-end
+- **Clara Gallen** - Développement du front-end
+
 ## Structure du Projet
 
 Ce projet est divisé en deux parties principales :
@@ -51,8 +58,3 @@ cd server
 npm install
 npm start
 ```
-
-## Auteurs
-
-- Ghassene Ben Slimene - Développement du Back-end
-- Clara Galen - Développement du Front-end

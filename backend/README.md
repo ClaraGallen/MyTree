@@ -302,25 +302,6 @@ exemple de sortie:
   }
 ````
 
-## Statistiques
-
-### Obtenir les Statistiques
-
-- **Endpoint** : `GET /statistics`
-- **Description** : Récupérer des statistiques sur l'arbre généalogique.
-- \*\*Entrée
-
-\*\* : Aucune, authentification requise.
-
-- **Sortie** :
-  ```json
-  {
-    "totalMembers": 50,
-    "averageLifespan": 72
-    // Autres statistiques...
-  }
-  ```
-
 ## Erreurs
 
 Chaque endpoint renvoie un code d'état HTTP approprié, ainsi qu'un message d'erreur descriptif en cas d'échec de la requête. Le message d'erreur est renvoyé sous la forme d'un objet JSON, comme illustré ci-dessous :
