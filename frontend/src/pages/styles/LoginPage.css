@@ -102,3 +102,45 @@ p a:hover {
     color: rgb(248, 0, 0);
     font-size: 20px;
 }
+
+
+
+/* Pour le téléphone */
+
+@media screen and (max-width: 768px) {
+    .login-container {
+      width: 90%; /* Réduire la largeur du conteneur */
+      margin: 100px auto; /* Réduire la marge et centrer */
+      padding-top: 20px; /* Réduire l'espacement en haut */
+    }
+  
+    .login-container form {
+      width: 80%; /* Réduire la largeur du formulaire */
+    }
+  
+    .login-container h2 {
+      margin-bottom: 10px; /* Réduire l'espacement en bas */
+      font-size: 1.5rem; /* Réduire la taille du titre */
+    }
+  
+    .login-container label {
+      font-size: 14px; /* Réduire la taille de la police des étiquettes */
+    }
+  
+    .login-container input,
+    .login-container select {
+      width: 100%; /* Utiliser la largeur totale */
+      margin-bottom: 10px; /* Ajouter un espace entre les champs */
+    }
+  
+    button[type="submit"] {
+      margin-top: 20px; /* Ajouter un espace au-dessus du bouton */
+      margin-bottom: 20px; /* Réduire l'espace en dessous du bouton */
+      font-size: 14px; /* Réduire la taille de la police du bouton */
+    }
+  
+    p {
+      font-size: 14px; /* Réduire la taille de la police des paragraphes */
+    }
+  }
+  

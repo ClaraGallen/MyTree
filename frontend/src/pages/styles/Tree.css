@@ -15,11 +15,12 @@
 
 #tree-here {
     position: absolute;
-    top: -820px; 
+    top: -620px; 
     left: 50%; 
     transform: translateX(-50%);
     width: 100%;
     z-index: -1;
+    height: 100%;
 }
 
 .node-label {
@@ -28,7 +29,7 @@
 
 .link {
     fill: none;
-    stroke: #ccc;
+    stroke: steelblue;
     stroke-width: 2px;
 }
 
@@ -48,15 +49,51 @@
     display: flex;
     flex-direction: column;
     margin-left: 10px;
-    position: absolute;
-    margin-top: auto;
+    position: fixed;
+    top: 100px;
     z-index: 0;
 }
+
+@media print {
+    .icon-container {
+      display: none !important;
+    }
+  }
 
 .icon {
     width: 32px; 
     height: 32px; 
-    margin-top: 12px; 
+    margin-bottom: 12px; 
+}
+
+/* Statistiques */
+
+/* styles.css */
+
+
+.statistics-container {
+    background-color: rgb(217, 217, 217); /* Couleur de fond avec transparence */
+    padding: 20px; /* Ajoute de l'espace intérieur */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Ajoute une ombre */
+    margin-left: 60px;
+    position: fixed;
+    border: rgb(155, 40, 80);
+    border-style: ridge;
+    border-width: 3px;
+    top: 100px;
+    width: auto;
+
+}
+
+
+.statistics-container h2 {
+    font-size: 14px;
+}
+
+.statistics-container p {
+    font-size: 12px;
+    text-align: left;
+
 }
 
 
@@ -86,6 +123,20 @@
 
 .presentation {
     justify-content: center;
+}
+
+.img {
+    max-width: 150px;
+    max-height: 150px;
+}
+
+.action {
+    background-color: transparent;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
 }
 
 #alone {
@@ -156,4 +207,122 @@
 
 #alone_form button:not(:last-child) {
     margin-right: 10px;
+}
+
+
+
+/* Pour le téléphone */
+
+@media screen and (max-width: 768px) {
+  /* Informations personnelles */
+
+  .tooltip {
+    background-color: rgba(31, 31, 31, 0.831);
+    border: none;
+    padding: 5px;
+    font-size: medium;
+}
+
+.tooltip .p {
+    text-align: center;
+}
+
+.tooltip input {
+    color: white;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    margin-left: 10px;
+    transition: width 0.25s;
+    box-sizing : border-box;
+    padding: 0;
+    font-size: medium;
+}
+
+.presentation {
+    justify-content: center;
+}
+
+.img {
+    max-width: 120px; /* Réduire la taille de l'image */
+    max-height: 120px; /* Réduire la taille de l'image */
+}
+
+.action {
+    background-color: transparent;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+#alone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#alone_content {
+    text-align: center;
+}
+
+#alone_form {
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(238, 238, 238, 0.737);
+    width: 90%; /* Utilisez 90% de la largeur */
+    padding: 20px;
+    margin-top: 20px; /* Ajoutez un espace au-dessus du formulaire */
+}
+
+#alone_form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+#alone_form input,
+#alone_form select {
+    width: 100%; /* Utilisez la largeur complète */
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 15px;
+    border: none;
+    background-color: rgba(197, 196, 196, 0.845);
+    margin-bottom: 10px;
+}
+
+#alone_form h3 {
+    text-align: center;
+}
+
+#alone_form td:nth-child(2) {
+    width: 100%;
+    margin-right: 10px;
+    align-items: left;
+}
+
+#alone_form td:nth-child(1) {
+    text-align: right;
+    width: 20%;
+}
+
+#alone_form button {
+    padding: 10px 20px;
+    font-size: 12px;
+    border-style: solid;
+    border-radius: 50px;
+    cursor: pointer;
+    background-color: rgba(197, 196, 196, 0.845);
+    border-color: #424242;
+    border-width: 2px; /* Réduire la largeur de la bordure */
+    color:#424242;
+}
+
+#alone_form button:hover {
+    background-color: rgba(159, 157, 157, 0.653);
+  }
+
+#alone_form button:not(:last-child) {
+    margin-right: 10px;
+}
 }

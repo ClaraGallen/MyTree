@@ -42,13 +42,33 @@ export default function Signup() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('/auth/register', { email, password: password1, nom, prenom, sexe, photo, dateNaissance, dateDeces, professions, adresse, tel});
-            console.log('response: '+response);
+            // Création d'un objet FormData
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('password', password1);
+            formData.append('nom', nom);
+            formData.append('prenom', prenom);
+            formData.append('sexe', sexe);
+            formData.append('photo', photo);
+            formData.append('dateNaissance', dateNaissance);
+            formData.append('dateDeces', dateDeces);
+            formData.append('professions', professions);
+            formData.append('adresse', adresse);
+            formData.append('tel', tel);
+
+            console.log(formData)
+
+            // Envoi de la requête avec FormData
+            const response = await axios.post('/auth/register', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('response:', response);
             window.location.href = '/login';
         } catch (error) {
+            setError("Une erreur s'est produite lors du traitement de votre demande.");
             console.error('Error:', error);
-            setError(error.response.data.error || error.response.data.message || 'Une erreur s\'est produite');
-            setStep(1);
         }
     };
 
@@ -87,7 +107,7 @@ export default function Signup() {
                         </select>
                         <label htmlFor="photo">Photo:</label>
                         <input type="file" id="photo" accept="image/*" onChange={(e) => setPhoto(e.target.files[0])} />
-                        <label htmlFor="dateNaissance">Date de naissnce:</label>
+                        <label htmlFor="dateNaissance">Date de naissance:</label>
                         <input type="date" id="dateNaissance" value={dateNaissance} onChange={(e) => setDateNaissance(e.target.value)} />
                         <label htmlFor="dateDeces">Date de mort:</label>
                         <input type="date" id="dateDeces" value={dateDeces} onChange={(e) => setDateDeces(e.target.value)} />

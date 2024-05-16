@@ -5,7 +5,7 @@ import "./styles/LoginPage.css";
 import './styles/background.css';
 
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(' ');
@@ -19,8 +19,11 @@ export default function Login({ onLogin }) {
                 // Connexion réussie
                 const token = response.data.token;
                 const personId = response.data.personId;
+                const role = response.data.role;
                 localStorage.setItem('token', token);
                 localStorage.setItem('personId', personId);
+                localStorage.setItem('role', role);
+
                 onLogin();
                 window.location.href = '/dashboard';
             } else {
