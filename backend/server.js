@@ -11,7 +11,9 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://192.168.59.111:5173",
+    origin: function (origin, callback) {
+      callback(null, true);
+    },
     credentials: true,
   })
 );
@@ -45,7 +47,7 @@ app.use("/share", require("./routes/shareUserResRoutes"));
 
 // Routes admin
 app.use("/delete", require("./routes/deleteUserRoutes"));
-app.use("/users", require("./routes/getAllusersRoutes"));
+app.use("/users", require("./routes/getAllUsersRoutes"));
 app.use("/valid", require("./routes/validUserRoutes"));
 app.use("/share", require("./routes/shareUserResRoutes"));
 

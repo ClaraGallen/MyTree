@@ -58,3 +58,10 @@ cd server
 npm install
 npm start
 ```
+
+### Utilisation
+
+Pour voir un exemple de compte, vous pouvez vous connecter avec les identifiants suivants :
+
+- Email : pp4@gmail.com
+- Mot de passe : 1
