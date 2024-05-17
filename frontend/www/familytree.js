@@ -15,6 +15,7 @@ Array.prototype.remove = function() {
 };
 
 
+
 function d3_append_multiline_text(d3element, node, text, delimiter = "_", css_class = undefined, line_sep = 14,
     line_offset = undefined, x = 13, dominant_baseline = "central") {
     // Ajoute un label de texte multiligne à un élément d3
@@ -47,15 +48,12 @@ function d3_append_multiline_text(d3element, node, text, delimiter = "_", css_cl
 class FTDataHandler {
 
     constructor(data, start_node_id = data.start) {
-        console.log(data);
-        console.log(data.links);
-        console.log(Object.values(data.persons).length);
+
         // check if edge list defined
         if (data.links.length > 0) {
 
             // make dag from edge list
             this.dag = d3.dagConnect()(data.links);
-            console.log(this.dag);
             // dag must be a node with id undefined. fix if necessary
             if (this.dag.id != undefined) {
                 this.root = this.dag.copy();
@@ -65,10 +63,12 @@ class FTDataHandler {
             }
 
             // get all d3-dag nodes and convert to family tree nodes
-            console.log(this);
             this.nodes = this.dag.descendants().map(node => {
                 if (node.id in data.unions) return new Union(node, this)
-                else if (node.id in data.persons) return new Person(node, this);
+                else if (node.id in data.persons) {
+                    var person = new Person(node, this);
+                    return person;
+                }
             });
 
             // relink children arrays: use family tree nodes instead of d3-dag nodes
@@ -85,7 +85,6 @@ class FTDataHandler {
             this.root = this.find_node_by_id(start_node_id);
             this.root.visible = true;
             this.dag.children = [this.root];
-
         }
         // if no edges but only nodes are defined: root = dag
         else if (Object.values(data.persons).length > 0) {
@@ -403,11 +402,20 @@ class Person extends FTNode {
     };
 
     get_name() {
-        return this.data.name;
+
+        return this.data.prenom + " " + this.data.nom;
     };
 
     get_birth_year() {
-        return this.data.birthyear;
+
+        var anneeNaissance = "";
+
+        if (this.data.birth) {
+            anneeNaissance = new Date(this.data.birth);
+            anneeNaissance = anneeNaissance.getFullYear();
+        }
+
+        return anneeNaissance;
     };
 
     get_birth_place() {
@@ -415,7 +423,14 @@ class Person extends FTNode {
     };
 
     get_death_year() {
-        return this.data.deathyear;
+
+        var aneeDeces = "";
+
+        if (this.data.death) {
+            aneeDeces = new Date(this.data.death);
+            aneeDeces = aneeDeces.getFullYear();
+        }
+        return aneeDeces;
     };
 
     get_death_place() {
@@ -460,7 +475,6 @@ class Person extends FTNode {
     };
 
     get_own_unions() {
-        console.log("pb : " + this.data.own_unions);
         var unions = (this.data.own_unions ?? [])
             .map(id => this.ft_datahandler.find_node_by_id(id))
             .filter(u => u != undefined);
@@ -546,7 +560,6 @@ class Person extends FTNode {
         // Vérifiez si l'icône sélectionnée est "plus"
         if (selectedIcon === "plus") {
             // extend if there are uncollapsed neighbor unions
-            console.log(this); 
             if (this.is_extendable()) this.show();
             // collapse if fully extended
             else this.hide();
@@ -769,6 +782,8 @@ class FTDrawer {
     node_class(node_class_func) {
         // setter for node css class function
         if (!node_class_func) {} else { this.node_class_func = node_class_func };
+        // node_class_func.show();
+
         return this;
     };
 
@@ -813,6 +828,20 @@ class FTDrawer {
         return link.id || link.source.id + "_" + link.target.id;
     }
 
+    draw_nodes() {
+        const nodes = this.ft_datahandler.nodes;
+
+            nodes.forEach(node => {
+                
+                if (node.is_extendable()) node.show();
+
+                this.draw(node);
+                node.ft_datahandler.update_roots();
+                        }
+                    );
+
+    }
+
     draw(source = this.ft_datahandler.root) {
 
         // get visible nodes and links
@@ -821,6 +850,7 @@ class FTDrawer {
 
         // assign new x and y positions to all nodes
         this.layout(this.ft_datahandler.dag);
+
 
         // switch x and y coordinates if orientation = "horizontal"
         if (this._orientation == "horizontal") {
@@ -888,7 +918,7 @@ class FTDrawer {
                 FTDrawer.label_delimiter,
                 "node-label",
             )
-        });
+        });       
 
         // UPDATE
         var nodeUpdate = nodeEnter.merge(node);
@@ -981,7 +1011,6 @@ class FTDrawer {
 class FamilyTree extends FTDrawer {
 
     constructor(data, svg) {
-        console.log(data);
         const ft_datahandler = new FTDataHandler(data);
         super(ft_datahandler, svg);
     };

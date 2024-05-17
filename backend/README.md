@@ -8,6 +8,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 - **`/config`** : Contient les fichiers de configuration pour différentes parties de l'application comme la base de données, l'authentification et les variables d'environnement.
 - **`/controllers`** : Logique de traitement des requêtes. Chaque contrôleur gère la logique pour un aspect spécifique de l'application (par exemple, les utilisateurs, les arbres généalogiques, etc.).
+- **`/handlers`** : Ce dossier contient les handlers utilisés par les contrôleurs pour traiter et gérer les données.
 - **`/models`** : Définit les schémas de la base de données MongoDB pour différentes entités comme les utilisateurs et les relations.
 - **`/routes`** : Définit les routes de l'API RESTful qui exposent les fonctionnalités du serveur.
 - **`/middleware`** : Contient les fonctions middleware pour la gestion des erreurs, l'authentification, la journalisation, et d'autres tâches transversales.
@@ -44,6 +45,10 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   }
   ```
 
+**Remarque 1** : Le premier utilisateur inscrit sera automatiquement un administrateur.
+
+**Remarque 2** : Si l'utilisateur est déjà ajouté par un autre membre de la famille et vient d'être inscrit, il trouvera un arbre généalogique déjà créé avec ses relations.
+
 ### Connexion
 
 - **Endpoint** : `POST /auth/login`
@@ -59,15 +64,22 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   ```json
   {
     "token": "jwt.token.ici",
-    "userId": "identifiantUniqueUtilisateur"
+    "userId": "identifiantUniqueUtilisateur",
+    "role": "user/admin"
   }
   ```
+
+**Remarque 1** : Si l'utilisateur est approuvé par l'administrateur, l'API retournera la sortie mentionnée. Si l'utilisateur est en attente ou refusé, l'API renverra un message d'erreur.
+
+**Remarque 2** : Le token expirera après une durée spécifiée dans le fichier config/config.js.
 
 ### Déconnexion
 
 - **Endpoint** : `GET /auth/logout`
 - **Description** : Déconnecter un utilisateur et invalider le token.
 - **Entrée** : Aucune, authentification requise.
+
+**Remarque** : Le premier utilisateur inscrit sera automatiquement un administrateur.
 
 - **Sortie** :
   ```json
@@ -80,18 +92,159 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 ### Changer de Rôle
 
-- **Endpoint** : `PATCH /users/{userId}/role`
-- **Description** : Changer le rôle d'un utilisateur.
-- **Entrée** :
+### Supprimer un Utilisateur
+
+- **Endpoint** : `DELETE /delete/:email`
+- **Description** : Supprime un utilisateur de la base de données en utilisant son email.
+- **Paramètres** :
+  - `email` : L'email de l'utilisateur à supprimer.
+- **Entrée** : Aucune.
+
+### Lister les Utilisateurs
+
+- **Endpoint** : `GET /users/list`
+- **Description** : Récupère une liste de tous les utilisateurs.
+- **Entrée** : Aucune.
+- **Sortie** :
+
+  ```json
+  [
+    {
+      "_id": "6637f9de212a5dd35f768959",
+      "email": "test1@gmail.com",
+      "role": "user",
+      "status": "accepte",
+      "createdAt": "2024-05-05T21:27:58.559Z",
+      "updatedAt": "2024-05-05T21:27:58.559Z",
+      "__v": 0
+    },
+    {
+      "_id": "6638a81fc8ab1e33178efbbc",
+      "email": "test2@gmail.com",
+      "role": "user",
+      "status": "refuse",
+      "person": "6638a81fc8ab1e33178efbba",
+      "createdAt": "2024-05-06T09:51:27.388Z",
+      "updatedAt": "2024-05-08T16:28:24.980Z",
+      "__v": 0
+    }
+    // Autres utilisateurs...
+  ]
+  ```
+
+- **Endpoint supplémentaire** : `GET /users/list/:status`
+- **Description** : Récupère une liste des utilisateurs filtrés par leur statut.
+- **Paramètres** :
+  - `status` : Le statut des utilisateurs à lister (ex. actif, inactif).
+- **Sortie** :
+  ```json
+  [
+    {
+      "_id": "6637f9de212a5dd35f768959",
+      "email": "test1@gmail.com",
+      "role": "user",
+      "status": "en attente",
+      "person": "6638a81fc8ab1e33178e789a",
+      "createdAt": "2024-05-05T21:27:58.559Z",
+      "updatedAt": "2024-05-05T21:27:58.559Z",
+      "__v": 0
+    },
+    {
+      "_id": "6638a81fc8ab1e33178efbbc",
+      "email": "test2@gmail.com",
+      "role": "user",
+      "status": "en attente",
+      "person": "6638a81fc8ab1e33178efbba",
+      "createdAt": "2024-05-06T09:51:27.388Z",
+      "updatedAt": "2024-05-08T16:28:24.980Z",
+      "__v": 0
+    }
+    // Autres utilisateurs...
+  ]
+  ```
+
+### Valider les Informations d'un Utilisateur
+
+- **Endpoint** : `GET /valid/info/:id`
+- **Description** : Récupérer le profil d'un utilisateur à travers son ID.
+- **Paramètres** :
+  - `id` : ID de l'utilisateur.
+- **Entrée** : Aucune.
+- **Sortie** :
+
   ```json
   {
-    "newRole": "admin"
+    "_id": "6640c69870d013fff60a4ab0",
+    "email": "s1@exp.com",
+    "role": "admin",
+    "status": "accepte",
+    "person": {
+      "_id": "6640c69870d013fff60a4aae",
+      "nom": "Jean",
+      "prenom": "Dupont",
+      "email": "s1@exp.com",
+      "sexe": "Homme",
+      "photo": "2024-05-12T13-39-36.327Z-frame.png",
+      "dateNaissance": "1980-01-01T00:00:00.000Z",
+      "dateDeces": null,
+      "professions": "Menuisier",
+      "adresse": "123 rue de l'Exemple",
+      "tel": "0123456789",
+      "conjoints": [],
+      "enfants": [],
+      "createdAt": "2024-05-12T13:39:36.666Z",
+      "updatedAt": "2024-05-12T13:39:36.666Z",
+      "__v": 0
+    },
+    "createdAt": "2024-05-12T13:39:36.689Z",
+    "updatedAt": "2024-05-12T13:47:18.556Z",
+    "__v": 0
   }
   ```
+
+- **Endpoint supplémentaire** : `PUT /valid/:id/:status`
+- **Description** : Met à jour le statut d'un utilisateur.
+- **Paramètres** :
+  - `id` : ID de l'utilisateur dont le statut doit être mis à jour.
+  - `status` : Nouveau statut de l'utilisateur (ex. actif, inactif).
+- **Entrée** : Aucune.
 - **Sortie** :
   ```json
   {
-    "message": "Rôle utilisateur mis à jour avec succès"
+    "result": {
+      "_id": "6640c69870d013fff60a4ab0",
+      "email": "s1@exp.com",
+      "role": "user",
+      "status": "accepte", //Le status a été mis à jour
+      "person": "6640c69870d013fff60a4aae",
+      "createdAt": "2024-05-12T13:39:36.689Z",
+      "updatedAt": "2024-05-12T14:20:33.462Z",
+      "__v": 0
+    }
+  }
+  ```
+
+### Partager les Ressources d'un Utilisateur
+
+- **Endpoint** : `PUT /share/:id/:role`
+- **Description** : Attribue ou met à jour le rôle d'un utilisateur concernant l'accès aux ressources partagées.
+- **Paramètres** :
+  - `id` : ID de l'utilisateur à qui le rôle est attribué.
+  - `role` : Rôle à attribuer à l'utilisateur (ex. admin, user).
+- **Entrée** : Aucune.
+- **Sortie** :
+  ```json
+  {
+    "result": {
+      "_id": "6640c69870d013fff60a4ab0",
+      "email": "s1@exp.com",
+      "role": "admin", //Le role a été mis à jour
+      "status": "accepte",
+      "person": "6640c69870d013fff60a4aae",
+      "createdAt": "2024-05-12T13:39:36.689Z",
+      "updatedAt": "2024-05-12T14:20:33.462Z",
+      "__v": 0
+    }
   }
   ```
 
@@ -112,6 +265,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "nom": "blaaa",
     "prenom": "bou",
     "sexe": "Homme",
+    "photo": "urlPhoto",
     "dateNaissance": "08/06/2000",
     "dateDeces": "",
     "professions": "Prof",
@@ -191,7 +345,8 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
   {
     "nom": "Doe",
     "prenom": "John",
-    "adresse": "123 Main St"
+    "adresse": "123 Main St",
+    "photo": "nouveau urlPhoto" // Cette action supprime l'ancienne image et ajoute la nouvelle
   }
   ```
 
@@ -206,7 +361,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 ### Suppression de Relations Familiales
 
 - **Endpoint** : `DELETE /people/deleteRelation/{id1}/{id2?}`
-- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour des personnes identifiées par l'ID. La relation est définie du point de vue de la personne `id1` par rapport à la personne `id2`. Par exemple, si la relation est "enfant", cela signifie que la personne `id1` est l'enfant de la personne `id2`.
+- **Description** : Supprime une relation spécifique (père, mère, conjoint, ou enfant) pour des personnes identifiées par l'ID.
 - **Paramètres** :
   - `id1` : ID de la personne 1.
   - `id2` (optionnel) : ID de la personne 2. Si non spécifié, l'ID de la personne actuellement connectée sera utilisé.
@@ -235,6 +390,7 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
     "personId": "identifiantUniquePersonne"
   }
   ```
+  **Remarque** : Après la suppression, la photo de l'utilisateur sera également supprimée.
 
 ## Importation/Exportation de Données
 
@@ -242,19 +398,19 @@ L'architecture du backend suit une structure modulaire et est organisée comme s
 
 - **Endpoint** : `GET /people/{id}`
 - **Description** : Exporter les informations d'une personne à travers son id.
-- **Entrée** : Aucune, authentification requise.
+- **Entrée** : Aucune.
 - **Sortie** : Fichier JSON de l'arbre généalogique.
 
 exemple de sortie:
 
-````json
+```json
 {
   "_id": "60d6c47e4094a45b0468d7c9",
   "nom": "Dupont",
   "prenom": "Jean",
   "email": "jean.dupont@example.com",
   "sexe": "Homme",
-  "photo": "https://example.com/photo.jpg",
+  "photo": "photo.jpg",
   "dateNaissance": "1980-01-01T00:00:00.000Z",
   "dateDeces": null,
   "professions": "Ingénieur",
@@ -278,48 +434,9 @@ exemple de sortie:
     {
       "idEnfant": "60d6c47e4094a45b0468d7c5"
     }
-  ],
-  "createdAt": "2022-01-01T00:00:00.000Z",
-  "updatedAt": "2022-01-01T00:00:00.000Z"
-}```
-
-### Exporter l'Arbre
-
-- **Endpoint** : `GET /export`
-- **Description** : Exporter l'arbre généalogique au format JSON.
-- **Entrée** : Aucune, authentification requise.
-- **Sortie** : Fichier JSON de l'arbre généalogique.
-
-### Importer l'Arbre
-
-- **Endpoint** : `POST /import`
-- **Description** : Importer un arbre généalogique à partir d'un fichier JSON.
-- **Entrée** : Fichier JSON de l'arbre généalogique.
-- **Sortie** :
-  ```json
-  {
-    "message": "Arbre importé avec succès"
-  }
-````
-
-## Statistiques
-
-### Obtenir les Statistiques
-
-- **Endpoint** : `GET /statistics`
-- **Description** : Récupérer des statistiques sur l'arbre généalogique.
-- \*\*Entrée
-
-\*\* : Aucune, authentification requise.
-
-- **Sortie** :
-  ```json
-  {
-    "totalMembers": 50,
-    "averageLifespan": 72
-    // Autres statistiques...
-  }
-  ```
+  ]
+}
+```
 
 ## Erreurs
 
@@ -363,7 +480,7 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 - **prenom** : Prénom de la personne (obligatoire).
 - **email** : Email de la personne (obligatoire).
 - **sexe** : Genre de la personne, 'Homme' ou 'Femme' (obligatoire).
-- **photo** : Lien vers une photo de la personne (facultatif).
+- **photo** : Nom de la photo de la personne (facultatif).
 - **dateNaissance** : Date de naissance de la personne (facultative).
 - **dateDeces** : Date de décès de la personne (facultative).
 - **professions** : Liste des professions de la personne (facultatif).
@@ -377,39 +494,41 @@ Chaque document de la collection `Persons` peut contenir les champs suivants :
 
 ## Sécurité
 
-Les mots de passe ne sont jamais stockés en clair dans la base de données. Seul le hash du mot de passe, généré à l'aide d'un algorithme de cryptage fort, est stocké dans la collection `Users`.
+- Les mots de passe ne sont jamais stockés en clair dans la base de données. Seul le hash du mot de passe, généré à l'aide d'un algorithme de cryptage fort, est stocké dans la collection `Users`.
+
+- Certaines routes sont limitées et ne peuvent être accessibles que par des utilisateurs spécifiques. Les permissions sont gérées au niveau du serveur pour assurer la sécurité et l'intégrité des données.
 
 ## Exemple de Document de la Collection `Persons`
 
 ```json
 {
-"\_id": ObjectId("identifiantUniquePersonne"),
-"nom": "Dupont",
-"prenom": "Jean",
-"sexe": "Homme",
-"photo": "urlPhoto",
-"email": "JeanDupont@gmail.com",
-"dateNaissance": "1970-05-15",
-"dateDeces": null,
-"professions": "Menuisier",
-"adresse": "123 rue de l'Exemple",
-"tel": "0123456789"
-"informationsComplementaires": "Informations diverses ici",
-"parents": {
-"pere": ObjectId("identifiantPere"),
-"mere": ObjectId("identifiantMere")
-},
-"conjoints": [
-{
-"idConjoint": ObjectId("identifiantConjoint"),
-"dateUnion": "1995-06-20",
-"dateSeparation": "2005-04-15"
-}
-],
-"enfants": [
-{
-"idEnfant": ObjectId("identifiantEnfant"),
-}
-]
+  "\_id": ObjectId("identifiantUniquePersonne"),
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "sexe": "Homme",
+  "photo": "urlPhoto",
+  "email": "JeanDupont@gmail.com",
+  "dateNaissance": "1970-05-15",
+  "dateDeces": null,
+  "professions": "Menuisier",
+  "adresse": "123 rue de l'Exemple",
+  "tel": "0123456789",
+  "informationsComplementaires": "Informations diverses ici",
+  "parents": {
+    "pere": ObjectId("identifiantPere"),
+    "mere": ObjectId("identifiantMere")
+  },
+  "conjoints": [
+    {
+      "idConjoint": ObjectId("identifiantConjoint"),
+      "dateUnion": "1995-06-20",
+      "dateSeparation": "2005-04-15"
+    }
+  ],
+  "enfants": [
+    {
+      "idEnfant": ObjectId("identifiantEnfant"),
+    }
+  ]
 }
 ```

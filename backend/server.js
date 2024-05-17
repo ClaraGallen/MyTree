@@ -26,19 +26,26 @@ app.use(
     credentials: true,
   })
 );
-
 // Middleware qui permet de traiter les données de la Request
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(require("cookie-parser")());
 
-// Routes
+// Routes authentification
 app.use("/auth", require("./routes/authRoutes"));
+
+// Routes gestion des personnes (le plus important)
 app.use(
   "/people",
   require("./controllers/peopleController").verifySession,
   require("./routes/peopleRoutes")
 );
+
+// Routes admin
+app.use("/delete", require("./routes/deleteUserRoutes"));
+app.use("/users", require("./routes/getAllUsersRoutes"));
+app.use("/valid", require("./routes/validUserRoutes"));
+app.use("/share", require("./routes/shareUserResRoutes"));
 
 // Middleware qui permet de gérer les erreurs
 app.use(require("./utils/errorHandler"));

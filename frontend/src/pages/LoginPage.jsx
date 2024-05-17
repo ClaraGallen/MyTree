@@ -7,7 +7,7 @@ import "./styles/background.css";
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(" ");
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -17,9 +17,11 @@ export default function Login({ onLogin }) {
       console.log("envoie demande");
       if (response.status === 200) {
         // Connexion réussie
-        const { token, personId } = response.data;
+        const { token, personId, role } = response.data;
         localStorage.setItem("token", token);
         localStorage.setItem("personId", personId);
+        localStorage.setItem("role", role);
+
         onLogin();
         navigate("/dashboard");
       } else {
@@ -31,7 +33,7 @@ export default function Login({ onLogin }) {
         error.response?.data.error ||
           error.response?.data.message ||
           "Une erreur s'est produite"
-      ); // Improved error handling
+      );
     }
   };
 

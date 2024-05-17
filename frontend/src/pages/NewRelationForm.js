@@ -13,7 +13,7 @@ const toggleNewRelationForm = () => {
 };
 
 const NewRelationForm = ({ setShowForm }) => {
-
+    const [image, setImage] = useState('');
     const [dataNewRelation, setDataNewRelation] = useState({
         type: '',
         fromDate: '',
@@ -29,47 +29,70 @@ const NewRelationForm = ({ setShowForm }) => {
             dateDeces: '',
             professions: '',
             adresse: '',
-            tel: ''
+            tel: '',
+            photo: ''
         }
     });
 
-    const addRelation = async (e) => {
+    const addRelation = async () => {
 
-        e.preventDefault(); // Empêche le comportement par défaut de la soumission du formulaire
-
+        // e.preventDefault(); // Empêche le comportement par défaut de la soumission du formulaire
         console.log(dataNewRelation);
 
-        var id = localStorage.getItem("id_tmp");
-        const dataRelation = {
-            relation: dataNewRelation.type,
-        };
-    
-        if (dataNewRelation.type === 'conjoint') {
-            dataRelation.dateUnion = dataNewRelation.dateUnion;
-            dataRelation.dateSeparation = dataNewRelation.dateSeparation;
+        if (
+            dataNewRelation.newPersonData.prenom.trim() === "" ||
+            dataNewRelation.newPersonData.nom.trim() === "" ||
+            dataNewRelation.newPersonData.sexe.trim() === "" ||
+            dataNewRelation.newPersonData.email.trim() === ""
+        ) {
+
+            alert("Veuillez remplir tous les champs obligatoires (Prénom, Nom, Genre, e-mail");
+            return;
         }
-    
         try {
+            const formData = new FormData();
+            formData.append('prenom', dataNewRelation.newPersonData.prenom);
+            formData.append('nom', dataNewRelation.newPersonData.nom);
+            formData.append('sexe', dataNewRelation.newPersonData.sexe);
+            formData.append('email', dataNewRelation.newPersonData.email);
+            if (image) formData.append('photo', image);
+            formData.append('professions', dataNewRelation.newPersonData.professions);
+            formData.append('tel', dataNewRelation.newPersonData.tel);
+            formData.append('adresse', dataNewRelation.newPersonData.adresse);
+
+            const formattedBirthday = dataNewRelation.newPersonData.dateNaissance ? new Date(dataNewRelation.newPersonData.dateNaissance) : "";
+            const formattedDeathday = dataNewRelation.newPersonData.dateDeces ? new Date(dataNewRelation.newPersonData.dateDeces) : "";
+            
+            formData.append('dateNaissance', formattedBirthday);
+            formData.append('dateDeces', formattedDeathday);
+
+            var id = localStorage.getItem("id_tmp");
+            const dataRelation = {
+                relation: dataNewRelation.type,
+            };
+        
+            if (dataNewRelation.type === 'conjoint') {
+                dataRelation.dateUnion = dataNewRelation.fromDate ? new Date(dataNewRelation.fromDate) : "";
+                dataRelation.dateSeparation = dataNewRelation.toDate ? new Date(dataNewRelation.toDate) : "";
+            }
+        
             if (dataNewRelation.withExistingPerson) {
                 var idMember = dataNewRelation.personId;
-                console.log("existe deja");
+
                 const response = await axios.post(`/people/addRelationByEmail/${data.persons[idMember].email}/${id}`, dataRelation);
                 console.log("Relation ajoutée avec succès :", response.data);
-                console.log("envoyé : " + data.persons[idMember].email + dataNewRelation.type + id);
 
             } else {
-                console.log("nouvelle personne");
                 // Si c'est une nouvelle personne, envoyez les données de la nouvelle personne avec les informations de la relation
-                const newPersonData = {
-                    ...dataNewRelation.newPersonData,
-                    ...dataRelation
-                };
-                console.log(newPersonData);
-                const response = await axios.post(`/people/addRelation/${id}`, newPersonData);
+                for (const key in dataRelation) {
+                    formData.append(key, dataRelation[key]);
+                }
+                console.log(formData);
+                const response = await axios.post(`/people/addRelation/${id}`, formData);
                 console.log("Relation ajoutée avec succès :", response.data);
             }
 
-            setShowForm(false);
+            // window.location.reload();
 
         } catch (error) {
             console.error("Erreur lors de l'ajout de la relation :", error);
@@ -142,7 +165,7 @@ const NewRelationForm = ({ setShowForm }) => {
                                         console.log(personId);
                                         return (
                                             <option key={personId} value={personId}>
-                                                {data.persons[personId].name}
+                                                {data.persons[personId].prenom + " " + data.persons[personId].nom}
                                             </option>
                                         );
                                     } else {
@@ -248,11 +271,22 @@ const NewRelationForm = ({ setShowForm }) => {
                                     />
                                 </td>
                             </tr>
+                            <tr>
+                                <td>Photo: </td>
+                                <td>
+                                <input
+                                        type="file"
+                                        id="photo"
+                                        accept="image/*"
+                                        onChange={(e) => setImage(e.target.files[0]) }
+                                    />
+                                </td>
+                            </tr>
                         </>
                     )}
                 </tbody>
             </table>
-            <button type="submit">Ajouter</button>
+            <button type="button" onClick={() => addRelation()}>Ajouter</button>
         </form>
     );
 }
